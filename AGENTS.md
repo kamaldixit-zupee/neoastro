@@ -22,6 +22,8 @@ Use this doc for any change inside this repository. It is the iOS user app for t
 7. **Do not add caching layers** (Core Data, SwiftData, file caches) without a product requirement. The app is intentionally stateless beyond Keychain.
 8. **Do not change the bundle ID** `varasol.MarathiCalendarPanchangam` casually – provisioning profiles and App Store Connect are tied to it.
 9. **Treat `Models/API/`** as wire format. Do not add view-layer concerns (formatting, image caching) to those types; do that in the ViewModel.
+10. **Every UI surface must use Liquid Glass.** Chrome (nav bar, tab bar, toolbars, banners, FABs, cards over the cosmic background) uses `.glassEffect(...)`; long-form body text and sensitive fields stay opaque. No `.ultraThinMaterial` / `.thickMaterial` regressions, no glass-on-glass, no flat plastic cards.
+11. **All modals use Liquid Glass sheets.** Present via `.sheet` / `.fullScreenCover` / `.confirmationDialog` / `.alert` and let iOS 26 paint the system Liquid Glass material. Never hand-roll an overlay modal with an opaque background, and never override `presentationBackground` with a flat color. See [.claude/references/UI-GUIDELINES.md](.claude/references/UI-GUIDELINES.md) § 4a.
 
 ## Routing decisions
 
@@ -48,6 +50,10 @@ If a task crosses into the parent backend / RN monorepo at `/Users/kamal.dixit/D
 | Profile / delete account | [Features/Account/](NeoAstro/Features/Account) |
 | Settings widgets | [Features/More/](NeoAstro/Features/More) |
 | Build spec | [project.yml](project.yml) |
+| Feature parity tracker | [FEATURES.md](FEATURES.md) |
+| API endpoints reference | [.claude/references/API-ENDPOINTS.md](.claude/references/API-ENDPOINTS.md) |
+| Socket events reference | [.claude/references/SOCKET-EVENTS.md](.claude/references/SOCKET-EVENTS.md) |
+| UI rules (Liquid Glass) | [.claude/references/UI-GUIDELINES.md](.claude/references/UI-GUIDELINES.md) |
 
 ## Adding a new feature (recipe)
 

@@ -12,6 +12,8 @@ alwaysApply: false
 - Keep all three envelope branches in `APIClient.send` (`ZupeeEnvelope`, `ResponseOnlyEnvelope`, direct `T`); the backend uses all three
 - No third-party SDKs are installed (no Firebase, Sentry, Razorpay, Agora, CleverTap); adding the first one is a discussion, not a unilateral change
 - Use `AppLog.<category>` (categories: api, auth, home, search, account, wallet, horoscope, panchang, chat); never use `print` or `NSLog`; add a new category to `AppLog.swift` rather than misusing one
+- All UI must use Liquid Glass (iOS 26 `.glassEffect(...)`); chrome (nav bar, tab bar, toolbars, banners, FABs, cards over the cosmic background) is glass; long-form body text and sensitive fields stay opaque; no `.ultraThinMaterial` / `.thickMaterial`; no glass-on-glass; no flat plastic cards; reference: `.claude/references/UI-GUIDELINES.md`
+- All modals use Liquid Glass sheets — present via `.sheet` / `.fullScreenCover` / `.confirmationDialog` / `.alert` (system Liquid Glass on iOS 26); never hand-roll overlay modals with opaque backgrounds; never override `presentationBackground` with a flat color
 - Folder convention: one feature per folder under `Features/<Name>/` containing `<Name>View.swift` + `<Name>ViewModel.swift` + supporting views; DTOs in `Models/API/<Name>API.swift`; service facades as stateless enums in `Services/<Name>Service.swift`
 - Models in `Models/API/` are wire format only; keep them `Codable`, optional-friendly, and free of view-layer logic
 - Use `async`/`await` for all I/O; never `DispatchQueue.main.async` after a network call (the actor hop is automatic)
