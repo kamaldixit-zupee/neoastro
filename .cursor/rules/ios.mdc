@@ -1,0 +1,25 @@
+---
+globs: NeoAstro/**/*.swift,project.yml
+alwaysApply: false
+---
+- Single iOS target generated from `project.yml` via XcodeGen; never hand-edit `NeoAstro.xcodeproj/project.pbxproj`
+- Swift 5.10, SwiftUI only (no UIKit screens, no storyboards), iOS 26.0 minimum, dark and light mode both, iPhone-portrait only
+- Architecture is MVVM with `@Observable @MainActor final class` ViewModels; do NOT use Combine, `@Published`, `@StateObject`, `@ObservedObject`, or `@EnvironmentObject`
+- ViewModels are owned locally with `@State private var vm = FooViewModel()`; share across screens with `.environment(vm)`
+- All HTTP must go through `APIClient.shared.send` – it owns auth, refresh-on-401, device headers, and the three Zupee envelope shapes; never call `URLSession` directly
+- Tokens live only in Keychain via `TokenStore`; do not introduce Core Data, SwiftData, UserDefaults, or any disk cache without product approval
+- `DeviceInfo.zupeeAppName` is intentionally `com.neoastro.android` – the Zupee gateway gates on package name; do not "correct" it to an iOS bundle id
+- Keep all three envelope branches in `APIClient.send` (`ZupeeEnvelope`, `ResponseOnlyEnvelope`, direct `T`); the backend uses all three
+- No third-party SDKs are installed (no Firebase, Sentry, Razorpay, Agora, CleverTap); adding the first one is a discussion, not a unilateral change
+- Use `AppLog.<category>` (categories: api, auth, home, search, account, wallet, horoscope, panchang, chat); never use `print` or `NSLog`; add a new category to `AppLog.swift` rather than misusing one
+- Folder convention: one feature per folder under `Features/<Name>/` containing `<Name>View.swift` + `<Name>ViewModel.swift` + supporting views; DTOs in `Models/API/<Name>API.swift`; service facades as stateless enums in `Services/<Name>Service.swift`
+- Models in `Models/API/` are wire format only; keep them `Codable`, optional-friendly, and free of view-layer logic
+- Use `async`/`await` for all I/O; never `DispatchQueue.main.async` after a network call (the actor hop is automatic)
+- Use early returns and `guard let` to keep nesting shallow; avoid forced unwraps outside obvious main-thread setup
+- Prefer enums + strict types over stringly-typed values; do not use `Any` or `AnyCodable`
+- Default to writing no comments; only comment where the *why* is non-obvious (e.g. intentional API spoofing, envelope quirks)
+- Bundle ID `varasol.MarathiCalendarPanchangam` is legacy but tied to provisioning – do not change casually
+- Build version strings in `DeviceInfo` (`buildVersionCode`, `buildVersionName`) feed analytics/gating – keep in sync with releases
+- No tests, lint config, or CI yet – if you add SwiftLint/SwiftFormat, also wire them into `project.yml` so XcodeGen picks them up
+- Branching: `feature/<slug>` for features, `bugfix/<slug>` for fixes, mainline is `main`
+- Do not commit secrets, `.env` files, signing keys, or debug-only `print` statements

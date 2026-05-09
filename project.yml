@@ -1,0 +1,34 @@
+name: NeoAstro
+options:
+  bundleIdPrefix: varasol
+  deploymentTarget:
+    iOS: "26.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+    DEVELOPMENT_TEAM: H5YRX72888
+    CODE_SIGN_STYLE: Automatic
+    ENABLE_PREVIEWS: "YES"
+
+targets:
+  NeoAstro:
+    type: application
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: NeoAstro
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: varasol.MarathiCalendarPanchangam
+        PRODUCT_NAME: NeoAstro
+        INFOPLIST_FILE: NeoAstro/Resources/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        TARGETED_DEVICE_FAMILY: "1"
+        SUPPORTS_MACCATALYST: "NO"
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: "NO"
+        DEVELOPMENT_TEAM: H5YRX72888
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: "Apple Development"

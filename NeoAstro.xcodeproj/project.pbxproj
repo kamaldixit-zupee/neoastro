@@ -1,0 +1,653 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		05273558B8F01B5C88992840 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5342A11B1F0E04014CE17270 /* AuthViewModel.swift */; };
+		09300E78C76A6C135329C5BC /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D0E9AC644BD099B1E163CCF /* HomeViewModel.swift */; };
+		0A93C96D47BE2F6AAA58CFD3 /* AstrologerProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA41FE8999AD50824AC96700 /* AstrologerProfileView.swift */; };
+		0E5C9BE221E4E39B2FCF3956 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EA4EE9C63047A1D300A3280 /* AppTheme.swift */; };
+		16491549EFEAC55EE80015B6 /* NeoAstroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D631343EA1C7883023CBEE5 /* NeoAstroApp.swift */; };
+		1F45E8FE7CC19CDB5556B0D0 /* UserSettingsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1462AAF8D8FDD55D95DBF5D7 /* UserSettingsService.swift */; };
+		2570F087FD73B1729ABDAAD7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D0701E808401644343075689 /* Assets.xcassets */; };
+		2802A7AB68B56554498D1B98 /* AppLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CAF5B10B3FE3E30F5FF0AD0 /* AppLog.swift */; };
+		315C0C87AFC4FE594026DEA3 /* HoroscopeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9125E9782918A532AAC4B13 /* HoroscopeViewModel.swift */; };
+		31811F0528B99C81293F9FA5 /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96D7CA403397823D55361DF6 /* EditProfileView.swift */; };
+		31E8313D6B8E18AADC966256 /* ProfileAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95147230F2CAC1D20433A9E /* ProfileAPI.swift */; };
+		338CD1546BB9C2AA69C69B44 /* MoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8927073DB90AB3ED9C500F /* MoreViewModel.swift */; };
+		39ECEB05DD8B769121CEE9BC /* HoroscopeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB60BDDAF7CB4481872C857 /* HoroscopeService.swift */; };
+		3C848AD2FE608F48C50A2EC9 /* JuspayPaymentSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E72AE215C4904BED9697C7 /* JuspayPaymentSheet.swift */; };
+		49E0C3766B84AA8969B1CA47 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF017F0A66269715EBA9131B /* AuthService.swift */; };
+		4A7A4E51663A213FB509138D /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9227B79C182340D824E7B2B9 /* LoginView.swift */; };
+		4E51756667E1694FCE883E3D /* HoroscopeAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EEC368F2F7C0D77BFFC4203 /* HoroscopeAPI.swift */; };
+		50B84C8C0EF6F5C477C1FFCA /* WalletAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822898FF3034AD910EF5FB4D /* WalletAPI.swift */; };
+		54F0A97B15018A04400DF11D /* PanchangViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522751E683EB689CF6118520 /* PanchangViewModel.swift */; };
+		569DE6A336E0DEAC267F8D09 /* AuthAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AB3ED7057402253FB40D6AC /* AuthAPI.swift */; };
+		588175A40B86ACAE1ACCD50B /* WalletService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF28ECFA6FEE6D439DD36F7F /* WalletService.swift */; };
+		5AF472EBDA7899214C7A7F86 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D0D8BE5A4E0CB3B3173F19 /* MainTabView.swift */; };
+		5F8207985467FE5118F49722 /* PanchangAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9299E2C699C9F2780797ED56 /* PanchangAPI.swift */; };
+		6CE1CF3F10219E056BC0A303 /* APIEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00640AA8A08A2BC57352CEDA /* APIEnvironment.swift */; };
+		6D662602F2C5B73F8E0B24CF /* ChatConfirmationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86094F0AFB9D94218755C1C /* ChatConfirmationSheet.swift */; };
+		80912B7DE8D4D95B663C5FD8 /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC8A1752185026572F27F5F8 /* MoreView.swift */; };
+		93D91D66F6E715B0B82A43C3 /* DeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6D49462196723AEDED8F86 /* DeviceInfo.swift */; };
+		97ACD1FDE863FD493A7A9B29 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312CB1FED6F640B14427F862 /* HomeView.swift */; };
+		9CEF5E19C3947452A6D6ECD7 /* AstrologerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66707C7FA12C4C48A4D790D /* AstrologerService.swift */; };
+		9F09ECDAE88EB141BA2B8E1F /* UserSettingsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514EA79C37A5CE6C40EB56DB /* UserSettingsAPI.swift */; };
+		9FB92138BDA1D3FEB6F90666 /* TokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C24B4546951FD8931B25A2 /* TokenStore.swift */; };
+		A6A9C1E9E09C362F0D8CFBF6 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8459254627064F9F1FB8C8E1 /* AccountView.swift */; };
+		A6B59CDC1022CA18CDA15D67 /* KeyboardDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9364DE3E0E3A64D704B0DD36 /* KeyboardDismiss.swift */; };
+		A8076160BEF9E15FCDEE9A6E /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472AAE9CC44C97590F768910 /* AccountViewModel.swift */; };
+		B33948658D3ED25E79637486 /* PanchangView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEF5D0335CFDF6E15272D545 /* PanchangView.swift */; };
+		B458C5EB607167323EE9657D /* HoroscopeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB88E544C98924C3B0147FCD /* HoroscopeView.swift */; };
+		B59CC258AE7B64CE9695471B /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2B634330C2DD800D84EAF /* APIClient.swift */; };
+		B9780B309F7B4AEDE0DAD1F3 /* PanchangService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBCC5D504C7F92A9FE653A19 /* PanchangService.swift */; };
+		B98155195151F7C7917AAB29 /* ProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76CD348A8D3EDAC8EAFC554D /* ProfileService.swift */; };
+		C006CB843E52425DAC51AE03 /* ConsultChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179305C81EE2A335E5031829 /* ConsultChatView.swift */; };
+		C0AC7FA78597E7F2AA2A5F7D /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 991737564742367E2C7B2B85 /* APIError.swift */; };
+		CB990A4E9B51F1AD17C1D297 /* AstrologerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2891DED3886D35A9A945492 /* AstrologerAPI.swift */; };
+		CF5D22E6ED6512C30F4B7E68 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E4A2D424064938F090C5937 /* RootView.swift */; };
+		D2438D429280BC2F261B92DE /* AstrologerCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DFA402D8E1969401B74776 /* AstrologerCard.swift */; };
+		D7300645F49479BADE62A811 /* ZupeeEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = AED8BE5F21F6674D170B0BE2 /* ZupeeEnvelope.swift */; };
+		D8B2E9B167CDC708668ADA0B /* WalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 767141686828E5C0E4E21646 /* WalletView.swift */; };
+		DB17DA68B6ECC4A412CDCAE2 /* OTPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2250FB76A11DBEBD18C297BB /* OTPView.swift */; };
+		E843AC0ECC6A2614584ACE83 /* WalletViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE871367C110D86D9053B89 /* WalletViewModel.swift */; };
+		EFA8CD3035A387B46F6EE294 /* SearchOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643683FF0BC1EB7709CEC01A /* SearchOverlayView.swift */; };
+		F3F13C76B3E9DD9705E1D436 /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254C5C3EABCBEC3BCFAC8433 /* AvatarView.swift */; };
+		F8A006A5123C8E865E60652B /* HexColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE401B6EA5EE18EEE82E4AE7 /* HexColor.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		00640AA8A08A2BC57352CEDA /* APIEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIEnvironment.swift; sourceTree = "<group>"; };
+		0ACB1135C151BE7A30E95DCD /* NeoAstro.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = NeoAstro.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1462AAF8D8FDD55D95DBF5D7 /* UserSettingsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsService.swift; sourceTree = "<group>"; };
+		179305C81EE2A335E5031829 /* ConsultChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsultChatView.swift; sourceTree = "<group>"; };
+		1C8927073DB90AB3ED9C500F /* MoreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreViewModel.swift; sourceTree = "<group>"; };
+		1D0E9AC644BD099B1E163CCF /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		2250FB76A11DBEBD18C297BB /* OTPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPView.swift; sourceTree = "<group>"; };
+		254C5C3EABCBEC3BCFAC8433 /* AvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarView.swift; sourceTree = "<group>"; };
+		2CB2B634330C2DD800D84EAF /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		2CE871367C110D86D9053B89 /* WalletViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewModel.swift; sourceTree = "<group>"; };
+		2D631343EA1C7883023CBEE5 /* NeoAstroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeoAstroApp.swift; sourceTree = "<group>"; };
+		312CB1FED6F640B14427F862 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		32E72AE215C4904BED9697C7 /* JuspayPaymentSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JuspayPaymentSheet.swift; sourceTree = "<group>"; };
+		3CAF5B10B3FE3E30F5FF0AD0 /* AppLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLog.swift; sourceTree = "<group>"; };
+		3EEC368F2F7C0D77BFFC4203 /* HoroscopeAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoroscopeAPI.swift; sourceTree = "<group>"; };
+		42114DA2F30D784C549B3483 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		472AAE9CC44C97590F768910 /* AccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewModel.swift; sourceTree = "<group>"; };
+		4E4A2D424064938F090C5937 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		514EA79C37A5CE6C40EB56DB /* UserSettingsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsAPI.swift; sourceTree = "<group>"; };
+		522751E683EB689CF6118520 /* PanchangViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanchangViewModel.swift; sourceTree = "<group>"; };
+		5342A11B1F0E04014CE17270 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		643683FF0BC1EB7709CEC01A /* SearchOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchOverlayView.swift; sourceTree = "<group>"; };
+		6AB3ED7057402253FB40D6AC /* AuthAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPI.swift; sourceTree = "<group>"; };
+		70D0D8BE5A4E0CB3B3173F19 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		767141686828E5C0E4E21646 /* WalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
+		76CD348A8D3EDAC8EAFC554D /* ProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
+		822898FF3034AD910EF5FB4D /* WalletAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletAPI.swift; sourceTree = "<group>"; };
+		8459254627064F9F1FB8C8E1 /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
+		9227B79C182340D824E7B2B9 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		9299E2C699C9F2780797ED56 /* PanchangAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanchangAPI.swift; sourceTree = "<group>"; };
+		9364DE3E0E3A64D704B0DD36 /* KeyboardDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardDismiss.swift; sourceTree = "<group>"; };
+		96D7CA403397823D55361DF6 /* EditProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileView.swift; sourceTree = "<group>"; };
+		991737564742367E2C7B2B85 /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
+		9EA4EE9C63047A1D300A3280 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		A6DFA402D8E1969401B74776 /* AstrologerCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AstrologerCard.swift; sourceTree = "<group>"; };
+		A7C24B4546951FD8931B25A2 /* TokenStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenStore.swift; sourceTree = "<group>"; };
+		AB88E544C98924C3B0147FCD /* HoroscopeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoroscopeView.swift; sourceTree = "<group>"; };
+		AED8BE5F21F6674D170B0BE2 /* ZupeeEnvelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZupeeEnvelope.swift; sourceTree = "<group>"; };
+		B86094F0AFB9D94218755C1C /* ChatConfirmationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConfirmationSheet.swift; sourceTree = "<group>"; };
+		B9125E9782918A532AAC4B13 /* HoroscopeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoroscopeViewModel.swift; sourceTree = "<group>"; };
+		B95147230F2CAC1D20433A9E /* ProfileAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileAPI.swift; sourceTree = "<group>"; };
+		BDB60BDDAF7CB4481872C857 /* HoroscopeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoroscopeService.swift; sourceTree = "<group>"; };
+		BF017F0A66269715EBA9131B /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		C2891DED3886D35A9A945492 /* AstrologerAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AstrologerAPI.swift; sourceTree = "<group>"; };
+		C66707C7FA12C4C48A4D790D /* AstrologerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AstrologerService.swift; sourceTree = "<group>"; };
+		CA41FE8999AD50824AC96700 /* AstrologerProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AstrologerProfileView.swift; sourceTree = "<group>"; };
+		CF28ECFA6FEE6D439DD36F7F /* WalletService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletService.swift; sourceTree = "<group>"; };
+		D0701E808401644343075689 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		EBCC5D504C7F92A9FE653A19 /* PanchangService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanchangService.swift; sourceTree = "<group>"; };
+		EE401B6EA5EE18EEE82E4AE7 /* HexColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexColor.swift; sourceTree = "<group>"; };
+		EE6D49462196723AEDED8F86 /* DeviceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfo.swift; sourceTree = "<group>"; };
+		EEF5D0335CFDF6E15272D545 /* PanchangView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanchangView.swift; sourceTree = "<group>"; };
+		FC8A1752185026572F27F5F8 /* MoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		2D148DC8CB06DD008CE9F8BC /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				C66707C7FA12C4C48A4D790D /* AstrologerService.swift */,
+				BF017F0A66269715EBA9131B /* AuthService.swift */,
+				BDB60BDDAF7CB4481872C857 /* HoroscopeService.swift */,
+				EBCC5D504C7F92A9FE653A19 /* PanchangService.swift */,
+				76CD348A8D3EDAC8EAFC554D /* ProfileService.swift */,
+				1462AAF8D8FDD55D95DBF5D7 /* UserSettingsService.swift */,
+				CF28ECFA6FEE6D439DD36F7F /* WalletService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		33BAA85418315DA061A56D94 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				254C5C3EABCBEC3BCFAC8433 /* AvatarView.swift */,
+				EE401B6EA5EE18EEE82E4AE7 /* HexColor.swift */,
+				9364DE3E0E3A64D704B0DD36 /* KeyboardDismiss.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		40B73BD75CFD4882569DA83A /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				643683FF0BC1EB7709CEC01A /* SearchOverlayView.swift */,
+			);
+			path = Search;
+			sourceTree = "<group>";
+		};
+		42286239311316A86B2928C1 /* Panchang */ = {
+			isa = PBXGroup;
+			children = (
+				EEF5D0335CFDF6E15272D545 /* PanchangView.swift */,
+				522751E683EB689CF6118520 /* PanchangViewModel.swift */,
+			);
+			path = Panchang;
+			sourceTree = "<group>";
+		};
+		4FFE97202B9CE1D325E3CE22 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				AF62D97AFB3BEC185AD7D026 /* API */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		53598EFA7D250838BE7C89F5 = {
+			isa = PBXGroup;
+			children = (
+				B0432A822891D77C422C842E /* NeoAstro */,
+				EC0DBB92CAF8052CF378710A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8F2DA8DA0C078D95156B3611 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				5342A11B1F0E04014CE17270 /* AuthViewModel.swift */,
+				9227B79C182340D824E7B2B9 /* LoginView.swift */,
+				2250FB76A11DBEBD18C297BB /* OTPView.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		AF62D97AFB3BEC185AD7D026 /* API */ = {
+			isa = PBXGroup;
+			children = (
+				C2891DED3886D35A9A945492 /* AstrologerAPI.swift */,
+				6AB3ED7057402253FB40D6AC /* AuthAPI.swift */,
+				3EEC368F2F7C0D77BFFC4203 /* HoroscopeAPI.swift */,
+				9299E2C699C9F2780797ED56 /* PanchangAPI.swift */,
+				B95147230F2CAC1D20433A9E /* ProfileAPI.swift */,
+				514EA79C37A5CE6C40EB56DB /* UserSettingsAPI.swift */,
+				822898FF3034AD910EF5FB4D /* WalletAPI.swift */,
+			);
+			path = API;
+			sourceTree = "<group>";
+		};
+		B0432A822891D77C422C842E /* NeoAstro */ = {
+			isa = PBXGroup;
+			children = (
+				D353D84AB1A1F0A4A0ED0968 /* App */,
+				33BAA85418315DA061A56D94 /* Components */,
+				B260C773A9692D30051241F1 /* Features */,
+				4FFE97202B9CE1D325E3CE22 /* Models */,
+				D910B131A8C69C2F3DDAC128 /* Navigation */,
+				D7DDA8BD9BA43F3CBE728BAF /* Networking */,
+				FA43920E40CDA4FE1536CF9F /* Resources */,
+				2D148DC8CB06DD008CE9F8BC /* Services */,
+			);
+			path = NeoAstro;
+			sourceTree = "<group>";
+		};
+		B260C773A9692D30051241F1 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				FBBC8E158A2F7C127A61DE82 /* Account */,
+				8F2DA8DA0C078D95156B3611 /* Auth */,
+				E53F4372F9DFEBB73B971BDE /* Home */,
+				B738F6FCEAEFB1B582717414 /* Horoscope */,
+				E8F25AE7BB981E0046E8B73F /* More */,
+				42286239311316A86B2928C1 /* Panchang */,
+				40B73BD75CFD4882569DA83A /* Search */,
+				CAED23D520680FBF030F2F5B /* Wallet */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		B738F6FCEAEFB1B582717414 /* Horoscope */ = {
+			isa = PBXGroup;
+			children = (
+				AB88E544C98924C3B0147FCD /* HoroscopeView.swift */,
+				B9125E9782918A532AAC4B13 /* HoroscopeViewModel.swift */,
+			);
+			path = Horoscope;
+			sourceTree = "<group>";
+		};
+		CAED23D520680FBF030F2F5B /* Wallet */ = {
+			isa = PBXGroup;
+			children = (
+				32E72AE215C4904BED9697C7 /* JuspayPaymentSheet.swift */,
+				767141686828E5C0E4E21646 /* WalletView.swift */,
+				2CE871367C110D86D9053B89 /* WalletViewModel.swift */,
+			);
+			path = Wallet;
+			sourceTree = "<group>";
+		};
+		D353D84AB1A1F0A4A0ED0968 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				9EA4EE9C63047A1D300A3280 /* AppTheme.swift */,
+				2D631343EA1C7883023CBEE5 /* NeoAstroApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		D7DDA8BD9BA43F3CBE728BAF /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				2CB2B634330C2DD800D84EAF /* APIClient.swift */,
+				00640AA8A08A2BC57352CEDA /* APIEnvironment.swift */,
+				991737564742367E2C7B2B85 /* APIError.swift */,
+				3CAF5B10B3FE3E30F5FF0AD0 /* AppLog.swift */,
+				EE6D49462196723AEDED8F86 /* DeviceInfo.swift */,
+				A7C24B4546951FD8931B25A2 /* TokenStore.swift */,
+				AED8BE5F21F6674D170B0BE2 /* ZupeeEnvelope.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		D910B131A8C69C2F3DDAC128 /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				70D0D8BE5A4E0CB3B3173F19 /* MainTabView.swift */,
+				4E4A2D424064938F090C5937 /* RootView.swift */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
+		E53F4372F9DFEBB73B971BDE /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				A6DFA402D8E1969401B74776 /* AstrologerCard.swift */,
+				CA41FE8999AD50824AC96700 /* AstrologerProfileView.swift */,
+				B86094F0AFB9D94218755C1C /* ChatConfirmationSheet.swift */,
+				179305C81EE2A335E5031829 /* ConsultChatView.swift */,
+				312CB1FED6F640B14427F862 /* HomeView.swift */,
+				1D0E9AC644BD099B1E163CCF /* HomeViewModel.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		E8F25AE7BB981E0046E8B73F /* More */ = {
+			isa = PBXGroup;
+			children = (
+				FC8A1752185026572F27F5F8 /* MoreView.swift */,
+				1C8927073DB90AB3ED9C500F /* MoreViewModel.swift */,
+			);
+			path = More;
+			sourceTree = "<group>";
+		};
+		EC0DBB92CAF8052CF378710A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0ACB1135C151BE7A30E95DCD /* NeoAstro.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FA43920E40CDA4FE1536CF9F /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				D0701E808401644343075689 /* Assets.xcassets */,
+				42114DA2F30D784C549B3483 /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		FBBC8E158A2F7C127A61DE82 /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				8459254627064F9F1FB8C8E1 /* AccountView.swift */,
+				472AAE9CC44C97590F768910 /* AccountViewModel.swift */,
+				96D7CA403397823D55361DF6 /* EditProfileView.swift */,
+			);
+			path = Account;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		007F2DA065807FCA62A8DB1D /* NeoAstro */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 06D83AF23268849D68D18C2B /* Build configuration list for PBXNativeTarget "NeoAstro" */;
+			buildPhases = (
+				026B2A7A04B38DE5B887D76B /* Sources */,
+				BBE035F61EF24629055A2371 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NeoAstro;
+			packageProductDependencies = (
+			);
+			productName = NeoAstro;
+			productReference = 0ACB1135C151BE7A30E95DCD /* NeoAstro.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1CAF126E86896EF05561D456 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					007F2DA065807FCA62A8DB1D = {
+						DevelopmentTeam = H5YRX72888;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = F1DD3FC2134A531546C46E20 /* Build configuration list for PBXProject "NeoAstro" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 53598EFA7D250838BE7C89F5;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = EC0DBB92CAF8052CF378710A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				007F2DA065807FCA62A8DB1D /* NeoAstro */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BBE035F61EF24629055A2371 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2570F087FD73B1729ABDAAD7 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		026B2A7A04B38DE5B887D76B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B59CC258AE7B64CE9695471B /* APIClient.swift in Sources */,
+				6CE1CF3F10219E056BC0A303 /* APIEnvironment.swift in Sources */,
+				C0AC7FA78597E7F2AA2A5F7D /* APIError.swift in Sources */,
+				A6A9C1E9E09C362F0D8CFBF6 /* AccountView.swift in Sources */,
+				A8076160BEF9E15FCDEE9A6E /* AccountViewModel.swift in Sources */,
+				2802A7AB68B56554498D1B98 /* AppLog.swift in Sources */,
+				0E5C9BE221E4E39B2FCF3956 /* AppTheme.swift in Sources */,
+				CB990A4E9B51F1AD17C1D297 /* AstrologerAPI.swift in Sources */,
+				D2438D429280BC2F261B92DE /* AstrologerCard.swift in Sources */,
+				0A93C96D47BE2F6AAA58CFD3 /* AstrologerProfileView.swift in Sources */,
+				9CEF5E19C3947452A6D6ECD7 /* AstrologerService.swift in Sources */,
+				569DE6A336E0DEAC267F8D09 /* AuthAPI.swift in Sources */,
+				49E0C3766B84AA8969B1CA47 /* AuthService.swift in Sources */,
+				05273558B8F01B5C88992840 /* AuthViewModel.swift in Sources */,
+				F3F13C76B3E9DD9705E1D436 /* AvatarView.swift in Sources */,
+				6D662602F2C5B73F8E0B24CF /* ChatConfirmationSheet.swift in Sources */,
+				C006CB843E52425DAC51AE03 /* ConsultChatView.swift in Sources */,
+				93D91D66F6E715B0B82A43C3 /* DeviceInfo.swift in Sources */,
+				31811F0528B99C81293F9FA5 /* EditProfileView.swift in Sources */,
+				F8A006A5123C8E865E60652B /* HexColor.swift in Sources */,
+				97ACD1FDE863FD493A7A9B29 /* HomeView.swift in Sources */,
+				09300E78C76A6C135329C5BC /* HomeViewModel.swift in Sources */,
+				4E51756667E1694FCE883E3D /* HoroscopeAPI.swift in Sources */,
+				39ECEB05DD8B769121CEE9BC /* HoroscopeService.swift in Sources */,
+				B458C5EB607167323EE9657D /* HoroscopeView.swift in Sources */,
+				315C0C87AFC4FE594026DEA3 /* HoroscopeViewModel.swift in Sources */,
+				3C848AD2FE608F48C50A2EC9 /* JuspayPaymentSheet.swift in Sources */,
+				A6B59CDC1022CA18CDA15D67 /* KeyboardDismiss.swift in Sources */,
+				4A7A4E51663A213FB509138D /* LoginView.swift in Sources */,
+				5AF472EBDA7899214C7A7F86 /* MainTabView.swift in Sources */,
+				80912B7DE8D4D95B663C5FD8 /* MoreView.swift in Sources */,
+				338CD1546BB9C2AA69C69B44 /* MoreViewModel.swift in Sources */,
+				16491549EFEAC55EE80015B6 /* NeoAstroApp.swift in Sources */,
+				DB17DA68B6ECC4A412CDCAE2 /* OTPView.swift in Sources */,
+				5F8207985467FE5118F49722 /* PanchangAPI.swift in Sources */,
+				B9780B309F7B4AEDE0DAD1F3 /* PanchangService.swift in Sources */,
+				B33948658D3ED25E79637486 /* PanchangView.swift in Sources */,
+				54F0A97B15018A04400DF11D /* PanchangViewModel.swift in Sources */,
+				31E8313D6B8E18AADC966256 /* ProfileAPI.swift in Sources */,
+				B98155195151F7C7917AAB29 /* ProfileService.swift in Sources */,
+				CF5D22E6ED6512C30F4B7E68 /* RootView.swift in Sources */,
+				EFA8CD3035A387B46F6EE294 /* SearchOverlayView.swift in Sources */,
+				9FB92138BDA1D3FEB6F90666 /* TokenStore.swift in Sources */,
+				9F09ECDAE88EB141BA2B8E1F /* UserSettingsAPI.swift in Sources */,
+				1F45E8FE7CC19CDB5556B0D0 /* UserSettingsService.swift in Sources */,
+				50B84C8C0EF6F5C477C1FFCA /* WalletAPI.swift in Sources */,
+				588175A40B86ACAE1ACCD50B /* WalletService.swift in Sources */,
+				D8B2E9B167CDC708668ADA0B /* WalletView.swift in Sources */,
+				E843AC0ECC6A2614584ACE83 /* WalletViewModel.swift in Sources */,
+				D7300645F49479BADE62A811 /* ZupeeEnvelope.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		2BFAB7C503C227DDABA018DF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = H5YRX72888;
+				INFOPLIST_FILE = NeoAstro/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = varasol.MarathiCalendarPanchangam;
+				PRODUCT_NAME = NeoAstro;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		AC35EAF22D143D1B11F01677 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = H5YRX72888;
+				INFOPLIST_FILE = NeoAstro/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = varasol.MarathiCalendarPanchangam;
+				PRODUCT_NAME = NeoAstro;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		C493A521BBDF7319D48261B5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = H5YRX72888;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.10;
+			};
+			name = Debug;
+		};
+		F672A177D06C70A46BD300A9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = H5YRX72888;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.10;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		06D83AF23268849D68D18C2B /* Build configuration list for PBXNativeTarget "NeoAstro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC35EAF22D143D1B11F01677 /* Debug */,
+				2BFAB7C503C227DDABA018DF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F1DD3FC2134A531546C46E20 /* Build configuration list for PBXProject "NeoAstro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C493A521BBDF7319D48261B5 /* Debug */,
+				F672A177D06C70A46BD300A9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1CAF126E86896EF05561D456 /* Project object */;
+}
