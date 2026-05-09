@@ -6,7 +6,7 @@ final class TokenStore {
 
     private let service = "com.neoastro.tokens"
     private enum Key: String {
-        case accessToken, refreshToken, userId, zupeeUserId, zodiacName, mobileNumber
+        case accessToken, refreshToken, userId, zupeeUserId, zodiacName, mobileNumber, language, onboardingCompleted
     }
 
     var accessToken: String? {
@@ -39,10 +39,27 @@ final class TokenStore {
         set { write(.mobileNumber, value: newValue) }
     }
 
+    /// User-selected interface language, set during the language-picker step.
+    /// `nil` until the first launch's picker has been completed.
+    var language: String? {
+        get { read(.language) }
+        set { write(.language, value: newValue) }
+    }
+
+    /// Marker that the user has finished the birth-details questionnaire on
+    /// this device. The server is the source of truth; this is a hint so we
+    /// avoid round-tripping `getUserDetails` on every cold launch.
+    var onboardingCompleted: Bool {
+        get { read(.onboardingCompleted) == "1" }
+        set { write(.onboardingCompleted, value: newValue ? "1" : nil) }
+    }
+
     var isAuthenticated: Bool { accessToken != nil }
 
     func clear() {
-        for key in [Key.accessToken, .refreshToken, .userId, .zupeeUserId, .zodiacName, .mobileNumber] {
+        // Note: we deliberately keep `language` after logout — the user's
+        // language preference outlives any single account.
+        for key in [Key.accessToken, .refreshToken, .userId, .zupeeUserId, .zodiacName, .mobileNumber, .onboardingCompleted] {
             write(key, value: nil)
         }
     }

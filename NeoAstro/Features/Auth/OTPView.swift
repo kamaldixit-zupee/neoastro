@@ -3,6 +3,7 @@ import UIKit
 
 struct OTPView: View {
     @Environment(AuthViewModel.self) private var auth
+    @Environment(AppConfigStore.self) private var config
     @FocusState private var focused: Bool
 
     var body: some View {
@@ -41,7 +42,7 @@ struct OTPView: View {
                 }
 
                 Button {
-                    auth.verifyOTP()
+                    auth.verifyOTP(config: config)
                 } label: {
                     HStack(spacing: 10) {
                         if auth.isLoading { ProgressView().tint(.white) }

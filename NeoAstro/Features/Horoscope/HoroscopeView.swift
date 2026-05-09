@@ -24,7 +24,7 @@ struct HoroscopeView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbarBackground(.hidden, for: .navigationBar)
             .navigationDestination(item: $selectedAstrologer) { astro in
-                ConsultChatView(astrologer: astro)
+                ChatView(astrologer: astro)
             }
             .task { await vm.load() }
         }

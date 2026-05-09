@@ -27,37 +27,22 @@ struct JuspayPaymentSheet: View {
     }
 
     var body: some View {
-        ZStack {
-            CosmicBackground()
+        VStack(spacing: AppTheme.sectionSpacing) {
+            header
 
-            VStack(spacing: 18) {
-                handle
-                header
-
-                Group {
-                    switch phase {
-                    case .selectMethod: selectMethodView
-                    case .processing: processingView
-                    case .success: successView
-                    }
+            Group {
+                switch phase {
+                case .selectMethod: selectMethodView
+                case .processing: processingView
+                case .success: successView
                 }
-                .frame(maxWidth: .infinity)
-                .animation(.smooth, value: phase)
-
-                Spacer(minLength: 0)
             }
-            .padding(20)
-        }
-        .glassEffect(.regular, in: .rect(cornerRadius: 28))
-        .clipShape(RoundedRectangle(cornerRadius: 28))
-        .padding(.horizontal, 12)
-        .padding(.bottom, 20)
-    }
+            .frame(maxWidth: .infinity)
+            .animation(.smooth, value: phase)
 
-    private var handle: some View {
-        Capsule()
-            .fill(.white.opacity(0.3))
-            .frame(width: 40, height: 4)
+            Spacer(minLength: 0)
+        }
+        .padding(20)
     }
 
     private var header: some View {
@@ -99,7 +84,7 @@ struct JuspayPaymentSheet: View {
                             .font(.caption)
                             .foregroundStyle(.white.opacity(0.5))
                     }
-                    .padding(12)
+                    .padding(AppTheme.cardPadding)
                 }
                 .buttonStyle(.plain)
                 .glassEffect(.regular, in: .rect(cornerRadius: 16))

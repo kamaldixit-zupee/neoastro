@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AccountView: View {
     @Environment(AuthViewModel.self) private var auth
+    @Environment(AppConfigStore.self) private var config
     @State private var vm = AccountViewModel()
     @State private var confirmDelete = false
     @State private var confirmLogout = false
@@ -51,7 +52,7 @@ struct AccountView: View {
             }
             .alert("Logout?", isPresented: $confirmLogout) {
                 Button("Cancel", role: .cancel) {}
-                Button("Logout", role: .destructive) { auth.logout() }
+                Button("Logout", role: .destructive) { auth.logout(config: config) }
             } message: {
                 Text("You'll need to verify your number again.")
             }
@@ -60,7 +61,7 @@ struct AccountView: View {
                 Button("Delete", role: .destructive) {
                     Task {
                         let ok = await vm.deleteAccount()
-                        if ok { auth.logout() }
+                        if ok { auth.logout(config: config) }
                     }
                 }
             } message: {
@@ -110,7 +111,7 @@ struct AccountView: View {
                 AvatarView(
                     name: displayName,
                     imageURL: userBlockImageURL() ?? vm.profile?.profilePictureUrl.flatMap(URL.init(string:)),
-                    gradient: ["#7B2CBF", "#F72585"],
+                    gradient: AppTheme.primaryAvatarPalette,
                     size: 100
                 )
             }

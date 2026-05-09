@@ -306,22 +306,35 @@ ZStack {
 
 ---
 
-## 12. Migration plan for existing screens
+## 12. Existing screens — Liquid Glass status
 
-The screens already in the app that need a Liquid Glass pass:
+The codebase already adopts `.glassEffect(...)` widely (cards, nav, tabs, banners). Status as of Batch 1:
 
-| Screen | What to change |
-|--------|----------------|
-| `HomeView` | Astrologer cards → `.glassEffect()` over cosmic; hero banner → glass capsule on top of gradient |
-| `LoginView` / `OTPView` | Phone field → opaque (sensitive); CTA pill → tinted glass |
-| `WalletView` | Balance hero → `.thick` glass with gold tint; transaction rows → opaque (financial detail), but the section header bar is glass |
-| `HoroscopeView` | Type-picker pills → glass capsules; horoscope cards → glass over cosmic |
-| `PanchangView` | Widget tiles → glass; reading content (titles, values) stays opaque inside |
-| `MoreView` / `AccountView` | Settings rows on opaque list cells; section headers and the navigation bar are glass |
-| `SearchOverlayView` | Search bar → system glass; category chips → glass; results list → opaque rows |
-| `JuspayPaymentSheet` | Payment fields stay opaque; surrounding chrome (close button, header) is glass |
+| Screen | Status | Notes |
+|--------|:------:|-------|
+| `HomeView` | ✅ | Cards + hero banner glass; sheet presentation now uses system Liquid Glass + visible drag indicator (no `.presentationBackground(.clear)`) |
+| `LoginView` / `OTPView` | ✅ | Phone / OTP boxes glass; `OTPBox` uses `GlassEffectContainer`; CTA pill is `.buttonStyle(.glass)` tinted pink |
+| `WalletView` | ✅ | Balance hero → `AppTheme.balanceCardGradient` + glass; sheet presentation cleaned; transaction rows glass-on-row |
+| `HoroscopeView` | ✅ | Type-picker pills, hero card, lucky chips, sentiment cards — all glass |
+| `PanchangView` | ✅ | All widget tiles glass; long readings sit on opaque content |
+| `AccountView` / `MoreView` | ✅ | Profile header glass; settings rows in clubbed glass box with hairline dividers |
+| `SearchOverlayView` | ✅ | System search bar; category buttons `.buttonStyle(.glass)`; result rows glass |
+| `ChatConfirmationSheet` | ✅ | System sheet glass; custom drag handle removed; uses `AppTheme.avatarPalette(for:)` |
+| `JuspayPaymentSheet` | ✅ | System sheet glass; outer hand-rolled `.glassEffect` wrapper removed |
+| `EditProfileView` | ⏳ | Verify in Batch 2 |
+| `ConsultChatView` | 🟦 | Stub today — full glass build will land with the chat-flow batch |
 
-Track migration progress in [FEATURES.md](../../FEATURES.md). A screen is not "✅ Done" until it complies with this doc.
+**What was done in Batch 1:**
+
+- Added `AppTheme.surface`, `AppTheme.tightCorner`, `AppTheme.sectionSpacing`, `AppTheme.cardPadding`, `AppTheme.balanceCardGradient`, `AppTheme.primaryAvatarPalette`, and `AppTheme.avatarPalette(for:)`.
+- Removed `.presentationBackground(.clear)` from the two sheets that were killing system Liquid Glass.
+- Removed custom drag-handle `Capsule()` shapes in favor of `.presentationDragIndicator(.visible)`.
+- Removed the `ZStack { CosmicBackground(); ... }` wrapper inside sheet bodies — system glass refracts the parent view's cosmic background; the inner cosmic was redundant.
+- Removed the outer `.glassEffect()` wrap around `JuspayPaymentSheet` content (system sheet provides Liquid Glass).
+- Centralized avatar palettes into `AppTheme.avatarPalette(for:)` and `AppTheme.primaryAvatarPalette`; removed duplicated hex-string arrays from `AstrologerCard`, `ChatConfirmationSheet`, `AccountView`, `MoreView`.
+- Replaced the wallet balance card's hex-literal gradient with `AppTheme.balanceCardGradient`.
+
+Track ongoing migration in [FEATURES.md](../../FEATURES.md). A screen is not "✅ Done" until it complies with this doc.
 
 ---
 

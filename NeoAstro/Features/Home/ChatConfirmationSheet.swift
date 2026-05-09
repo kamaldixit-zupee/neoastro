@@ -7,68 +7,45 @@ struct ChatConfirmationSheet: View {
 
     private var price: Int { astrologer.displayPrice }
     private var original: Int? { astrologer.originalPrice }
-    private var gradient: [String] {
-        let palettes = [
-            ["#7B2CBF", "#FF8FAB"],
-            ["#3A86FF", "#8338EC"],
-            ["#F72585", "#B5179E"],
-            ["#06A77D", "#3A86FF"],
-            ["#FFB703", "#FB8500"],
-            ["#7209B7", "#F72585"]
-        ]
-        let i = abs(astrologer._id.hashValue) % palettes.count
-        return palettes[i]
-    }
+    private var palette: [String] { AppTheme.avatarPalette(for: astrologer._id) }
 
     var body: some View {
-        ZStack {
-            CosmicBackground()
+        VStack(spacing: AppTheme.sectionSpacing) {
+            AvatarView(
+                name: astrologer.name,
+                imageURL: astrologer.imageURL,
+                gradient: palette,
+                size: 80
+            )
 
-            VStack(spacing: 18) {
-                handle
-
-                AvatarView(
-                    name: astrologer.name,
-                    imageURL: astrologer.imageURL,
-                    gradient: gradient,
-                    size: 80
-                )
-
-                VStack(spacing: 4) {
-                    HStack(spacing: 6) {
-                        Text(astrologer.name)
-                            .font(.title3.weight(.bold))
-                            .foregroundStyle(.white)
-                        if astrologer.verified == true {
-                            Image(systemName: "checkmark.seal.fill")
-                                .foregroundStyle(AppTheme.goldGradient)
-                        }
-                    }
-                    if let q = astrologer.qualificationText ?? astrologer.qualification {
-                        Text(q)
-                            .font(.subheadline)
-                            .foregroundStyle(.white.opacity(0.7))
+            VStack(spacing: 4) {
+                HStack(spacing: 6) {
+                    Text(astrologer.name)
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(.white)
+                    if astrologer.verified == true {
+                        Image(systemName: "checkmark.seal.fill")
+                            .foregroundStyle(AppTheme.goldGradient)
                     }
                 }
-
-                rateRow
-
-                infoStrip
-
-                Spacer(minLength: 6)
-
-                actionButtons
+                if let q = astrologer.qualificationText ?? astrologer.qualification {
+                    Text(q)
+                        .font(.subheadline)
+                        .foregroundStyle(.white.opacity(0.7))
+                }
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 24)
-        }
-    }
 
-    private var handle: some View {
-        Capsule()
-            .fill(.white.opacity(0.3))
-            .frame(width: 40, height: 4)
-            .padding(.top, 8)
+            rateRow
+
+            infoStrip
+
+            Spacer(minLength: 6)
+
+            actionButtons
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 12)
+        .padding(.bottom, 24)
     }
 
     private var rateRow: some View {
@@ -92,7 +69,7 @@ struct ChatConfirmationSheet: View {
                 .foregroundStyle(.white.opacity(0.6))
         }
         .frame(maxWidth: .infinity)
-        .padding(14)
+        .padding(AppTheme.cardPadding)
         .glassEffect(.regular, in: .rect(cornerRadius: 18))
     }
 
@@ -142,8 +119,8 @@ struct ChatConfirmationSheet: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
             }
-            .buttonStyle(.plain)
-            .glassEffect(.regular, in: .capsule)
+            .buttonStyle(.glass)
+            .tint(.white.opacity(0.2))
         }
     }
 }

@@ -4,7 +4,14 @@ import Observation
 @Observable
 @MainActor
 final class AuthViewModel {
-    enum Stage { case login, otp, authenticated }
+    enum Stage {
+        case splash
+        case languagePicker
+        case login
+        case otp
+        case onboarding
+        case authenticated
+    }
 
     var stage: Stage
     var mobileNumber: String = ""
@@ -14,7 +21,9 @@ final class AuthViewModel {
     var errorMessage: String?
 
     init() {
-        self.stage = TokenStore.shared.isAuthenticated ? .authenticated : .login
+        // Always start at splash — `routeAfterBootstrap(using:)` decides where
+        // to go once `AppConfigStore.bootstrap()` returns.
+        self.stage = .splash
         self.mobileNumber = TokenStore.shared.mobileNumber ?? ""
     }
 
@@ -26,6 +35,55 @@ final class AuthViewModel {
     var isOTPValid: Bool {
         otp.filter(\.isNumber).count == 6
     }
+
+    // MARK: - Routing
+
+    /// Called by `SplashView` once `AppConfigStore.bootstrap()` finishes.
+    /// Decides whether to show the language picker, login, onboarding, or
+    /// the main tabs.
+    func routeAfterBootstrap(using config: AppConfigStore) {
+        if TokenStore.shared.language == nil {
+            AppLog.info(.auth, "route → languagePicker (no stored language)")
+            stage = .languagePicker
+            return
+        }
+
+        if !TokenStore.shared.isAuthenticated {
+            AppLog.info(.auth, "route → login (no token)")
+            stage = .login
+            return
+        }
+
+        if config.needsOnboarding {
+            AppLog.info(.auth, "route → onboarding")
+            stage = .onboarding
+            return
+        }
+
+        AppLog.info(.auth, "route → authenticated")
+        stage = .authenticated
+    }
+
+    /// Called by `LanguageSelectionView` after the user picks + persists.
+    func languageSelected() {
+        if TokenStore.shared.isAuthenticated {
+            // We don't know onboarding status here without re-running bootstrap;
+            // a logged-in user reaching this stage is uncommon (only happens if
+            // we wipe the language Keychain entry). Send them to splash so the
+            // store re-evaluates rather than guessing.
+            stage = .splash
+        } else {
+            stage = .login
+        }
+    }
+
+    /// Called by `OnboardingViewModel` after `setOnboardingCompleted` succeeds.
+    func onboardingCompleted() {
+        AppLog.info(.auth, "onboarding completed → authenticated")
+        stage = .authenticated
+    }
+
+    // MARK: - Auth flow
 
     func sendOTP(resend: Bool = false) {
         guard isMobileValid else {
@@ -50,7 +108,7 @@ final class AuthViewModel {
         }
     }
 
-    func verifyOTP() {
+    func verifyOTP(config: AppConfigStore) {
         guard isOTPValid else {
             AppLog.warn(.auth, "verifyOTP blocked: invalid otp len=\(otp.count)")
             return
@@ -61,8 +119,11 @@ final class AuthViewModel {
         Task {
             do {
                 let result = try await AuthService.authenticate(phone: mobileNumber, otp: otp)
-                stage = .authenticated
-                AppLog.info(.auth, "VM · verifyOTP success → MainTabView, userId=\(result.userId ?? "?")")
+                AppLog.info(.auth, "VM · verifyOTP success userId=\(result.userId ?? "?")")
+                // Re-bootstrap: now that we have a token, fetch post-signup +
+                // user details so we can route onboarding-vs-tabs correctly.
+                await config.bootstrap()
+                routeAfterBootstrap(using: config)
             } catch {
                 errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
                 AppLog.error(.auth, "VM · verifyOTP failed", error: error)
@@ -76,9 +137,10 @@ final class AuthViewModel {
         errorMessage = nil
     }
 
-    func logout() {
+    func logout(config: AppConfigStore) {
         AppLog.info(.auth, "VM · logout")
         AuthService.logout()
+        config.clear()
         mobileNumber = ""
         otp = ""
         errorMessage = nil

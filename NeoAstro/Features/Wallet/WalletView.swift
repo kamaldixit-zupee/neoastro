@@ -1,9 +1,16 @@
 import SwiftUI
 
 struct WalletView: View {
+    enum WalletDestination: Hashable {
+        case transaction(WalletTransactionAPI)
+        case tds
+        case cashback
+    }
+
     @State private var vm = WalletViewModel()
     @State private var amountText: String = ""
     @State private var showJuspay = false
+    @State private var path: [WalletDestination] = []
     @FocusState private var amountFocused: Bool
 
     private let quickAmounts = [100, 500, 1000, 2000]
@@ -12,13 +19,14 @@ struct WalletView: View {
     private var canAdd: Bool { amountInt >= 10 }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             ZStack {
                 CosmicBackground()
 
                 ScrollView {
-                    VStack(spacing: 18) {
+                    VStack(spacing: AppTheme.sectionSpacing) {
                         balanceCard
+                        quickLinksRow
                         addBalanceCard
                         transactionsSection
                     }
@@ -29,6 +37,13 @@ struct WalletView: View {
                 .scrollIndicators(.hidden)
                 .scrollDismissesKeyboard(.interactively)
                 .refreshable { await vm.refresh() }
+            }
+            .navigationDestination(for: WalletDestination.self) { dest in
+                switch dest {
+                case .transaction(let tx): TransactionDetailView(tx: tx)
+                case .tds: TDSView()
+                case .cashback: CashbackView()
+                }
             }
             .navigationTitle("Wallet")
             .toolbarBackground(.hidden, for: .navigationBar)
@@ -49,7 +64,7 @@ struct WalletView: View {
                     }
                 }
                 .presentationDetents([.medium])
-                .presentationBackground(.clear)
+                .presentationDragIndicator(.visible)
             }
             .task { await vm.load() }
         }
@@ -88,15 +103,8 @@ struct WalletView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(20)
-        .background(
-            LinearGradient(
-                colors: [Color(hex: "#7209B7").opacity(0.55), Color(hex: "#F72585").opacity(0.35)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            ),
-            in: .rect(cornerRadius: 24)
-        )
-        .glassEffect(.regular, in: .rect(cornerRadius: 24))
+        .background(AppTheme.balanceCardGradient, in: .rect(cornerRadius: AppTheme.cardCorner))
+        .glassEffect(.regular, in: .rect(cornerRadius: AppTheme.cardCorner))
     }
 
     private var addBalanceCard: some View {
@@ -169,6 +177,37 @@ struct WalletView: View {
         .glassEffect(.regular, in: .rect(cornerRadius: 22))
     }
 
+    private var quickLinksRow: some View {
+        HStack(spacing: 10) {
+            quickLink(icon: "gift.fill", title: "Cashback", destination: .cashback)
+            quickLink(icon: "doc.text.fill", title: "TDS", destination: .tds)
+        }
+    }
+
+    private func quickLink(icon: String, title: String, destination: WalletDestination) -> some View {
+        Button {
+            path.append(destination)
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: icon)
+                    .font(.title3)
+                    .foregroundStyle(AppTheme.goldGradient)
+                    .frame(width: 36, height: 36)
+                    .glassEffect(.regular, in: .circle)
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.white)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.5))
+            }
+            .padding(12)
+        }
+        .buttonStyle(.plain)
+        .glassEffect(.regular, in: .rect(cornerRadius: 18))
+    }
+
     private var transactionsSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
@@ -192,7 +231,12 @@ struct WalletView: View {
             } else {
                 VStack(spacing: 8) {
                     ForEach(vm.transactions) { tx in
-                        TransactionRow(tx: tx)
+                        Button {
+                            path.append(.transaction(tx))
+                        } label: {
+                            TransactionRow(tx: tx)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
             }

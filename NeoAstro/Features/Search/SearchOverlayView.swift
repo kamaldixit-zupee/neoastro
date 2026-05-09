@@ -44,7 +44,7 @@ struct SearchOverlayView: View {
             .searchable(text: $query, prompt: "Search astrologers, skills…")
             .onChange(of: query) { _, _ in scheduleSearch() }
             .navigationDestination(item: $selectedAstrologer) { astrologer in
-                ConsultChatView(astrologer: astrologer)
+                ChatView(astrologer: astrologer)
             }
         }
     }

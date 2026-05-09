@@ -22,17 +22,17 @@ This is the porting checklist. Every feature in the React Native user app (`zupe
 
 | Feature | iOS | iOS file | RN reference | Notes |
 |---------|:---:|----------|--------------|-------|
-| Splash / cold start | ⏳ | — | `screens/splash/Splash.tsx` | Needs maintenance-mode check + auth stage routing |
+| Splash / cold start | ✅ | [Features/Splash/SplashView.swift](NeoAstro/Features/Splash/SplashView.swift) | `screens/splash/Splash.tsx` | Animated logo, fires `AppConfigStore.bootstrap()`, routes via `AuthViewModel.routeAfterBootstrap` |
 | Phone-number login | ✅ | [Features/Auth/LoginView.swift](NeoAstro/Features/Auth/LoginView.swift) | `screens/Login/Login.tsx` | |
 | OTP verification | ✅ | [Features/Auth/OTPView.swift](NeoAstro/Features/Auth/OTPView.swift) | `screens/verifyOtp/VerifyOtp.tsx` | Resend countdown + auto-fill done |
 | Auth stage state machine | ✅ | [Features/Auth/AuthViewModel.swift](NeoAstro/Features/Auth/AuthViewModel.swift) | `appState` Zustand slice | |
 | Token refresh on 401 | ✅ | [Networking/APIClient.swift](NeoAstro/Networking/APIClient.swift) | `src/api/index.ts` | Single in-flight refresh, deduped |
 | Truecaller signup | ⏳ | — | `useTrueCallerAuthApi.ts` | Optional; needs SDK |
-| Pre-signup config | ⏳ | — | `usePreSignupApi.ts` | |
-| Post-signup config | ⏳ | — | `services/AuthService.ts` | |
-| Language selection | ⏳ | — | `screens/SelectLanguage` | App is English-only today |
-| Onboarding questionnaire (birth details for Kundli) | ⏳ | — | `screens/questionnaire` | Required before chat |
-| Mark onboarding complete | ⏳ | — | `setOnboardingCompleted` API | |
+| Pre-signup config | ✅ | [Services/ConfigService.swift](NeoAstro/Services/ConfigService.swift) | `usePreSignupApi.ts` | Best-effort fetch on splash; falls back to hardcoded language list |
+| Post-signup config | ✅ | [Services/ConfigService.swift](NeoAstro/Services/ConfigService.swift) | `services/AuthService.ts` | Fetched after authenticate; drives `needsOnboarding` |
+| Language selection | ✅ | [Features/Onboarding/LanguageSelectionView.swift](NeoAstro/Features/Onboarding/LanguageSelectionView.swift) | `screens/SelectLanguage` | First-launch picker; persists to `TokenStore.language`; `DeviceInfo.language` reads from it |
+| Onboarding questionnaire (birth details for Kundli) | ✅ | [Features/Onboarding/OnboardingView.swift](NeoAstro/Features/Onboarding/OnboardingView.swift) | `screens/questionnaire` | 4-step wizard (name+gender → DOB → time → place); place autocomplete deferred |
+| Mark onboarding complete | ✅ | [Services/OnboardingService.swift](NeoAstro/Services/OnboardingService.swift) | `setOnboardingCompleted` API | Server flag + Keychain hint mirror |
 | Referral code entry | ⏳ | — | `screens/AddReferralCode.tsx` | |
 | Referral success screen | ⏳ | — | `screens/ReferralCodeSuccess.tsx` | |
 | Logout | 🟡 | [Features/Account/AccountViewModel.swift](NeoAstro/Features/Account/AccountViewModel.swift) | `account/index.tsx` | TokenStore.clear works; needs full session teardown |
@@ -68,31 +68,31 @@ This is the porting checklist. Every feature in the React Native user app (`zupe
 
 | Feature | iOS | iOS file | RN reference | Notes |
 |---------|:---:|----------|--------------|-------|
-| Chat confirmation sheet | 🟦 | [Features/Home/ChatConfirmationSheet.swift](NeoAstro/Features/Home/ChatConfirmationSheet.swift) | `home/index.tsx` | Stub; no pricing breakdown |
-| Birth-details prompt before chat | ⏳ | — | `chat/getSampleBirthLocation` | |
-| Initiate chat (CTA) | ⏳ | — | `INITIATE_CHAT` socket | |
-| Chat screen | 🟦 | [Features/Home/ConsultChatView.swift](NeoAstro/Features/Home/ConsultChatView.swift) | `cx/chat/ChatScreen.tsx` | Placeholder file |
-| Send text message | ⏳ | — | `RAISE_QUERY` w/ ack-retry | |
-| Send voice note | ⏳ | — | `getVoiceNotePreSignedUrl` + `RAISE_QUERY` | Needs `VoiceRecorder` bridge |
-| Send image | ⏳ | — | `getImagePreSignedUrl` + `RAISE_QUERY` | |
+| Chat confirmation sheet | ✅ | [Features/Home/ChatConfirmationSheet.swift](NeoAstro/Features/Home/ChatConfirmationSheet.swift) | `home/index.tsx` | Pricing breakdown, info chips, system Liquid Glass sheet |
+| Birth-details prompt before chat | ⏳ | — | `chat/getSampleBirthLocation` | Lands when birth-details revalidation is wired |
+| Initiate chat (CTA) | ✅ | [Features/Home/HomeView.swift](NeoAstro/Features/Home/HomeView.swift) | `INITIATE_CHAT` socket | `startChat(with:)` emits `INITIATE_CHAT` and pushes `ChatView` |
+| Chat screen | ✅ | [Features/Chat/ChatView.swift](NeoAstro/Features/Chat/ChatView.swift) | `cx/chat/ChatScreen.tsx` | Real chat screen (replaces stub); waits for `CHAT_STARTED`; live billing pill |
+| Send text message | ✅ | [Features/Chat/ChatViewModel.swift](NeoAstro/Features/Chat/ChatViewModel.swift) | `RAISE_QUERY` w/ ack-retry | Optimistic insert + 3-retry exponential ack via `NeoAstroSocket.emitWithAck` |
+| Send voice note | ⏳ | — | `getVoiceNotePreSignedUrl` + `RAISE_QUERY` | Needs `AVAudioRecorder` bridge — Batch 4b |
+| Send image | ⏳ | — | `getImagePreSignedUrl` + `RAISE_QUERY` | Needs PhotosPicker — Batch 4b |
 | Reply / quote message | ⏳ | — | `replyTo` / `repliedAgainst` fields | |
-| Receive message | ⏳ | — | `ANSWER_QUERY` socket | |
-| Typing indicators (both sides) | ⏳ | — | `USER_TYPING` / `ASTRO_TYPING(_STOP)` | |
-| Read receipts | ⏳ | — | `HUMAN_ANSWER_SEEN` | Emit only on actual scroll |
-| Recording indicators (astrologer) | ⏳ | — | `ASTRO_RECORDING_*` | |
-| Audio playback (mini player) | ⏳ | — | `AudioPlayerModule` bridge | |
-| Low-balance system message | ⏳ | — | `LOW_BALANCE_NOTIF` | |
-| Payment update banner | ⏳ | — | `UPDATE_PAYMENT` | |
-| Recharge CTA from chat | ⏳ | — | `IN_CHAT_RECHARGE_CTA_CLICKED` | |
-| End chat | ⏳ | — | `END_CHAT` / `CHAT_ENDED` | |
+| Receive message | ✅ | [Features/Chat/ChatViewModel.swift](NeoAstro/Features/Chat/ChatViewModel.swift) | `ANSWER_QUERY` socket | Drained from `RealtimeStore.inboundMessages` with id-dedup |
+| Typing indicators (both sides) | ✅ | [Features/Chat/ChatView.swift](NeoAstro/Features/Chat/ChatView.swift) | `USER_TYPING` / `ASTRO_TYPING(_STOP)` | User typing debounced 1.5 s; astro indicator driven by `astroTypingUntil` |
+| Read receipts | ⏳ | — | `HUMAN_ANSWER_SEEN` | Emit only on actual scroll — Batch 4b |
+| Recording indicators (astrologer) | ⏳ | — | `ASTRO_RECORDING_*` | Events handled by store; UI fold-in next |
+| Audio playback (mini player) | ⏳ | — | `AudioPlayerModule` bridge | Batch 4b |
+| Low-balance system message | ✅ | [Realtime/handlers/ChatEventHandler.swift](NeoAstro/Realtime/handlers/ChatEventHandler.swift) | `LOW_BALANCE_NOTIF` | Synthesises a SYSTEM_LOW_BALANCE bubble into the chat |
+| Payment update banner | 🟡 | [Realtime/SocketEvent.swift](NeoAstro/Realtime/SocketEvent.swift) | `UPDATE_PAYMENT` | Event known; UI banner deferred |
+| Recharge CTA from chat | ⏳ | — | `IN_CHAT_RECHARGE_CTA_CLICKED` | Wires once recharge sheet lands in chat |
+| End chat | ✅ | [Features/Chat/ChatView.swift](NeoAstro/Features/Chat/ChatView.swift) | `END_CHAT` / `CHAT_ENDED` | Toolbar phone-down → confirmation dialog → emit |
 | Chat history list | ⏳ | — | `screens/conversations/index.tsx` | |
 | Per-astrologer chat history | ⏳ | — | `chat/getHistoryWithAstrologer` | |
 | Live chat details fetch | ⏳ | — | `chat/getLiveChatDetails` | |
 | Delete chat with one astrologer | ⏳ | — | `chat/deleteChatHistory` | |
 | Delete all chat history | ⏳ | — | `chat/deleteAllChatHistory` | |
-| Waitlist screen | ⏳ | — | `WAITLIST_JOINED` + `screens/waitingScreen` | |
-| Incoming chat (astrologer-initiated) | ⏳ | — | `INCOMING_CHAT` | |
-| Chat initiation failed modal | ⏳ | — | `CHAT_INITIATION_FAILED` | |
+| Waitlist screen | 🟡 | [Features/Chat/ChatView.swift](NeoAstro/Features/Chat/ChatView.swift) | `WAITLIST_JOINED` + `screens/waitingScreen` | Inline waiting state inside ChatView (display text from `WAITLIST_JOINED`); standalone waitlist screen TBD |
+| Incoming chat (astrologer-initiated) | 🟡 | [Realtime/handlers/ChatEventHandler.swift](NeoAstro/Realtime/handlers/ChatEventHandler.swift) | `INCOMING_CHAT` | Event handled (logged); UI surface deferred |
+| Chat initiation failed modal | ✅ | [Features/Chat/ChatView.swift](NeoAstro/Features/Chat/ChatView.swift) | `CHAT_INITIATION_FAILED` | Inline error card with heading/sub/close inside the waiting state |
 
 ---
 
@@ -100,19 +100,19 @@ This is the porting checklist. Every feature in the React Native user app (`zupe
 
 | Feature | iOS | iOS file | RN reference | Notes |
 |---------|:---:|----------|--------------|-------|
-| Outgoing call initiation | ⏳ | — | `/v1.0/call/initiateCall` | |
-| Incoming call full-screen UI | ⏳ | — | `IncomingCallModule` | iOS needs `IncomingCallViewController` equivalent + CallKit |
-| Accept call | ⏳ | — | `CALL_ACCEPTED` + `InitiateChatModule.initiateChat` | |
-| Reject call | ⏳ | — | `CALL_REJECTED` | |
-| Cancel outgoing call | ⏳ | — | `cancelCall` API | |
-| Agora audio engine | ⏳ | — | Agora RTC SDK | First third-party dep — discuss before adding |
-| Call status update | ⏳ | — | `INCHAT_CALL_STATUS_UPDATE` | |
-| Call ended | ⏳ | — | `CALL_ENDED` | |
-| Call initiation failed | ⏳ | — | `CALL_INITIATION_FAILED` w/ recommendations | |
+| Outgoing call initiation | ⏳ | — | `/v1.0/call/initiateCall` | Lands with Batch 4b (Agora) |
+| Incoming call full-screen UI | 🟡 | [Features/Calls/IncomingCallView.swift](NeoAstro/Features/Calls/IncomingCallView.swift) | `IncomingCallModule` | Liquid Glass UI shell with pulse rings + accept/reject; Agora hookup is Batch 4b. Custom UI (not CallKit) to match RN behavior |
+| Accept call | 🟡 | [Navigation/RootView.swift](NeoAstro/Navigation/RootView.swift) | `CALL_ACCEPTED` + `InitiateChatModule.initiateChat` | Signaling side wired (clears `incomingCall`); Agora join + chat linkage is Batch 4b |
+| Reject call | ✅ | [Realtime/handlers/CallEventHandler.swift](NeoAstro/Realtime/handlers/CallEventHandler.swift) | `CALL_REJECTED` | `incomingCall` cleared on reject/cancel/end |
+| Cancel outgoing call | ⏳ | — | `cancelCall` API | Lands with outgoing-call flow (Batch 4b) |
+| Agora audio engine | ⏳ | — | Agora RTC SDK | **Decision pending** — Batch 4b blocker |
+| Call status update | 🟡 | [Realtime/handlers/CallEventHandler.swift](NeoAstro/Realtime/handlers/CallEventHandler.swift) | `INCHAT_CALL_STATUS_UPDATE` | Event known; chat-message linkage deferred |
+| Call ended | ✅ | [Realtime/handlers/CallEventHandler.swift](NeoAstro/Realtime/handlers/CallEventHandler.swift) | `CALL_ENDED` | Clears incoming-call surface |
+| Call initiation failed | ✅ | [Realtime/handlers/CallEventHandler.swift](NeoAstro/Realtime/handlers/CallEventHandler.swift) | `CALL_INITIATION_FAILED` w/ recommendations | Clears state; recommendations UI lands with outgoing-call flow |
 | Last call session | ⏳ | — | `getLastCallSession` | |
-| Return-to-call bar | ⏳ | — | persistent footer when in call | |
-| Ringtone playback | ⏳ | — | `RingtoneModule` bridge | iOS uses `AVAudioPlayer` |
-| Call duration display + balance ticker | ⏳ | — | `timeLeftToChat` | |
+| Return-to-call bar | ⏳ | — | persistent footer when in call | Lands with Agora |
+| Ringtone playback | ⏳ | — | `RingtoneModule` bridge | iOS uses `AVAudioPlayer` — Batch 4b |
+| Call duration display + balance ticker | ⏳ | — | `timeLeftToChat` | Lands with Agora |
 
 ---
 
@@ -205,16 +205,16 @@ This is the porting checklist. Every feature in the React Native user app (`zupe
 
 | Feature | iOS | iOS file | RN reference | Notes |
 |---------|:---:|----------|--------------|-------|
-| Wallet screen data | ✅ | [Features/Wallet/WalletView.swift](NeoAstro/Features/Wallet/WalletView.swift) | `wallet/index.tsx` | |
+| Wallet screen data | ✅ | [Features/Wallet/WalletView.swift](NeoAstro/Features/Wallet/WalletView.swift) | `wallet/index.tsx` | Quick-link tiles for Cashback / TDS added |
 | Balance check | 🟡 | WalletView | `useCheckWalletBalance` | Pulled via screen-data only; no direct refresh API yet |
-| Transaction passbook | ✅ | [Features/Wallet/WalletViewModel.swift](NeoAstro/Features/Wallet/WalletViewModel.swift) | `txnHistory/TransactionHistory.tsx` | |
-| Transaction filters | ⏳ | — | `transactionHistory/filters` | |
-| Transaction detail view | ⏳ | — | `txnDetails/TransactionInfo.tsx` | |
-| Cashback / coins listing | ⏳ | — | `fetchActiveCashbackCoins`, `cashback/Cashback.tsx` | |
-| Convert actual → playable coins | ⏳ | — | `payment/convertActualCoins` | |
-| Invoices | ⏳ | — | `wallet/getInvoices` | |
-| TDS certificates | ⏳ | — | `wallet/tds/*`, `tds/getUserTdsInfo` | |
-| TDS / GST txn history | ⏳ | — | `cx/tdsAndGstTxnScreen` | |
+| Transaction passbook | ✅ | [Features/Wallet/WalletViewModel.swift](NeoAstro/Features/Wallet/WalletViewModel.swift) | `txnHistory/TransactionHistory.tsx` | Rows now navigate to `TransactionDetailView` |
+| Transaction filters | 🟡 | [Services/WalletService.swift](NeoAstro/Services/WalletService.swift) | `transactionHistory/filters` | Service ready; filter sheet UI deferred |
+| Transaction detail view | ✅ | [Features/Wallet/TransactionDetailView.swift](NeoAstro/Features/Wallet/TransactionDetailView.swift) | `txnDetails/TransactionInfo.tsx` | Glass amount hero + details list + invoice card |
+| Cashback / coins listing | ✅ | [Features/Wallet/CashbackView.swift](NeoAstro/Features/Wallet/CashbackView.swift) | `fetchActiveCashbackCoins`, `cashback/Cashback.tsx` | Active-coins hero + offer rows + convert CTA |
+| Convert actual → playable coins | ✅ | [Features/Wallet/CashbackView.swift](NeoAstro/Features/Wallet/CashbackView.swift) | `payment/convertActualCoins` | Wired into Cashback "Convert to wallet" button |
+| Invoices | 🟡 | [Services/WalletService.swift](NeoAstro/Services/WalletService.swift) | `wallet/getInvoices` | Service ready; UI deferred |
+| TDS certificates | ✅ | [Features/Wallet/TDSView.swift](NeoAstro/Features/Wallet/TDSView.swift) | `wallet/tds/*`, `tds/getUserTdsInfo` | Summary card + certificate list (download URL ready) |
+| TDS / GST txn history | 🟡 | [Services/WalletService.swift](NeoAstro/Services/WalletService.swift) | `cx/tdsAndGstTxnScreen` | `tdsTransactionsOfQuarter` service ready; UI fold-in next |
 | Low-balance nudge in chat | ⏳ | — | `LOW_BALANCE_NOTIF` | (also under Chat) |
 
 ---
@@ -318,13 +318,13 @@ This is the porting checklist. Every feature in the React Native user app (`zupe
 |---------|:---:|----------|--------------|-------|
 | View profile | ✅ | [Features/Account/AccountView.swift](NeoAstro/Features/Account/AccountView.swift) | `screens/profile` | |
 | Edit profile | ✅ | [Features/Account/EditProfileView.swift](NeoAstro/Features/Account/EditProfileView.swift) | `editProfile/EditProfile.tsx` | name, email, gender, city, state |
-| Upload profile picture | ⏳ | — | `uploadProfilePic` | |
-| Submit astrology questionnaire | ⏳ | — | `submitAstroUserDetails` | |
-| Send appography details | ⏳ | — | `sendAppographyDetails` | |
-| Set user location | ⏳ | — | `setUserLocation` (legacy `setLocation` deprecated) | |
-| Update GA / advertising id | ⏳ | — | `updateGAId` | |
-| Get rejoin info | ⏳ | — | `getRejoinInfo` | |
-| User experience setting | ⏳ | — | `userExperience/updateUserExperience` | |
+| Upload profile picture | 🟡 | [Services/ProfileService.swift](NeoAstro/Services/ProfileService.swift) | `uploadProfilePic` | Service implements 2-step presigned-URL upload; UI (PhotosPicker) deferred — needs `EditProfilePayload.profilePictureUrl` field too |
+| Submit astrology questionnaire | ✅ | [Services/OnboardingService.swift](NeoAstro/Services/OnboardingService.swift) | `submitAstroUserDetails` | Wired into Onboarding flow (Batch 2) |
+| Send appography details | ⏳ | — | `sendAppographyDetails` | Skipped — overlaps with `submitAstroUserDetails`; revisit if backend distinguishes them |
+| Set user location | ✅ | [Services/ProfileService.swift](NeoAstro/Services/ProfileService.swift) | `setUserLocation` | Service ready; UI fold-in lands with place autocomplete |
+| Update GA / advertising id | ✅ | [Services/ProfileService.swift](NeoAstro/Services/ProfileService.swift) | `updateGAId` | Service ready; called from analytics layer when added |
+| Get rejoin info | ✅ | [Services/ProfileService.swift](NeoAstro/Services/ProfileService.swift) | `getRejoinInfo` | Service ready; UI surface as needed |
+| User experience setting | ✅ | [Services/ProfileService.swift](NeoAstro/Services/ProfileService.swift) | `userExperience/updateUserExperience` | Service ready |
 
 ---
 
@@ -346,19 +346,19 @@ This is the porting checklist. Every feature in the React Native user app (`zupe
 
 | Feature | iOS | iOS file | RN reference | Notes |
 |---------|:---:|----------|--------------|-------|
-| Push notification registration (APNs) | ⏳ | — | iOS uses APNs; backend endpoint is `fcmToken` | |
-| Update push token | ⏳ | — | `misc/fcmToken` | |
-| Notification center / history | ⏳ | — | `screens/notification/Notification.tsx` | |
-| Read notification | ⏳ | — | `misc/readNotification` | |
-| Clear single notification | ⏳ | — | `misc/clearNotification` | |
-| Clear all notifications | ⏳ | — | `misc/clearAllNotifications` | |
-| Notification requests detail | ⏳ | — | `getNotificationRequestsDetail` | |
-| In-app nudges (per screen) | ⏳ | — | `getNudgesByScreenName` | |
-| Mark nudge shown | ⏳ | — | `setUserNudgeShown` | |
-| Astrologer-online system notification | ⏳ | — | `ASTROLOGER_ONLINE_NOTIFICATION` | |
-| Unread badge count | ⏳ | — | `UNREAD_MESSAGES_COUNT` + `NRC` | |
-| Dynamic nudge banner | ⏳ | — | `DYNAMIC_NUDGE` | |
-| Deep-link from notification | ⏳ | — | RN universal links | |
+| Push notification registration (APNs) | ✅ | [App/AppDelegate.swift](NeoAstro/App/AppDelegate.swift) | iOS uses APNs; backend endpoint is `fcmToken` | `UIApplicationDelegateAdaptor` wired in `NeoAstroApp`; auth requested at launch; **needs Push Notifications capability added in Xcode target settings** |
+| Update push token | ✅ | [Services/NotificationService.swift](NeoAstro/Services/NotificationService.swift) | `misc/fcmToken` | Auto-uploaded on `didRegisterForRemoteNotificationsWithDeviceToken` |
+| Notification center / history | ✅ | [Features/Notifications/NotificationCenterView.swift](NeoAstro/Features/Notifications/NotificationCenterView.swift) | `screens/notification/Notification.tsx` | Reachable via bell icon in HomeView toolbar |
+| Read notification | ✅ | [Features/Notifications/NotificationCenterView.swift](NeoAstro/Features/Notifications/NotificationCenterView.swift) | `misc/readNotification` | Tap row → marks read |
+| Clear single notification | ✅ | [Features/Notifications/NotificationCenterView.swift](NeoAstro/Features/Notifications/NotificationCenterView.swift) | `misc/clearNotification` | Swipe-to-clear |
+| Clear all notifications | ✅ | [Features/Notifications/NotificationCenterView.swift](NeoAstro/Features/Notifications/NotificationCenterView.swift) | `misc/clearAllNotifications` | Trash button + confirmation dialog |
+| Notification requests detail | ✅ | [Services/NotificationService.swift](NeoAstro/Services/NotificationService.swift) | `getNotificationRequestsDetail` | Backs `NotificationCenterView` list |
+| In-app nudges (per screen) | ✅ | [Services/NotificationService.swift](NeoAstro/Services/NotificationService.swift) | `getNudgesByScreenName` | Service ready; per-screen wiring lands as we add nudges |
+| Mark nudge shown | ✅ | [Features/Notifications/NudgeBanner.swift](NeoAstro/Features/Notifications/NudgeBanner.swift) | `setUserNudgeShown` | Auto-marked on action / dismiss |
+| Astrologer-online system notification | 🟡 | [Realtime/handlers/PresenceEventHandler.swift](NeoAstro/Realtime/handlers/PresenceEventHandler.swift) | `ASTROLOGER_ONLINE_NOTIFICATION` | Stored on `RealtimeStore.astrologerOnlineBanner`; UI banner lands when presented in HomeView |
+| Unread badge count | ✅ | [Realtime/handlers/NotificationEventHandler.swift](NeoAstro/Realtime/handlers/NotificationEventHandler.swift) | `UNREAD_MESSAGES_COUNT` + `NRC` | Live in `RealtimeStore.unreadCount` |
+| Dynamic nudge banner | ✅ | [Features/Notifications/NudgeBanner.swift](NeoAstro/Features/Notifications/NudgeBanner.swift) | `DYNAMIC_NUDGE` | Reusable component; realtime fan-in lands with Batch 4 |
+| Deep-link from notification | 🟡 | [App/AppDelegate.swift](NeoAstro/App/AppDelegate.swift) | RN universal links | Tap delivery wired (logs deepLink); routing pending deep-link infra |
 
 ---
 
@@ -366,19 +366,19 @@ This is the porting checklist. Every feature in the React Native user app (`zupe
 
 | Feature | iOS | iOS file | RN reference | Notes |
 |---------|:---:|----------|--------------|-------|
-| Socket.IO Swift client integration | ⏳ | — | `src/socket/AppManager.ts` | First third-party dep (Socket.IO Swift) |
-| Connection authenticated handling | ⏳ | — | `CONNECTION_AUTHENTICATED` | |
-| Force-logout via socket | ⏳ | — | `CONNECTION_MANAGE` | |
-| Notification refresh count | ⏳ | — | `NRC` | |
-| User-details sync on reconnect | ⏳ | — | `GET_USER_DETAILS` | |
-| Manual reconnection (linear / exponential) | ⏳ | — | `ReconnectionHelper` | Disable Socket.IO's built-in retry |
-| Event validation guards | ⏳ | — | `EVENTS_REQUIRING_*` / `SKIP_IF_*` | Port to iOS verbatim |
-| Ack-and-retry on `RAISE_QUERY` | ⏳ | — | exponential backoff | |
-| `{ en, data }` envelope codec | ⏳ | — | `socket.emit("req", ...)` | |
-| Token-in-handshake auth | ⏳ | — | query string params | See SOCKET-EVENTS.md §1 |
-| Native bridge: `IncomingCallModule` | ⏳ | — | exists in RN | |
-| Native bridge: `ConsultCallModule` | ⏳ | — | exists in RN | |
-| Native bridge: `InitiateChatModule` | ⏳ | — | exists in RN | |
+| Socket.IO Swift client integration | ✅ | [Realtime/SocketManager.swift](NeoAstro/Realtime/SocketManager.swift) | `src/socket/AppManager.ts` | First third-party dep (`socket.io-client-swift` 16.1+) wired via XcodeGen |
+| Connection authenticated handling | ✅ | [Realtime/handlers/ConnectionEventHandler.swift](NeoAstro/Realtime/handlers/ConnectionEventHandler.swift) | `CONNECTION_AUTHENTICATED` | Sets `RealtimeStore.isConnected`; force-logout on errorCode 256/257 |
+| Force-logout via socket | ✅ | [Realtime/handlers/ConnectionEventHandler.swift](NeoAstro/Realtime/handlers/ConnectionEventHandler.swift) | `CONNECTION_MANAGE` | Stops realtime, calls `AuthService.logout()` |
+| Notification refresh count | ✅ | [Realtime/handlers/ConnectionEventHandler.swift](NeoAstro/Realtime/handlers/ConnectionEventHandler.swift) | `NRC` | Updates `RealtimeStore.unreadCount` |
+| User-details sync on reconnect | 🟡 | [Realtime/SocketEvent.swift](NeoAstro/Realtime/SocketEvent.swift) | `GET_USER_DETAILS` | Event handled; user-details merge into config store deferred |
+| Manual reconnection (linear / exponential) | ✅ | [Realtime/ReconnectionPolicy.swift](NeoAstro/Realtime/ReconnectionPolicy.swift) | `ReconnectionHelper` | Socket.IO's built-in retry disabled; linear 100 ms × 120 attempts |
+| Event validation guards | ✅ | [Realtime/EventValidation.swift](NeoAstro/Realtime/EventValidation.swift) | `EVENTS_REQUIRING_*` / `SKIP_IF_*` | Ported verbatim |
+| Ack-and-retry on `RAISE_QUERY` | ✅ | [Realtime/SocketManager.swift](NeoAstro/Realtime/SocketManager.swift) | exponential backoff | `emitWithAck`: 3 retries × 2 s base, exponential |
+| `{ en, data }` envelope codec | ✅ | [Realtime/SocketEnvelope.swift](NeoAstro/Realtime/SocketEnvelope.swift) | `socket.emit("req", ...)` | `req` / `res` channels with typed Encodable / Decodable |
+| Token-in-handshake auth | ✅ | [Realtime/SocketManager.swift](NeoAstro/Realtime/SocketManager.swift) | query string params | All zupee-expected params populated; `com.neoastro.android` package name preserved |
+| Native bridge: `IncomingCallModule` | 🟡 | [Features/Calls/IncomingCallView.swift](NeoAstro/Features/Calls/IncomingCallView.swift) | exists in RN | UI shell ready; native call ViewController equivalent lands with Agora (Batch 4b) |
+| Native bridge: `ConsultCallModule` | ⏳ | — | exists in RN | Batch 4b (consultation flow) |
+| Native bridge: `InitiateChatModule` | ⏳ | — | exists in RN | Batch 4b (per-minute voice) |
 
 ---
 
@@ -452,14 +452,22 @@ This is the porting checklist. Every feature in the React Native user app (`zupe
 
 ---
 
+## Recent batches
+
+- **Batch 4 — Realtime / Socket layer.** First third-party SDK lands: `socket.io-client-swift` (16.1+) wired into [project.yml](project.yml). New `NeoAstro/Realtime/` directory with [SocketEvent](NeoAstro/Realtime/SocketEvent.swift) (string-typed enum of every event), [SocketEnvelope](NeoAstro/Realtime/SocketEnvelope.swift) (the `{ en, data }` codec on `req`/`res` channels), [ReconnectionPolicy](NeoAstro/Realtime/ReconnectionPolicy.swift) (linear 100 ms × 120 + exponential variants), [EventValidation](NeoAstro/Realtime/EventValidation.swift) (porting `EVENTS_REQUIRING_*` / `SKIP_IF_*` from RN), [Models/RealtimeEvents.swift](NeoAstro/Realtime/Models/RealtimeEvents.swift) (typed payload DTOs for chat / call / consult / presence / nudge), and [SocketManager.swift](NeoAstro/Realtime/SocketManager.swift) (the `NeoAstroSocket` actor — handshake with full zupee-expected query params, manual reconnection, `emit` and `emitWithAck` with 3×2s exponential retry, multi-subscriber `AsyncStream<RealtimeEvent>`). Five domain handlers in [Realtime/handlers/](NeoAstro/Realtime/handlers): Connection (sets `isConnected`, force-logout on errorCode 256/257), Chat (CHAT_STARTED → ActiveChat, CHAT_ENDED, ANSWER_QUERY drain queue, ASTRO_TYPING window, LOW_BALANCE synth bubble, WAITLIST_JOINED, CHAT_INITIATION_FAILED), Call (INCOMING_CALL_REQUEST surface, CALL_ACCEPTED/REJECTED/CANCELLED/ENDED clear), Presence (ASTROLOGER_STATUS_UPDATE / WAITTIME_UPDATE / UNAVAILABLE / ONLINE_NOTIFICATION → presence map), Notification (UNREAD_MESSAGES_COUNT, DYNAMIC_NUDGE buffer cap-5). [RealtimeStore](NeoAstro/Realtime/RealtimeStore.swift) (`@Observable @MainActor`) bridges all of this into UI state — `isConnected`, `unreadCount`, `activeChat`, `presence`, `incomingCall`, `inboundMessages`, `astroTypingUntil`. App boot wires it: [NeoAstroApp](NeoAstro/App/NeoAstroApp.swift) injects the store and uses `task(id: auth.stage)` to `start()` on `.authenticated` and `stop()` on `.login` / `.splash`. **Chat feature lands real:** [ChatView](NeoAstro/Features/Chat/ChatView.swift) replaces the old `ConsultChatView` placeholder (deleted), backed by [ChatViewModel](NeoAstro/Features/Chat/ChatViewModel.swift) — optimistic message insert with pending/failed indicators, ack-retry RAISE_QUERY, debounced USER_TYPING, drained ANSWER_QUERY with id-dedup, ASTRO_TYPING indicator, system LOW_BALANCE bubble, end-chat confirmation dialog → END_CHAT emit, in-screen status header with live billing pill. [MessageBubble](NeoAstro/Features/Chat/MessageBubble.swift) (user / astro / system variants with Liquid Glass + tinted glass for outgoing, plus animated `TypingIndicator`), [ChatInputBar](NeoAstro/Features/Chat/ChatInputBar.swift) (vertical-axis text field + glass send button). [HomeView.startChat(with:)](NeoAstro/Features/Home/HomeView.swift) emits INITIATE_CHAT and pushes ChatView; HoroscopeView and SearchOverlayView updated to ChatView too. [IncomingCallView](NeoAstro/Features/Calls/IncomingCallView.swift) — full-screen Liquid Glass surface with pulse rings, accept/reject; mounted at [RootView](NeoAstro/Navigation/RootView.swift) via `.fullScreenCover` bound to `RealtimeStore.incomingCall` (Agora hookup is Batch 4b). **Deferred to Batch 4b** (needs Agora SDK decision): Agora audio/video, voice/image attachments, HUMAN_ANSWER_SEEN, video consultation flow, mode switch, free ask/chat flows, deep-link routing, native call ViewController, ringtone, call duration ticker.
+
+- **Batch 3 — REST-only feature surfaces (Profile / Wallet / Notifications; Helpdesk + KYC skipped per request).** Wallet gained 4 service-layer endpoints (TDS certs + summary, cashback, invoices, transaction filters, convert coins) with three new feature screens — [TransactionDetailView](NeoAstro/Features/Wallet/TransactionDetailView.swift) (glass amount hero + details list + invoice card; pushed from passbook rows), [TDSView](NeoAstro/Features/Wallet/TDSView.swift) (TDS summary card + certificate list with download URLs), [CashbackView](NeoAstro/Features/Wallet/CashbackView.swift) (active-coins hero + offer rows + convert-to-wallet CTA). [WalletView](NeoAstro/Features/Wallet/WalletView.swift) gained a quick-links row for Cashback / TDS and uses a `NavigationStack(path:)` for proper back-navigation. Profile gained service methods for `setUserLocation`, `updateUserExperience`, `updateGAId`, `getRejoinInfo`, plus a 2-step presigned-URL `uploadProfilePic` skeleton (UI pass deferred). Notifications: brand-new [NotificationAPI](NeoAstro/Models/API/NotificationAPI.swift) + [NotificationService](NeoAstro/Services/NotificationService.swift) (push token, list, read, clear, clearAll, nudges, markNudgeShown). New [AppDelegate](NeoAstro/App/AppDelegate.swift) wires APNs via `UIApplicationDelegateAdaptor`: requests auth at launch, uploads device token to `/v1.0/misc/fcmToken`, surfaces foreground banners + tap deep-links. New [NotificationCenterView](NeoAstro/Features/Notifications/NotificationCenterView.swift) (glass row list, swipe-to-clear, confirmation-dialog for clear-all, pulled in via bell icon in HomeView toolbar) and reusable [NudgeBanner](NeoAstro/Features/Notifications/NudgeBanner.swift) component. **Project-config TODO (must be done in Xcode):** add the *Push Notifications* capability to the NeoAstro target.
+- **Batch 2 — Auth completion (partial; complete except referral + force-update which were deferred).** Added a real cold-start path: [SplashView](NeoAstro/Features/Splash/SplashView.swift) fires `AppConfigStore.bootstrap()` (parallelizes pre-signup config + user details + post-signup config) then `AuthViewModel.routeAfterBootstrap(...)` chooses among `splash → languagePicker / login / onboarding / authenticated`. `AuthViewModel.Stage` gained `splash`, `languagePicker`, `onboarding` cases; `verifyOTP` now re-bootstraps so post-OTP routing reflects whether the user has filled in birth details. New [LanguageSelectionView](NeoAstro/Features/Onboarding/LanguageSelectionView.swift) (Liquid-Glass tile grid, server-driven languages with hardcoded fallback) persists to `TokenStore.language`; `DeviceInfo.language` now reads the user's pick before falling back to `Locale`. New 4-step [OnboardingView](NeoAstro/Features/Onboarding/OnboardingView.swift) + [OnboardingViewModel](NeoAstro/Features/Onboarding/OnboardingViewModel.swift) (name+gender, DOB, time-with-skip, place) hits `submitAstroUserDetails` + `setOnboardingCompleted`. New [ConfigService](NeoAstro/Services/ConfigService.swift) and [OnboardingService](NeoAstro/Services/OnboardingService.swift); new [ConfigAPI](NeoAstro/Models/API/ConfigAPI.swift) DTOs; `TokenStore` extended with `language` and `onboardingCompleted` keys; `AppLog` gained `config` and `onboarding` categories. **Skipped:** referral code entry, force-update gate (per request).
+- **Batch 1 — Foundation pass (complete).** Added `AppTheme` tokens (`surface`, `tightCorner`, `sectionSpacing`, `cardPadding`, `balanceCardGradient`, `avatarPalette(for:)`, `primaryAvatarPalette`). Fixed sheet presentations on `HomeView` and `WalletView` (removed `.presentationBackground(.clear)`, switched to `.presentationDragIndicator(.visible)`). Cleaned `ChatConfirmationSheet` and `JuspayPaymentSheet` bodies (dropped inner `CosmicBackground`, custom drag handles, redundant outer glass wrapper) so system Liquid Glass sheets do their job. Centralized avatar palettes — `AstrologerCard`, `AccountView`, `MoreView`, `ChatConfirmationSheet` now use the `AppTheme` helper instead of duplicated hex string arrays. UI-GUIDELINES migration table updated to reflect the actual screen status. See [.claude/references/UI-GUIDELINES.md § 12](.claude/references/UI-GUIDELINES.md).
+
 ## Roll-up
 
 | Status | Count |
 |--------|------:|
-| ✅ Done | 19 |
-| 🟡 Partial | 11 |
-| 🟦 Stub | 3 |
-| ⏳ TODO | ~190 |
+| ✅ Done | 73 |
+| 🟡 Partial | 22 |
+| 🟦 Stub | 1 |
+| ⏳ TODO | ~127 |
 | ❓ Verify | 5 |
 | 🚫 Won't port | 2 |
 

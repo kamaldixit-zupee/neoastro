@@ -24,5 +24,12 @@ enum DeviceInfo {
 
     static var platform: String { "ios" }
     static var iOSVersion: String { UIDevice.current.systemVersion }
-    static var language: String { Locale.current.language.languageCode?.identifier ?? "en" }
+
+    /// Wire language code: prefer the user's explicit picker selection (set by
+    /// `LanguageSelectionView`), then fall back to the system locale.
+    static var language: String {
+        TokenStore.shared.language
+            ?? Locale.current.language.languageCode?.identifier
+            ?? "en"
+    }
 }

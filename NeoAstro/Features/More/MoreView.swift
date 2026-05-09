@@ -21,6 +21,7 @@ struct MoreView: View {
     ]
 
     @Environment(AuthViewModel.self) private var auth
+    @Environment(AppConfigStore.self) private var config
     @State private var vm = MoreViewModel()
     @State private var path: [Destination] = []
     @State private var confirmLogout = false
@@ -90,7 +91,7 @@ struct MoreView: View {
             }
             .alert("Logout?", isPresented: $confirmLogout) {
                 Button("Cancel", role: .cancel) {}
-                Button("Logout", role: .destructive) { auth.logout() }
+                Button("Logout", role: .destructive) { auth.logout(config: config) }
             } message: {
                 Text("You'll need to verify your number again.")
             }
@@ -99,7 +100,7 @@ struct MoreView: View {
                 Button("Delete", role: .destructive) {
                     Task {
                         let ok = await vm.deleteAccount()
-                        if ok { auth.logout() }
+                        if ok { auth.logout(config: config) }
                     }
                 }
             } message: {
@@ -159,7 +160,7 @@ struct MoreView: View {
                     AvatarView(
                         name: item.username ?? "User",
                         imageURL: item.iconURL,
-                        gradient: ["#7B2CBF", "#F72585"],
+                        gradient: AppTheme.primaryAvatarPalette,
                         size: 64
                     )
 

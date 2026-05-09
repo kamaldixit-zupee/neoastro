@@ -24,18 +24,7 @@ struct AstrologerCard: View {
         if let state = astrologer.status?.state { return state == "ONLINE" }
         return astrologer.isActive ?? false
     }
-    private var gradient: [String] {
-        let palettes = [
-            ["#7B2CBF", "#FF8FAB"],
-            ["#3A86FF", "#8338EC"],
-            ["#F72585", "#B5179E"],
-            ["#06A77D", "#3A86FF"],
-            ["#FFB703", "#FB8500"],
-            ["#7209B7", "#F72585"]
-        ]
-        let i = abs(astrologer._id.hashValue) % palettes.count
-        return palettes[i]
-    }
+    private var gradient: [String] { AppTheme.avatarPalette(for: astrologer._id) }
 
     var body: some View {
         Button(action: onTap) {

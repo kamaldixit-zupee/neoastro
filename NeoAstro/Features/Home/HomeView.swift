@@ -5,7 +5,9 @@ struct HomeView: View {
     @State private var selectedAstrologer: AstrologerAPI?
     @State private var chatConfirmation: AstrologerAPI?
     @State private var pendingChatAstrologer: AstrologerAPI?
+    @State private var showNotifications: Bool = false
     @Environment(HomeSearchCoordinator.self) private var searchCoordinator
+    @Environment(RealtimeStore.self) private var realtime
     @FocusState private var searchFocused: Bool
 
     var body: some View {
@@ -52,32 +54,56 @@ struct HomeView: View {
             .navigationTitle("NeoAstro")
             .navigationBarTitleDisplayMode(.large)
             .toolbarBackground(.hidden, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { showNotifications = true } label: {
+                        Image(systemName: "bell.fill")
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                    }
+                }
+            }
             .searchable(text: $vm.searchText, prompt: "Search astrologers, skills…")
             .searchFocused($searchFocused)
             .navigationDestination(item: $selectedAstrologer) { astrologer in
                 AstrologerProfileView(astrologer: astrologer)
             }
             .navigationDestination(item: $pendingChatAstrologer) { astrologer in
-                ConsultChatView(astrologer: astrologer)
+                ChatView(astrologer: astrologer)
+            }
+            .navigationDestination(isPresented: $showNotifications) {
+                NotificationCenterView()
             }
             .sheet(item: $chatConfirmation) { astrologer in
                 ChatConfirmationSheet(
                     astrologer: astrologer,
                     onConfirm: {
                         chatConfirmation = nil
-                        pendingChatAstrologer = astrologer
+                        startChat(with: astrologer)
                     },
                     onCancel: { chatConfirmation = nil }
                 )
                 .presentationDetents([.fraction(0.55), .large])
-                .presentationBackground(.clear)
-                .presentationDragIndicator(.hidden)
+                .presentationDragIndicator(.visible)
             }
             .task { await vm.loadInitial() }
             .onChange(of: searchCoordinator.requestFocusToken) { _, _ in
                 searchFocused = true
             }
         }
+    }
+
+    /// Confirm-sheet → emit INITIATE_CHAT → push ChatView. The chat view
+    /// itself waits on `realtime.activeChat` to populate via CHAT_STARTED.
+    private func startChat(with astrologer: AstrologerAPI) {
+        AppLog.info(.chat, "VM · INITIATE_CHAT astroId=\(astrologer._id)")
+        Task {
+            await NeoAstroSocket.shared.emit(
+                .initiateChat,
+                payload: InitiateChatPayload(astroId: astrologer._id)
+            )
+        }
+        pendingChatAstrologer = astrologer
     }
 
     private var heroBanner: some View {

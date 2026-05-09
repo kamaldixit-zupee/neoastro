@@ -12,6 +12,14 @@ settings:
     CODE_SIGN_STYLE: Automatic
     ENABLE_PREVIEWS: "YES"
 
+# First (and currently only) third-party dependency.
+# Powers the realtime layer (chat, call signaling, presence, nudges).
+# Engine.io v3 protocol matches the backend in `chat.service`.
+packages:
+  SocketIO:
+    url: https://github.com/socketio/socket.io-client-swift
+    from: "16.1.0"
+
 targets:
   NeoAstro:
     type: application
@@ -19,6 +27,9 @@ targets:
     deploymentTarget: "26.0"
     sources:
       - path: NeoAstro
+    dependencies:
+      - package: SocketIO
+        product: SocketIO
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: varasol.MarathiCalendarPanchangam
