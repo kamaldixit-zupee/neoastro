@@ -25,17 +25,13 @@ struct SearchView: View {
                     .contentShape(Rectangle())
                     .onTapGesture { inputFocused = false }
 
-                GeometryReader { geo in
-                    let cardHeight = (174.0 / 360.0) * geo.size.width
+                VStack(spacing: 0) {
+                    content
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-                    VStack(spacing: 0) {
-                        content(cardHeight: cardHeight)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-                        searchBar
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 10)
-                    }
+                    searchBar
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
                 }
             }
             .navigationDestination(item: $selectedAstrologer) { astrologer in
@@ -60,9 +56,9 @@ struct SearchView: View {
     // MARK: - Content
 
     @ViewBuilder
-    private func content(cardHeight: CGFloat) -> some View {
+    private var content: some View {
         if !vm.query.trimmingCharacters(in: .whitespaces).isEmpty {
-            resultsList(cardHeight: cardHeight)
+            resultsList
         } else if !vm.recentAstrologers.isEmpty {
             recentSearchesSection
         } else if vm.isLoadingInitial {
@@ -76,7 +72,7 @@ struct SearchView: View {
         }
     }
 
-    private func resultsList(cardHeight: CGFloat) -> some View {
+    private var resultsList: some View {
         ScrollView {
             LazyVStack(spacing: 14) {
                 if vm.searchResults.isEmpty {
@@ -88,7 +84,6 @@ struct SearchView: View {
                     ForEach(vm.searchResults) { astrologer in
                         AstrologerCard(
                             astrologer: astrologer,
-                            height: cardHeight,
                             onTap: { handleTap(astrologer) },
                             onChat: {
                                 vm.recordTap(astrologer)
@@ -196,7 +191,7 @@ struct SearchView: View {
                     .frame(width: 44, height: 44)
             }
             .buttonStyle(.plain)
-            .glassEffect(.regular, in: .circle)
+            .glassEffect(.regular.interactive(), in: .circle)
 
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass")
@@ -240,7 +235,7 @@ struct SearchView: View {
                     .frame(width: 44, height: 44)
             }
             .buttonStyle(.plain)
-            .glassEffect(.regular, in: .circle)
+            .glassEffect(.regular.interactive(), in: .circle)
         }
     }
 

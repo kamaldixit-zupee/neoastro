@@ -6,7 +6,7 @@ enum AstrologerService {
         let result = try await APIClient.shared.send(.init(
             path: "/v1.0/astrologer/listAstrologers",
             method: .GET,
-            query: ["consultationEnabled": "true"]
+            query: ["consultationEnabled": "false"]
         ), as: AstrologerListResponse.self)
         AppLog.info(.home, "service · listAll items=\(result.totalWidgets) astrologers=\(result.astrologers.count)")
         return result.astrologers
@@ -17,7 +17,7 @@ enum AstrologerService {
         let result = try await APIClient.shared.send(.init(
             path: "/v1.0/astrologer/listAstrologers",
             method: .GET,
-            query: ["consultationEnabled": "true"]
+            query: ["consultationEnabled": "false"]
         ), as: AstrologerListResponse.self)
         AppLog.info(.home, "service · listBest items=\(result.totalWidgets) astrologers=\(result.astrologers.count)")
         return result.astrologers
@@ -29,7 +29,7 @@ enum AstrologerService {
             path: "/v1.0/astrologer/listAstrologers",
             method: .GET,
             query: [
-                "consultationEnabled": "true",
+                "consultationEnabled": "false",
                 "search": searchQuery
             ]
         ), as: AstrologerListResponse.self)

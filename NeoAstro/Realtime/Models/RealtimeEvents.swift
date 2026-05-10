@@ -15,6 +15,7 @@ struct NotificationCountPayload: Decodable {
 struct ChatRequestedPayload: Encodable {
     let astroId: String
     var isClickedFromFreeAsk: Bool = false
+    var isOffline: Bool = false
 }
 
 struct InitiateChatPayload: Encodable {

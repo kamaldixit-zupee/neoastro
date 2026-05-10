@@ -19,11 +19,19 @@ final class ChatViewModel {
         var astroId: String? = nil
         var mediaURL: URL? = nil
         var audioDurationSeconds: Int? = nil
+        var callSessionStatus: String? = nil   // ringing / ongoing / accepted / completed / ended / no_answer / rejected / missed
+        var callFormFactor: String? = nil      // "voice" / "video"
 
-        var isSystem: Bool { messageType.hasPrefix("SYSTEM_") }
-        var isText:  Bool { messageType == "TEXT" }
-        var isAudio: Bool { messageType == "AUDIO" }
-        var isImage: Bool { messageType == "IMAGE" }
+        /// Wire types come in lowercase (`text`, `audio`, `image`, `voiceCall`)
+        /// from the history endpoint and uppercase from realtime events.
+        /// Normalize for the type accessors so both render the right bubble.
+        private var normalizedType: String { messageType.uppercased() }
+
+        var isSystem: Bool { normalizedType.hasPrefix("SYSTEM_") }
+        var isText:  Bool { normalizedType == "TEXT" || normalizedType.isEmpty }
+        var isAudio: Bool { normalizedType == "AUDIO" }
+        var isImage: Bool { normalizedType == "IMAGE" }
+        var isVoiceCall: Bool { normalizedType == "VOICECALL" }
     }
 
     // MARK: - State

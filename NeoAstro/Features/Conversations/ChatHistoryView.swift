@@ -19,7 +19,7 @@ final class ChatHistoryViewModel {
         defer { isLoading = false }
         do {
             let result = try await ChatHistoryService.messages(with: astroId)
-            messages = (result.messages ?? []).sorted { $0.date < $1.date }
+            messages = result.messages
             astrologer = result.astrologer
             AppLog.info(.chat, "VM · history loaded count=\(messages.count)")
         } catch {
@@ -79,6 +79,7 @@ struct ChatHistoryView: View {
         .navigationTitle(conversation.astrologerName ?? "Chat")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .tabBar)
         .alert("Couldn't resume chat", isPresented: $showResumeFailureAlert) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -108,15 +109,6 @@ struct ChatHistoryView: View {
             }
 
             Spacer()
-
-            if let count = conversation.totalMessages, count > 0 {
-                Text("\(count) msgs")
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.white.opacity(0.7))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .glassEffect(.regular, in: .capsule)
-            }
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
@@ -126,12 +118,7 @@ struct ChatHistoryView: View {
     }
 
     private var statusLine: String {
-        if conversation.isActive { return "Active session" }
-        if let s = conversation.durationSeconds, s > 0 {
-            let mins = s / 60
-            return "Ended · \(mins) min"
-        }
-        return "Ended"
+        conversation.isActive ? "Active session" : "Past session"
     }
 
     // MARK: - List
@@ -151,25 +138,47 @@ struct ChatHistoryView: View {
     }
 
     private func historicalRow(_ msg: HistoricalMessage) -> some View {
+        let mediaURL = resolvedMediaURL(for: msg)
+        // For media bubbles the `body` text isn't rendered, so blank it out
+        // — otherwise the URL string would appear if the renderer ever fell
+        // through to the text branch.
+        let kind = (msg.messageType ?? "").uppercased()
+        let isMedia = kind == "AUDIO" || kind == "IMAGE" || kind == "VOICECALL"
+
         let bubble = ChatViewModel.ChatMessage(
             id: msg.id,
-            body: msg.message ?? "",
+            body: isMedia ? "" : (msg.message ?? ""),
             isFromUser: msg.fromUser,
             messageType: msg.messageType ?? "TEXT",
             sentAt: msg.date,
             sequenceId: msg.sequenceId,
             astroId: msg.astroId,
-            mediaURL: resolvedMediaURL(for: msg),
-            audioDurationSeconds: msg.audioDuration
+            mediaURL: mediaURL,
+            audioDurationSeconds: msg.audioDuration,
+            callSessionStatus: msg.callSessionStatus,
+            callFormFactor: msg.formFactor
         )
         return MessageBubble(message: bubble)
     }
 
+    /// Resolve the playback / image URL from whichever field the wire used.
+    /// - audio: `audioUrl` first, then `message` (astro audio messages put
+    ///   the URL in `message`).
+    /// - voiceCall: the recording URL lives in `message` for ended calls.
+    /// - image: first entry of `mediaUrls`.
     private func resolvedMediaURL(for msg: HistoricalMessage) -> URL? {
-        if (msg.messageType ?? "").uppercased() == "AUDIO", let s = msg.audioUrl {
-            return URL(string: s)
+        let kind = (msg.messageType ?? "").uppercased()
+        switch kind {
+        case "AUDIO":
+            if let s = msg.audioUrl, let url = URL(string: s) { return url }
+            return msg.message.flatMap(URL.init(string:))
+        case "VOICECALL":
+            return msg.message.flatMap(URL.init(string:))
+        case "IMAGE":
+            return msg.mediaUrls?.first.flatMap(URL.init(string:))
+        default:
+            return nil
         }
-        return msg.mediaUrls?.first.flatMap(URL.init(string:))
     }
 
     // MARK: - Empty / archived / resume

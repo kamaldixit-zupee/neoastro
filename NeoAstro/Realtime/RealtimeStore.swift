@@ -101,7 +101,7 @@ final class RealtimeStore {
                 await self?.dispatch(realtime)
             }
         }
-        AppLog.info(.api, "RealtimeStore started")
+        AppLog.info(.socketIO, "RealtimeStore started")
     }
 
     /// Tear down on logout.
@@ -121,7 +121,7 @@ final class RealtimeStore {
         inboundMessages.removeAll()
         astroTypingUntil = nil
         lastChatInitiationError = nil
-        AppLog.info(.api, "RealtimeStore stopped")
+        AppLog.info(.socketIO, "RealtimeStore stopped")
     }
 
     // MARK: - Drain helpers (called by ChatViewModel)
@@ -156,7 +156,7 @@ final class RealtimeStore {
             currentAstroId: currentAstroId,
             chatInProgress: chatInProgress
         ) else {
-            AppLog.debug(.api, "event dropped by guard event=\(event.rawValue)")
+            AppLog.debug(.socketIO, "event dropped by guard event=\(event.rawValue)")
             return
         }
 
@@ -189,7 +189,7 @@ final class RealtimeStore {
              .freeChatWaitlist, .freeChatAstroId:
             FreeAskEventHandler.handle(event, envelope: envelope, store: self)
         default:
-            AppLog.debug(.api, "event handled=false event=\(event.rawValue)")
+            AppLog.debug(.socketIO, "event handled=false event=\(event.rawValue)")
         }
     }
 

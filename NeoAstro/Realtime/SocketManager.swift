@@ -56,17 +56,19 @@ actor NeoAstroSocket {
     /// connected is a no-op.
     func connect() {
         guard TokenStore.shared.isAuthenticated else {
-            AppLog.warn(.api, "socket connect skipped: no token")
+            AppLog.warn(.socketIO, "connect skipped: no token (status=\(statusString))")
             return
         }
         if socket?.status == .connected || socket?.status == .connecting {
+            AppLog.info(.socketIO, "connect skipped: already \(statusString)")
             return
         }
 
         let baseURL = APIEnvironment.current.baseURL
         let query = handshakeQuery()
 
-        AppLog.info(.api, "socket connecting host=\(baseURL.absoluteString) keys=\(query.keys.sorted())")
+        AppLog.info(.socketIO, "connecting host=\(baseURL.absoluteString) status=\(statusString)")
+        AppLog.debug(.socketIO, "handshake query=\(redactedQuery(query))")
 
         let manager = SocketManager(
             socketURL: baseURL,
@@ -101,7 +103,7 @@ actor NeoAstroSocket {
 
     /// Tear down completely. Called on logout.
     func disconnect() {
-        AppLog.info(.api, "socket disconnect requested")
+        AppLog.info(.socketIO, "disconnect requested status=\(statusString)")
         reconnectTask?.cancel()
         reconnectTask = nil
         reconnectAttempt = 0
@@ -122,21 +124,24 @@ actor NeoAstroSocket {
     }
 
     /// Emit a typed payload via the `req` channel.
+    ///
+    /// Wire format: the server's `requestHandler` does `JSON.parse(requestString)`
+    /// on whatever arrives, so we must send the envelope as a JSON-encoded
+    /// **string**, not a dictionary. RN does the same via
+    /// `socket.emit("req", JSON.stringify({en, data}))`. Sending a dict
+    /// instead silently fails on the server (parse throws, swallowed by
+    /// try/catch, no response).
     func emit<P: Encodable>(_ event: SocketEvent, payload: P? = nil) {
         guard let socket, socket.status == .connected else {
-            AppLog.warn(.api, "socket emit dropped (not connected) event=\(event.rawValue)")
+            AppLog.warn(.socketIO, "emit dropped (status=\(statusString)) event=\(event.rawValue)")
             return
         }
         do {
-            let envelope = SocketEnvelopeOut(en: event.rawValue, data: payload)
-            let data = try JSONEncoder().encode(envelope)
-            guard let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-                throw APIError.businessFailure(message: "envelope encode failed")
-            }
-            AppLog.debug(.api, "socket emit \(event.rawValue) keys=\(dict.keys.sorted())")
-            socket.emit(SocketChannel.request, dict)
+            let json = try encodeEnvelope(event: event, payload: payload)
+            AppLog.debug(.socketIO, "emit → \(event.rawValue) status=\(statusString) bytes=\(json.utf8.count)")
+            socket.emit(SocketChannel.request, json)
         } catch {
-            AppLog.error(.api, "socket emit failed event=\(event.rawValue)", error: error)
+            AppLog.error(.socketIO, "emit failed event=\(event.rawValue)", error: error)
         }
     }
 
@@ -150,57 +155,85 @@ actor NeoAstroSocket {
     ) async -> Bool {
         guard let socket else { return false }
         do {
-            let envelope = SocketEnvelopeOut(en: event.rawValue, data: payload)
-            let data = try JSONEncoder().encode(envelope)
-            guard let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-                return false
-            }
+            let json = try encodeEnvelope(event: event, payload: payload)
 
             for attempt in 0...maxRetries {
                 let ack = await withCheckedContinuation { (cont: CheckedContinuation<Bool, Never>) in
-                    socket.emitWithAck(SocketChannel.request, dict).timingOut(after: timeoutSeconds) { _ in
+                    socket.emitWithAck(SocketChannel.request, json).timingOut(after: timeoutSeconds) { _ in
                         cont.resume(returning: true)
                     }
                 }
                 if ack { return true }
                 let backoff = Double(attempt + 1) * 2.0
-                AppLog.warn(.api, "ack timeout event=\(event.rawValue) attempt=\(attempt) retryIn=\(backoff)s")
+                AppLog.warn(.socketIO, "ack timeout event=\(event.rawValue) status=\(statusString) attempt=\(attempt) retryIn=\(backoff)s")
                 try? await Task.sleep(for: .seconds(backoff))
             }
             return false
         } catch {
-            AppLog.error(.api, "emitWithAck failed event=\(event.rawValue)", error: error)
+            AppLog.error(.socketIO, "emitWithAck failed event=\(event.rawValue)", error: error)
             return false
         }
     }
 
+    /// Encode `{en, data}` to a JSON string for the `req` channel.
+    private func encodeEnvelope<P: Encodable>(event: SocketEvent, payload: P?) throws -> String {
+        let envelope = SocketEnvelopeOut(en: event.rawValue, data: payload)
+        let data = try JSONEncoder().encode(envelope)
+        guard let json = String(data: data, encoding: .utf8) else {
+            throw APIError.businessFailure(message: "envelope encode failed")
+        }
+        return json
+    }
+
     // MARK: - Handshake
 
+    /// Mirrors zupee-rn-astro's `getSpEventData` (`src/socket/utils.ts`)
+    /// key-for-key. The RN handshake is the only known-working shape — the
+    /// server's `connection` handler is gated on `reauth`+`authenticateWithRestApi`
+    /// to run `CONNECTION_AUTHENTICATED` (which fills `client.uid`,
+    /// `client.zupeeUserId` and writes the Redis socket-cache used by
+    /// `SendDirect`); `signupPhoneNumber`+`ult: "phone"` are read by
+    /// `setUserLoginTypeAndEmail`. Drift here = silent server-side drops.
     private func handshakeQuery() -> [String: String] {
         let token = TokenStore.shared.accessToken ?? ""
         let refresh = TokenStore.shared.refreshToken ?? ""
-        let zuid = TokenStore.shared.zupeeUserId.map(String.init) ?? ""
+        let phone = TokenStore.shared.mobileNumber ?? ""
+        let email = TokenStore.shared.userEmail ?? ""
+        let name = TokenStore.shared.userName ?? ""
+        let lang = DeviceInfo.language
+        let psn = DeviceInfo.prefixedSerialNumber
+        let buildCode = DeviceInfo.buildVersionCode
+        // RN's `Platform.Version` on iOS is the major iOS version as a string
+        // (e.g. "26"). The server doesn't strictly validate this, but match
+        // RN's shape so logs line up.
+        let iosMajor = DeviceInfo.iOSVersion.split(separator: ".").first.map(String.init) ?? DeviceInfo.iOSVersion
+        let connectionInfo = #"{"networkType":"wifi","isConnected":true}"#
         return [
             "socketType": "MAIN_CLIENT",
-            "action": "SIGN_IN_ACTION",
-            "accessToken": token,
-            "refreshToken": refresh,
-            "ult": DeviceInfo.language,
-            "uniqueDeviceId": DeviceInfo.prefixedSerialNumber,
-            "SerialNumber": DeviceInfo.prefixedSerialNumber,
+            "action": "SignIn",
+            "rfc": "",
+            "av": buildCode,
+            "iv": buildCode,
+            "app_version": DeviceInfo.buildVersionName,
+            "version_code": buildCode,
             "packageName": DeviceInfo.zupeeAppName,
-            "appname": DeviceInfo.zupeeAppName,
-            "appversion": DeviceInfo.buildVersionCode,
-            "appVersionName": DeviceInfo.buildVersionName,
-            "version_code": DeviceInfo.buildVersionCode,
-            "anov": DeviceInfo.iOSVersion,
+            "anov": iosMajor,
             "det": DeviceInfo.platform,
             "deviceType": DeviceInfo.platform,
-            "Platform": DeviceInfo.platform,
-            "lc": DeviceInfo.language,
-            "languagePreference": DeviceInfo.language,
-            "ludoUserId": TokenStore.shared.userId ?? "",
-            "zuid": zuid
+            "lc": lang,
+            "languagePreference": lang,
+            "DeviceId": "",
+            "accessToken": token,
+            "signupPhoneNumber": phone,
+            "refreshToken": refresh,
+            "ue": email,
+            "un": name,
+            "ult": "phone",
+            "reauth": "true",
+            "authenticateWithRestApi": "true",
+            "uniqueDeviceId": psn,
+            "SerialNumber": psn,
+            "connectionInfo": connectionInfo
         ]
     }
 
@@ -211,32 +244,32 @@ actor NeoAstroSocket {
     // MARK: - Lifecycle handlers
 
     private func handleConnect() {
-        AppLog.info(.api, "socket connected")
+        AppLog.info(.socketIO, "connected status=\(statusString)")
         reconnectAttempt = 0
         reconnectTask?.cancel()
         reconnectTask = nil
     }
 
     private func handleDisconnect() {
-        AppLog.warn(.api, "socket disconnected — scheduling reconnect")
+        AppLog.warn(.socketIO, "disconnected status=\(statusString) — scheduling reconnect")
         scheduleReconnect()
     }
 
     private func handleError(_ data: [Any]) {
-        AppLog.error(.api, "socket error data=\(data)")
+        AppLog.error(.socketIO, "error status=\(statusString) data=\(data)")
         scheduleReconnect()
     }
 
     private func handleResponse(_ data: [Any]) {
         guard let first = data.first, let envelope = SocketEnvelopeIn(any: first) else {
-            AppLog.warn(.api, "socket response unparseable raw=\(data)")
+            AppLog.warn(.socketIO, "response unparseable raw=\(data)")
             return
         }
         guard let event = SocketEvent(rawValue: envelope.en) else {
-            AppLog.debug(.api, "socket response unhandled event=\(envelope.en)")
+            AppLog.debug(.socketIO, "response unhandled event=\(envelope.en)")
             return
         }
-        AppLog.info(.api, "socket ← \(event.rawValue)")
+        AppLog.info(.socketIO, "← \(event.rawValue)")
         let realtimeEvent = RealtimeEvent(event: event, envelope: envelope)
         for cont in continuations.values { cont.yield(realtimeEvent) }
     }
@@ -246,10 +279,10 @@ actor NeoAstroSocket {
         reconnectTask = Task { [policy] in
             while !Task.isCancelled {
                 guard let delay = policy.delay(forAttempt: reconnectAttempt) else {
-                    AppLog.error(.api, "socket reconnect attempts exhausted")
+                    AppLog.error(.socketIO, "reconnect attempts exhausted status=\(statusString)")
                     return
                 }
-                AppLog.info(.api, "socket reconnect attempt=\(reconnectAttempt) in=\(delay)")
+                AppLog.info(.socketIO, "reconnect attempt=\(reconnectAttempt) in=\(delay) status=\(statusString)")
                 try? await Task.sleep(for: delay)
                 reconnectAttempt += 1
                 connect()
@@ -258,5 +291,33 @@ actor NeoAstroSocket {
                 }
             }
         }
+    }
+
+    // MARK: - Logging helpers
+
+    /// Human-readable Socket.IO status for logs.
+    private var statusString: String {
+        guard let socket else { return "no-socket" }
+        switch socket.status {
+        case .connected: return "connected"
+        case .connecting: return "connecting"
+        case .disconnected: return "disconnected"
+        case .notConnected: return "notConnected"
+        @unknown default: return "unknown"
+        }
+    }
+
+    /// Token fields are short-formed so the handshake query can be safely
+    /// printed at debug level without leaking the full JWTs.
+    private func redactedQuery(_ q: [String: String]) -> [String: String] {
+        var copy = q
+        for k in ["accessToken", "refreshToken"] {
+            if let v = copy[k], !v.isEmpty {
+                copy[k] = "<set len=\(v.count)>"
+            } else {
+                copy[k] = "<empty>"
+            }
+        }
+        return copy
     }
 }

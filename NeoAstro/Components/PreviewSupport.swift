@@ -11,7 +11,6 @@ extension View {
             .environment(AppConfigStore())
             .environment(RealtimeStore())
             .environment(DeepLinkRouter())
-            .environment(HomeSearchCoordinator())
     }
 }
 #endif

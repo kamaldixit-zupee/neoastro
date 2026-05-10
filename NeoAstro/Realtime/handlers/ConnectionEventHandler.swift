@@ -8,15 +8,15 @@ enum ConnectionEventHandler {
         case .connectionAuthenticated:
             let payload = envelope.decode(ConnectionAuthenticatedPayload.self)
             if let code = payload?.errorCode {
-                AppLog.warn(.api, "connection authenticated errorCode=\(code) — forcing logout")
+                AppLog.warn(.socketIO, "connection authenticated errorCode=\(code) — forcing logout")
                 Task { await store.stop() }
                 AuthService.logout()
                 return
             }
             store.isConnected = true
-            AppLog.info(.api, "socket authenticated")
+            AppLog.info(.socketIO, "authenticated — isConnected=true")
         case .connectionManage:
-            AppLog.warn(.api, "CONNECTION_MANAGE — server-forced logout")
+            AppLog.warn(.socketIO, "CONNECTION_MANAGE — server-forced logout")
             Task { await store.stop() }
             AuthService.logout()
         case .nrc:

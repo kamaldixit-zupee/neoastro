@@ -1,9 +1,15 @@
 import Foundation
 
-/// Wire envelope used by every event:
+/// Wire envelope used by every event. Note the asymmetry — the request
+/// payload is JSON-encoded as a **string**, but the response arrives as a
+/// JS object:
 ///
-///     client→server :  socket.emit("req", { en: "<EVENT>", data: <payload> })
-///     server→client :  socket.emit("res", { en: "<EVENT>", data: <payload> })
+///     client→server :  socket.emit("req", JSON.stringify({en, data}))
+///     server→client :  socket.emit("res", { en, data })
+///
+/// The server's `requestHandler` does `JSON.parse(requestString)` on the
+/// incoming arg, so emitting a dict on `req` is silently dropped by a
+/// try/catch on the server. `SocketManager.emit` stringifies before sending.
 ///
 /// The backend uses the named keys `req` / `res` rather than per-event names,
 /// so we always subscribe to those two and dispatch internally on `en`.

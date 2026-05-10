@@ -16,11 +16,12 @@ enum AppLog {
         case chat = "chat"
         case config = "config"
         case onboarding = "onboarding"
+        case socketIO = "SOCKET_IO"
     }
 
     private static let loggers: [Category: Logger] = {
         var map: [Category: Logger] = [:]
-        for c in [Category.api, .auth, .home, .search, .account, .wallet, .horoscope, .panchang, .chat, .config, .onboarding] {
+        for c in [Category.api, .auth, .home, .search, .account, .wallet, .horoscope, .panchang, .chat, .config, .onboarding, .socketIO] {
             map[c] = Logger(subsystem: subsystem, category: c.rawValue)
         }
         return map

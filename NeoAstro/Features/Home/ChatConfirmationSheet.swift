@@ -41,11 +41,28 @@ struct ChatConfirmationSheet: View {
 
             Spacer(minLength: 6)
 
-            actionButtons
+            startChatButton
         }
         .padding(.horizontal, 20)
         .padding(.top, 12)
-        .padding(.bottom, 24)
+        .padding(.bottom, 40)
+        .overlay(alignment: .topTrailing) {
+            closeButton
+                .padding(.top, 8)
+                .padding(.trailing, 12)
+        }
+    }
+
+    private var closeButton: some View {
+        Button(action: onCancel) {
+            Image(systemName: "xmark")
+                .font(.footnote.weight(.bold))
+                .foregroundStyle(.white)
+                .frame(width: 30, height: 30)
+        }
+        .buttonStyle(.plain)
+        .glassEffect(.regular.interactive(), in: .circle)
+        .accessibilityLabel("Close")
     }
 
     private var rateRow: some View {
@@ -97,30 +114,59 @@ struct ChatConfirmationSheet: View {
         }
     }
 
-    private var actionButtons: some View {
-        VStack(spacing: 10) {
-            Button(action: onConfirm) {
-                HStack(spacing: 8) {
-                    Image(systemName: "message.fill")
-                    Text("Start Chat — ₹\(price)/min")
-                        .font(.headline)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
-            }
-            .buttonStyle(.glass)
-            .controlSize(.large)
-            .tint(AppTheme.pinkAccent)
-
-            Button(action: onCancel) {
-                Text("Cancel")
+    private var startChatButton: some View {
+        Button(action: onConfirm) {
+            HStack(spacing: 8) {
+                Image(systemName: "message.fill")
+                    .font(.subheadline)
+                Text("Start Chat — ₹\(price)/min")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.white.opacity(0.85))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
             }
-            .buttonStyle(.glass)
-            .tint(.white.opacity(0.2))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
         }
+        .buttonStyle(.glass)
+        .tint(AppTheme.pinkAccent)
     }
 }
+
+#if DEBUG
+#Preview {
+    ZStack {
+        CosmicBackground()
+        ChatConfirmationSheet(
+            astrologer: AstrologerAPI(
+                _id: "preview-astro",
+                name: "Astro Sample",
+                image: nil,
+                images: nil,
+                description: nil,
+                bio: nil,
+                price: 25,
+                discountedPrice: 18,
+                experience: 7,
+                languages: ["Hindi", "English"],
+                ratings: 4.7,
+                verified: true,
+                chats: 1245,
+                totalMins: nil,
+                studies: ["Vedic", "Tarot"],
+                isActive: true,
+                premium: false,
+                heading: nil,
+                subHeading: nil,
+                location: nil,
+                qualification: "B.A. Astrology",
+                qualificationText: "Vedic Astrologer",
+                experienceText: nil,
+                trustText: nil,
+                status: AstrologerAPI.AstrologerStatus(text: "Online", state: "ONLINE")
+            ),
+            onConfirm: {},
+            onCancel: {}
+        )
+        .presentationDetents([.fraction(0.55), .large])
+    }
+    .previewEnvironment()
+}
+#endif

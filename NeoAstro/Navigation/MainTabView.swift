@@ -1,24 +1,15 @@
 import SwiftUI
 
-@Observable
-@MainActor
-final class HomeSearchCoordinator {
-    var requestFocusToken: Int = 0
-    func requestFocus() { requestFocusToken &+= 1 }
-}
-
 struct MainTabView: View {
     enum AppTab: Hashable { case home, horoscope, panchang, more, search }
 
     @State private var selection: AppTab = .home
-    @State private var searchCoordinator = HomeSearchCoordinator()
     @Environment(DeepLinkRouter.self) private var deepLinks
 
     var body: some View {
         TabView(selection: $selection) {
             Tab("Home", systemImage: "sparkles", value: AppTab.home) {
                 HomeView()
-                    .environment(searchCoordinator)
             }
 
             Tab("Horoscope", systemImage: "moon.stars.fill", value: AppTab.horoscope) {
@@ -33,7 +24,7 @@ struct MainTabView: View {
                 MoreView()
             }
 
-            Tab(value: AppTab.search, role: .search) {
+            Tab("Search", systemImage: "magnifyingglass", value: AppTab.search) {
                 SearchView(onClose: { selection = .home })
             }
         }

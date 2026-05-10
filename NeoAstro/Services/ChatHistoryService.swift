@@ -3,15 +3,16 @@ import Foundation
 enum ChatHistoryService {
 
     /// Conversation list. Returns the user's past + active chats sorted by
-    /// the server (typically most recent first).
+    /// the server (typically most recent first). The wire shape is
+    /// `{ en, response: [ConversationSummary, …] }`, so we decode the array
+    /// directly via `ResponseOnlyEnvelope`.
     static func conversations(skip: Int = 0, limit: Int = 30) async throws -> [ConversationSummary] {
         AppLog.info(.chat, "service · conversations skip=\(skip) limit=\(limit)")
-        let result = try await APIClient.shared.send(.init(
+        return try await APIClient.shared.send(.init(
             path: "/v1.0/chat/getHistory",
             method: .POST,
             body: GetChatHistoryBody(skip: skip, limit: limit)
-        ), as: ChatHistoryListResponse.self)
-        return result.resolved
+        ), as: [ConversationSummary].self)
     }
 
     /// Full message history with one astrologer.

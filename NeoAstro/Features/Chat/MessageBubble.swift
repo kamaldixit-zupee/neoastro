@@ -1,4 +1,5 @@
 import SwiftUI
+import AVKit
 
 enum BubbleSide { case user, astro }
 
@@ -42,6 +43,8 @@ struct MessageBubble: View {
             AudioMessageContent(message: message, side: side)
         } else if message.isImage {
             ImageMessageContent(message: message, side: side)
+        } else if message.isVoiceCall {
+            VoiceCallMessageContent(message: message, side: side)
         } else {
             TextMessageContent(message: message, side: side)
         }
@@ -262,6 +265,143 @@ private struct ImageMessageContent: View {
     }
 }
 
+// MARK: - Voice-call content
+
+private struct VoiceCallMessageContent: View {
+    let message: ChatViewModel.ChatMessage
+    let side: BubbleSide
+
+    @State private var player = AudioPlayer.shared
+    @State private var showVideoPlayer: Bool = false
+
+    private var isPlayingThis: Bool {
+        player.playingId == message.id && message.mediaURL != nil
+    }
+
+    private var status: VoiceCallStatus {
+        VoiceCallStatus(rawValue: (message.callSessionStatus ?? "").lowercased()) ?? .unknown
+    }
+
+    private var isVideo: Bool { (message.callFormFactor ?? "").lowercased() == "video" }
+
+    private var hasRecording: Bool {
+        if let url = message.mediaURL?.absoluteString {
+            return url.hasPrefix("http://") || url.hasPrefix("https://")
+        }
+        return false
+    }
+
+    private var icon: String {
+        if isVideo { return message.isFromUser ? "video.fill" : "video" }
+        return message.isFromUser ? "phone.arrow.up.right.fill" : "phone.arrow.down.left.fill"
+    }
+
+    private var titleText: String { isVideo ? "Video Call" : "Voice Call" }
+
+    private var statusText: String {
+        switch status {
+        case .ringing:                return "Ringing"
+        case .ongoing, .accepted:     return "Ongoing"
+        case .completed, .ended:
+            if let secs = message.audioDurationSeconds, secs > 0 {
+                return formatDuration(secs)
+            }
+            return "Ended"
+        case .noAnswer:               return "No answer"
+        case .rejected:               return "Rejected"
+        case .missed:                 return "Missed"
+        case .unknown:                return "Call"
+        }
+    }
+
+    private var statusColor: Color {
+        switch status {
+        case .ongoing, .accepted: return .green
+        case .rejected, .missed:  return .orange
+        default:                  return .white.opacity(0.7)
+        }
+    }
+
+    var body: some View {
+        Button { togglePlayback() } label: {
+            HStack(spacing: 12) {
+                Image(systemName: icon)
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 36, height: 36)
+                    .glassEffect(.regular.tint(AppTheme.pinkAccent.opacity(0.55)), in: .circle)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(titleText)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white)
+                    Text(statusText)
+                        .font(.caption)
+                        .foregroundStyle(statusColor)
+                }
+
+                if hasRecording {
+                    Spacer(minLength: 8)
+                    Image(systemName: playButtonIcon)
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.white)
+                        .frame(width: 28, height: 28)
+                        .glassEffect(.regular, in: .circle)
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .glassEffect(side == .user
+                         ? .regular.tint(AppTheme.pinkAccent.opacity(0.45))
+                         : .regular,
+                         in: .rect(cornerRadius: 18))
+        }
+        .buttonStyle(.plain)
+        .disabled(!hasRecording)
+        .fullScreenCover(isPresented: $showVideoPlayer) {
+            VideoCallPlayer(url: message.mediaURL)
+        }
+    }
+
+    private var playButtonIcon: String {
+        if isVideo { return "play.fill" }
+        return isPlayingThis ? "pause.fill" : "play.fill"
+    }
+
+    private func togglePlayback() {
+        guard hasRecording, let url = message.mediaURL else { return }
+        if isVideo {
+            // Voice-call recordings are .mp4; AudioPlayer (AVAudioPlayer)
+            // can't render the video track. Push the system video player
+            // instead so both audio and video play correctly.
+            showVideoPlayer = true
+        } else {
+            player.play(messageId: message.id, url: url)
+        }
+    }
+
+    private func formatDuration(_ seconds: Int) -> String {
+        let h = seconds / 3600
+        let m = (seconds % 3600) / 60
+        let s = seconds % 60
+        return h > 0
+            ? String(format: "%d:%02d:%02d", h, m, s)
+            : String(format: "%d:%02d", m, s)
+    }
+}
+
+private enum VoiceCallStatus: String {
+    case ringing
+    case ongoing
+    case accepted
+    case completed
+    case ended
+    case noAnswer = "no_answer"
+    case rejected
+    case missed
+    case unknown
+}
+
 // MARK: - Lightbox
 
 private struct ImageLightbox: View {
@@ -270,7 +410,7 @@ private struct ImageLightbox: View {
 
     var body: some View {
         ZStack {
-            CosmicBackground()
+            Color.black.ignoresSafeArea()
 
             if let url {
                 AsyncImage(url: url) { phase in
@@ -297,6 +437,48 @@ private struct ImageLightbox: View {
                         .font(.title2)
                 }
             }
+        }
+    }
+}
+
+// MARK: - Video-call playback
+
+/// Full-screen `AVPlayer` for video-call recordings. Presented from the
+/// voice-call bubble when `formFactor == "video"` since `AudioPlayer`
+/// (AVAudioPlayer) can't decode the video track in the .mp4 container.
+private struct VideoCallPlayer: View {
+    let url: URL?
+    @Environment(\.dismiss) private var dismiss
+    @State private var player: AVPlayer?
+
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+
+            if let player {
+                VideoPlayer(player: player)
+                    .ignoresSafeArea()
+            } else {
+                ProgressView().tint(.white).controlSize(.large)
+            }
+        }
+        .overlay(alignment: .topTrailing) {
+            Button { dismiss() } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.title)
+                    .foregroundStyle(.white)
+                    .padding(16)
+            }
+        }
+        .onAppear {
+            guard let url else { return }
+            let p = AVPlayer(url: url)
+            player = p
+            p.play()
+        }
+        .onDisappear {
+            player?.pause()
+            player = nil
         }
     }
 }

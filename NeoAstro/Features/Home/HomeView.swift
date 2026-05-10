@@ -1,67 +1,68 @@
 import SwiftUI
 
 struct HomeView: View {
+    /// Sheet payload for the chat-confirmation bottom sheet. Carries the
+    /// `isFromFreeAsk` flag so the resulting `CHAT_REQUESTED` emit can mirror
+    /// the RN payload exactly.
+    struct ChatConfirmationContext: Identifiable, Hashable {
+        let astrologer: AstrologerAPI
+        let isFromFreeAsk: Bool
+        var id: String { astrologer._id }
+    }
+
     @State private var vm = HomeViewModel()
     @State private var selectedAstrologer: AstrologerAPI?
-    @State private var chatConfirmation: AstrologerAPI?
+    @State private var chatConfirmation: ChatConfirmationContext?
     @State private var pendingChatAstrologer: AstrologerAPI?
     @State private var showConversations: Bool = false
     @State private var showFreeAsk: Bool = false
     @State private var showFreeChat: Bool = false
-    @Environment(HomeSearchCoordinator.self) private var searchCoordinator
     @Environment(RealtimeStore.self) private var realtime
-    @FocusState private var searchFocused: Bool
 
     var body: some View {
         NavigationStack {
             ZStack {
                 CosmicBackground()
 
-                GeometryReader { geo in
-                    let cardHeight = (174.0 / 360.0) * geo.size.width
-
-                    ScrollView {
-                        VStack(spacing: 14) {
-                            if let banner = realtime.astrologerOnlineBanner {
-                                astrologerOnlineBanner(banner)
-                                    .padding(.horizontal, 16)
-                                    .padding(.top, 4)
-                                    .transition(.move(edge: .top).combined(with: .opacity))
-                            }
-
-                            heroBanner
+                ScrollView {
+                    VStack(spacing: 14) {
+                        if let banner = realtime.astrologerOnlineBanner {
+                            astrologerOnlineBanner(banner)
                                 .padding(.horizontal, 16)
                                 .padding(.top, 4)
+                                .transition(.move(edge: .top).combined(with: .opacity))
+                        }
 
-                            freeActionsRow
+                        heroBanner
+                            .padding(.horizontal, 16)
+                            .padding(.top, 4)
+
+                        freeActionsRow
+                            .padding(.horizontal, 16)
+
+                        if vm.isLoading && vm.astrologers.isEmpty {
+                            ProgressView()
+                                .tint(.white)
+                                .padding(.top, 40)
+                        } else if let error = vm.errorMessage, vm.astrologers.isEmpty {
+                            errorView(error)
+                        } else if vm.astrologers.isEmpty {
+                            emptyView
+                        } else {
+                            ForEach(vm.astrologers) { astrologer in
+                                AstrologerCard(
+                                    astrologer: astrologer,
+                                    onTap: { selectedAstrologer = astrologer },
+                                    onChat: { chatConfirmation = ChatConfirmationContext(astrologer: astrologer, isFromFreeAsk: false) }
+                                )
                                 .padding(.horizontal, 16)
-
-                            if vm.isLoading && vm.astrologers.isEmpty {
-                                ProgressView()
-                                    .tint(.white)
-                                    .padding(.top, 40)
-                            } else if let error = vm.errorMessage, vm.astrologers.isEmpty {
-                                errorView(error)
-                            } else if vm.astrologers.isEmpty {
-                                emptyView
-                            } else {
-                                ForEach(vm.astrologers) { astrologer in
-                                    AstrologerCard(
-                                        astrologer: astrologer,
-                                        height: cardHeight,
-                                        onTap: { selectedAstrologer = astrologer },
-                                        onChat: { chatConfirmation = astrologer }
-                                    )
-                                    .padding(.horizontal, 16)
-                                }
                             }
                         }
-                        .padding(.bottom, 100)
                     }
-                    .scrollIndicators(.hidden)
-                    .scrollDismissesKeyboard(.interactively)
-                    .refreshable { await vm.refresh() }
+                    .padding(.bottom, 100)
                 }
+                .scrollIndicators(.hidden)
+                .refreshable { await vm.refresh() }
             }
             .navigationTitle("NeoAstro")
             .navigationBarTitleDisplayMode(.large)
@@ -75,8 +76,6 @@ struct HomeView: View {
                     }
                 }
             }
-            .searchable(text: $vm.searchText, prompt: "Search astrologers, skills…")
-            .searchFocused($searchFocused)
             .navigationDestination(item: $selectedAstrologer) { astrologer in
                 AstrologerProfileView(astrologer: astrologer)
             }
@@ -92,12 +91,12 @@ struct HomeView: View {
             .sheet(isPresented: $showFreeChat) {
                 FreeChatFlow(onClose: { showFreeChat = false }, onAssigned: handleFreeChatAssigned)
             }
-            .sheet(item: $chatConfirmation) { astrologer in
+            .sheet(item: $chatConfirmation) { context in
                 ChatConfirmationSheet(
-                    astrologer: astrologer,
+                    astrologer: context.astrologer,
                     onConfirm: {
                         chatConfirmation = nil
-                        startChat(with: astrologer)
+                        startChat(with: context)
                     },
                     onCancel: { chatConfirmation = nil }
                 )
@@ -105,9 +104,6 @@ struct HomeView: View {
                 .presentationDragIndicator(.visible)
             }
             .task { await vm.loadInitial() }
-            .onChange(of: searchCoordinator.requestFocusToken) { _, _ in
-                searchFocused = true
-            }
         }
     }
 
@@ -228,7 +224,7 @@ struct HomeView: View {
     private func handleFreeAskAstrologerPick(_ astroId: String) {
         showFreeAsk = false
         if let astrologer = vm.allAstrologers.first(where: { $0._id == astroId }) {
-            chatConfirmation = astrologer
+            chatConfirmation = ChatConfirmationContext(astrologer: astrologer, isFromFreeAsk: true)
         } else {
             AppLog.warn(.chat, "free ask pick · astrologer \(astroId) not in home list")
         }
@@ -247,14 +243,27 @@ struct HomeView: View {
         }
     }
 
-    /// Confirm-sheet → emit INITIATE_CHAT → push ChatView. The chat view
-    /// itself waits on `realtime.activeChat` to populate via CHAT_STARTED.
-    private func startChat(with astrologer: AstrologerAPI) {
-        AppLog.info(.chat, "VM · INITIATE_CHAT astroId=\(astrologer._id)")
+    /// Confirm-sheet → emit `CHAT_REQUESTED` → push ChatView. Mirrors
+    /// `handleConfirmChatProceed` in zupee-rn-astro: if the astrologer is
+    /// OFFLINE we bail without emitting (the sheet has already been closed
+    /// by the caller); otherwise we send the same `{astroId,
+    /// isClickedFromFreeAsk, isOffline}` payload. ChatView then waits on
+    /// `realtime.activeChat` to populate via CHAT_STARTED.
+    private func startChat(with context: ChatConfirmationContext) {
+        let astrologer = context.astrologer
+        if astrologer.status?.state == "OFFLINE" {
+            AppLog.warn(.chat, "VM · CHAT_REQUESTED skipped (astrologer offline) astroId=\(astrologer._id)")
+            return
+        }
+        AppLog.info(.chat, "VM · CHAT_REQUESTED astroId=\(astrologer._id) fromFreeAsk=\(context.isFromFreeAsk)")
         Task {
             await NeoAstroSocket.shared.emit(
-                .initiateChat,
-                payload: InitiateChatPayload(astroId: astrologer._id)
+                .chatRequested,
+                payload: ChatRequestedPayload(
+                    astroId: astrologer._id,
+                    isClickedFromFreeAsk: context.isFromFreeAsk,
+                    isOffline: false
+                )
             )
         }
         pendingChatAstrologer = astrologer
