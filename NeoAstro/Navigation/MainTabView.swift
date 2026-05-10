@@ -14,22 +14,8 @@ struct MainTabView: View {
     @State private var searchCoordinator = HomeSearchCoordinator()
     @Environment(DeepLinkRouter.self) private var deepLinks
 
-    private var routedSelection: Binding<AppTab> {
-        Binding(
-            get: { selection == .search ? .home : selection },
-            set: { newValue in
-                if newValue == .search {
-                    selection = .home
-                    searchCoordinator.requestFocus()
-                } else {
-                    selection = newValue
-                }
-            }
-        )
-    }
-
     var body: some View {
-        TabView(selection: routedSelection) {
+        TabView(selection: $selection) {
             Tab("Home", systemImage: "sparkles", value: AppTab.home) {
                 HomeView()
                     .environment(searchCoordinator)
@@ -48,8 +34,7 @@ struct MainTabView: View {
             }
 
             Tab(value: AppTab.search, role: .search) {
-                HomeView()
-                    .environment(searchCoordinator)
+                SearchView(onClose: { selection = .home })
             }
         }
         .tabBarMinimizeBehavior(.onScrollDown)

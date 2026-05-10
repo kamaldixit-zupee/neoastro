@@ -92,4 +92,39 @@ enum AstrologerService {
         ), as: AstrologerMetadataResponse.self)
         return result.metadata
     }
+
+    // MARK: - Recent searches
+
+    /// Astrologer ids the user has recently opened from a search.
+    static func recentSearches() async throws -> [String] {
+        AppLog.info(.search, "service · getRecentSearches")
+        let result = try await APIClient.shared.send(.init(
+            path: "/v1.0/user/getRecentSearches",
+            method: .GET
+        ), as: RecentSearchesResponse.self)
+        return result.astrologerIds ?? []
+    }
+
+    /// Push an astrologer to the top of the recent-search list.
+    static func addRecentSearch(astroId: String) async throws {
+        AppLog.info(.search, "service · addRecentSearch astroId=\(astroId)")
+        try await APIClient.shared.sendVoid(.init(
+            path: "/v1.0/user/addRecentSearch",
+            method: .POST,
+            body: AddRecentSearchBody(astroId: astroId)
+        ))
+    }
+
+    /// Pass `astroId` to remove a single entry, or omit to clear everything.
+    static func clearRecentSearches(astroId: String? = nil) async throws {
+        AppLog.info(.search, "service · clearRecentSearches astroId=\(astroId ?? "<all>")")
+        let body: ClearRecentSearchesBody = astroId == nil
+            ? ClearRecentSearchesBody(astroId: nil, clearAll: true)
+            : ClearRecentSearchesBody(astroId: astroId, clearAll: nil)
+        try await APIClient.shared.sendVoid(.init(
+            path: "/v1.0/user/clearRecentSearches",
+            method: .POST,
+            body: body
+        ))
+    }
 }
