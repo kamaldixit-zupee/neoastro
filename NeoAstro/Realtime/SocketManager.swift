@@ -111,6 +111,16 @@ actor NeoAstroSocket {
         manager = nil
     }
 
+    /// Marker payload used by `emit(_:)` for fire-and-forget events that
+    /// don't carry data (e.g. analytics signals).
+    struct EmptyPayload: Encodable {}
+
+    /// No-payload convenience.
+    func emit(_ event: SocketEvent) {
+        let none: EmptyPayload? = nil
+        emit(event, payload: none)
+    }
+
     /// Emit a typed payload via the `req` channel.
     func emit<P: Encodable>(_ event: SocketEvent, payload: P? = nil) {
         guard let socket, socket.status == .connected else {

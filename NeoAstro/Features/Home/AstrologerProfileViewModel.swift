@@ -15,6 +15,8 @@ final class AstrologerProfileViewModel {
     var reviews: [AstrologerReview] = []
     var totalReviews: Int = 0
     var averageRating: Double = 0
+    var popup: AstrologerPopupContent?
+    var metadata: AstrologerMetadata?
 
     var isLoadingProfile: Bool = false
     var isLoadingReviews: Bool = false
@@ -37,13 +39,31 @@ final class AstrologerProfileViewModel {
 
     // MARK: - Load
 
-    /// Fire profile + reviews in parallel. Either failing leaves the other
-    /// to populate; we don't show a hard failure since the list-payload
-    /// already gives the screen something to render.
+    /// Fire profile + reviews + popup + metadata in parallel. Any failing
+    /// leaves the others to populate; we don't show a hard failure since
+    /// the list-payload already gives the screen something to render.
     func load() async {
         async let p: () = loadProfile()
         async let r: () = loadReviews()
-        _ = await (p, r)
+        async let pop: () = loadPopup()
+        async let m: () = loadMetadata()
+        _ = await (p, r, pop, m)
+    }
+
+    private func loadPopup() async {
+        do {
+            popup = try await AstrologerService.popupDetails(astroId: astrologer._id)
+        } catch {
+            AppLog.warn(.home, "popup load failed: \(error.localizedDescription)")
+        }
+    }
+
+    private func loadMetadata() async {
+        do {
+            metadata = try await AstrologerService.metadata(astroId: astrologer._id)
+        } catch {
+            AppLog.warn(.home, "metadata load failed: \(error.localizedDescription)")
+        }
     }
 
     private func loadProfile() async {

@@ -36,6 +36,11 @@ final class ChatViewModel {
     var hasEndedChat: Bool = false
     var isUploadingMedia: Bool = false
 
+    /// Highest astrologer-message sequenceId we've already reported as seen.
+    /// Used to debounce `HUMAN_ANSWER_SEEN` so we only emit when the user
+    /// genuinely scrolls into a new high-water-mark message.
+    private var lastSeenSequenceId: Int = 0
+
     private weak var realtime: RealtimeStore?
     private var inboundDrainTask: Task<Void, Never>?
     private var typingDebounceTask: Task<Void, Never>?
@@ -257,6 +262,22 @@ final class ChatViewModel {
         messages[idx] = msg
         if !succeeded {
             errorMessage = "Couldn't send. Tap to retry."
+        }
+    }
+
+    /// Called from `ChatView` when an astrologer message scrolls into view.
+    /// Emits `HUMAN_ANSWER_SEEN` only when the message advances the
+    /// high-water mark — repeated visits to the same row are no-ops.
+    func messageBecameVisible(_ message: ChatMessage) {
+        guard !message.isFromUser, !message.isSystem else { return }
+        guard let seq = message.sequenceId, seq > lastSeenSequenceId else { return }
+        guard let realtime, let chat = realtime.activeChat else { return }
+        lastSeenSequenceId = seq
+        Task {
+            await NeoAstroSocket.shared.emit(
+                .humanAnswerSeen,
+                payload: HumanAnswerSeenPayload(chatId: chat.chatId, sequenceId: seq)
+            )
         }
     }
 

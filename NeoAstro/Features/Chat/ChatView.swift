@@ -5,6 +5,7 @@ struct ChatView: View {
     let astrologer: AstrologerAPI
 
     @Environment(RealtimeStore.self) private var realtime
+    @Environment(DeepLinkRouter.self) private var deepLinks
     @Environment(\.dismiss) private var dismiss
     @State private var vm: ChatViewModel
     @State private var recorder = AudioRecorder()
@@ -118,6 +119,15 @@ struct ChatView: View {
             Text("Ended")
                 .font(.caption)
                 .foregroundStyle(.white.opacity(0.55))
+        } else if realtime.astrologerRecording {
+            HStack(spacing: 6) {
+                Image(systemName: "waveform")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.red)
+                Text("Recording…")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.red)
+            }
         } else if vm.isAstroTyping {
             HStack(spacing: 6) {
                 Text("Typing")
@@ -149,6 +159,18 @@ struct ChatView: View {
                 .regular.tint(AppTheme.pinkAccent.opacity(0.4)),
                 in: .capsule
             )
+    }
+
+    /// Tap handler for the Recharge CTA inside a low-balance system bubble.
+    /// Reports the click to analytics via the existing socket event, then
+    /// hops to Wallet through the deep-link router so the same routing
+    /// logic that handles a notification tap kicks in.
+    private func handleRechargeFromChat() {
+        Task {
+            await NeoAstroSocket.shared.emit(.inChatRechargeCtaClicked)
+        }
+        deepLinks.intent = .wallet
+        dismiss()
     }
 
     // MARK: - Body states
@@ -201,9 +223,10 @@ struct ChatView: View {
             ScrollView {
                 LazyVStack(spacing: 10) {
                     ForEach(vm.messages) { msg in
-                        MessageBubble(message: msg)
+                        MessageBubble(message: msg, onRecharge: handleRechargeFromChat)
                             .id(msg.id)
                             .padding(.horizontal, 14)
+                            .onAppear { vm.messageBecameVisible(msg) }
                     }
                     if vm.isAstroTyping {
                         HStack {

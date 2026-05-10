@@ -12,8 +12,11 @@
 		0A93C96D47BE2F6AAA58CFD3 /* AstrologerProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA41FE8999AD50824AC96700 /* AstrologerProfileView.swift */; };
 		0AE15262449E5E9626DC7933 /* CashbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAD0558A4FA8E7702138D1F /* CashbackView.swift */; };
 		0CDA4E64CF1889345C7FC88F /* MessageBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = E74A0A675527CF83E9CE5A6C /* MessageBubble.swift */; };
+		0DFD90872DC827CAB1D0EB7A /* FreeAskFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A407804397F4E78503058B2D /* FreeAskFlow.swift */; };
 		0E5C9BE221E4E39B2FCF3956 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EA4EE9C63047A1D300A3280 /* AppTheme.swift */; };
 		10FFE0ABCC91D449DBAB1FC9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01852DE59635FB4153F2C357 /* AppDelegate.swift */; };
+		115A06F7821CD3BA02E497A3 /* ChatMediaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D3919954C3AAF02B81223A7 /* ChatMediaService.swift */; };
+		11887C184C35A1B3ADAA8918 /* DeepLinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298EEA4F7014CCDE600011BB /* DeepLinkRouter.swift */; };
 		16491549EFEAC55EE80015B6 /* NeoAstroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D631343EA1C7883023CBEE5 /* NeoAstroApp.swift */; };
 		16616AF1A571113044897B53 /* SocketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D91691CEE502F66ACBEDB2C /* SocketManager.swift */; };
 		1D1AF7A158E793FF9A74B5F7 /* SocketEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770D8A77CCE66541E036F2F6 /* SocketEvent.swift */; };
@@ -21,6 +24,7 @@
 		1F9F1DEC8B205BEFB9B61CB8 /* OnboardingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 143501EBA71F81F313B23656 /* OnboardingService.swift */; };
 		2570F087FD73B1729ABDAAD7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D0701E808401644343075689 /* Assets.xcassets */; };
 		2802A7AB68B56554498D1B98 /* AppLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CAF5B10B3FE3E30F5FF0AD0 /* AppLog.swift */; };
+		282C71D7738EB0DF1AE2E9F1 /* FreeAskWaitingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D302A99BFD2ABB5E4D6443A /* FreeAskWaitingView.swift */; };
 		283AC5527C900204D1FE00DC /* ConnectionEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883C9F37985D8C42A130F0C1 /* ConnectionEventHandler.swift */; };
 		315C0C87AFC4FE594026DEA3 /* HoroscopeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9125E9782918A532AAC4B13 /* HoroscopeViewModel.swift */; };
 		31811F0528B99C81293F9FA5 /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96D7CA403397823D55361DF6 /* EditProfileView.swift */; };
@@ -42,17 +46,26 @@
 		5AF472EBDA7899214C7A7F86 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D0D8BE5A4E0CB3B3173F19 /* MainTabView.swift */; };
 		5C0AB1088E6B792CCC0093EB /* ConfigAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE890063715CE118ACCAB6FF /* ConfigAPI.swift */; };
 		5C50F816163F1A8EAA4FD982 /* NotificationCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64F455DD0BB5131FA5B796CD /* NotificationCenterView.swift */; };
+		5D56037D93FE0EFB144851EC /* FreeChatFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224F33A4B6FF221805D29B66 /* FreeChatFlow.swift */; };
 		5D6063A948701AFCAEFA24EE /* PresenceEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C252D5BB5EEFD16E0A8EFE75 /* PresenceEventHandler.swift */; };
 		5F8207985467FE5118F49722 /* PanchangAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9299E2C699C9F2780797ED56 /* PanchangAPI.swift */; };
+		6758C40FD69C160239F2CD33 /* FreeAskComposeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B18865239C723892B22428E /* FreeAskComposeView.swift */; };
+		6B33CB5EB2F4AEABB495457E /* ChatHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 903E4B16497F3ACA972C733C /* ChatHistoryView.swift */; };
+		6B46B8633FEFD728D667AA86 /* FreeAskAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FB40B1E2208D851BA98E26A /* FreeAskAPI.swift */; };
 		6CE1CF3F10219E056BC0A303 /* APIEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00640AA8A08A2BC57352CEDA /* APIEnvironment.swift */; };
 		6D662602F2C5B73F8E0B24CF /* ChatConfirmationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86094F0AFB9D94218755C1C /* ChatConfirmationSheet.swift */; };
 		6F057DFC2A2F55CB8D9D2648 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6BBE6E7D8AA0D2AAC357E1E /* ChatViewModel.swift */; };
+		75B3B5443B935C4E71D8E5FB /* ConversationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29EB59024A05925AF8B66FB4 /* ConversationsViewModel.swift */; };
 		797DAFFC76DCC6341720EE8D /* ConfigService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B663922D76D249DE66A3FD91 /* ConfigService.swift */; };
 		80912B7DE8D4D95B663C5FD8 /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC8A1752185026572F27F5F8 /* MoreView.swift */; };
+		86C82E939ADFB53927B89990 /* AstrologerProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DAB7351F028C8416694E5ED /* AstrologerProfileViewModel.swift */; };
+		8BFD573D9BB675BB9316377B /* ConversationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A01D6BF711131D8F725718 /* ConversationsView.swift */; };
 		8F8C546D501D12F0A8114111 /* SocketEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6099FC8AEF13FE80D103591B /* SocketEnvelope.swift */; };
 		93D23405D9DCCA48B9CE4408 /* TDSView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFD242B027D44466FD562CDD /* TDSView.swift */; };
 		93D91D66F6E715B0B82A43C3 /* DeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6D49462196723AEDED8F86 /* DeviceInfo.swift */; };
 		97ACD1FDE863FD493A7A9B29 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312CB1FED6F640B14427F862 /* HomeView.swift */; };
+		9B061C2B4747F02424A58C30 /* AstrologerStoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DAE5811023E91D38C6E52D2 /* AstrologerStoriesView.swift */; };
+		9B3A5074B6C08419BCED52F8 /* TransactionFilterSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6852C7EE22EFF031A3D1ED8 /* TransactionFilterSheet.swift */; };
 		9B961C36A124EDF6B6E1CBEE /* ChatEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C479D381990E3F75123D20A /* ChatEventHandler.swift */; };
 		9CEF5E19C3947452A6D6ECD7 /* AstrologerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66707C7FA12C4C48A4D790D /* AstrologerService.swift */; };
 		9F09ECDAE88EB141BA2B8E1F /* UserSettingsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514EA79C37A5CE6C40EB56DB /* UserSettingsAPI.swift */; };
@@ -62,16 +75,21 @@
 		A6A9C1E9E09C362F0D8CFBF6 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8459254627064F9F1FB8C8E1 /* AccountView.swift */; };
 		A6B59CDC1022CA18CDA15D67 /* KeyboardDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9364DE3E0E3A64D704B0DD36 /* KeyboardDismiss.swift */; };
 		A8076160BEF9E15FCDEE9A6E /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472AAE9CC44C97590F768910 /* AccountViewModel.swift */; };
+		A83E40697802DD42A76EA992 /* FreeAskService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FA86C4C09CDAE7CC0AF785 /* FreeAskService.swift */; };
 		A9BAFCB126BBF08EDC438908 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9949E14C997A17FFE729C63B /* SplashView.swift */; };
+		ACA9B432EB2911AF1447607C /* SelectFreeQuestionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA21B6EFF95C7FFC18A7F9B7 /* SelectFreeQuestionView.swift */; };
 		B27F35F2DFC7C84865BC7CBE /* RealtimeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3ACD7043D9269B76489A8FC /* RealtimeStore.swift */; };
 		B33948658D3ED25E79637486 /* PanchangView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEF5D0335CFDF6E15272D545 /* PanchangView.swift */; };
 		B458C5EB607167323EE9657D /* HoroscopeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB88E544C98924C3B0147FCD /* HoroscopeView.swift */; };
 		B59CC258AE7B64CE9695471B /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2B634330C2DD800D84EAF /* APIClient.swift */; };
 		B62C1673242A333FB6178F76 /* LanguageSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6098958998522CC4A4EE0366 /* LanguageSelectionView.swift */; };
+		B7180D894F4C10A7450D2930 /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 388DB20060C1D3EB85B96F61 /* AudioRecorder.swift */; };
+		B855D2807973559AED527F77 /* ChatHistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F7DEF415DA53270E23FCC0C /* ChatHistoryService.swift */; };
 		B9780B309F7B4AEDE0DAD1F3 /* PanchangService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBCC5D504C7F92A9FE653A19 /* PanchangService.swift */; };
 		B98155195151F7C7917AAB29 /* ProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76CD348A8D3EDAC8EAFC554D /* ProfileService.swift */; };
 		BEB725D1D41D89FB8CBB3915 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211E49A4EC2C1AED27684B2F /* OnboardingViewModel.swift */; };
 		C0AC7FA78597E7F2AA2A5F7D /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 991737564742367E2C7B2B85 /* APIError.swift */; };
+		C1876693ED1D250400E8F2CF /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F46BBA62299CD5E9C8FDFC /* AudioPlayer.swift */; };
 		C3C73AEB2A573B1AA3C72E3A /* NudgeBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B00B99EB5CB8D190A686528 /* NudgeBanner.swift */; };
 		C5E8E1AF2178455880823C7F /* IncomingCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC951E9A23BE216E85123D88 /* IncomingCallView.swift */; };
 		CB990A4E9B51F1AD17C1D297 /* AstrologerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2891DED3886D35A9A945492 /* AstrologerAPI.swift */; };
@@ -83,13 +101,19 @@
 		DB17DA68B6ECC4A412CDCAE2 /* OTPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2250FB76A11DBEBD18C297BB /* OTPView.swift */; };
 		DC9850D42BDEBA8FA3B1EE0A /* NotificationEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C27C0790F0C5F7471DEB1C /* NotificationEventHandler.swift */; };
 		E006A45F6F40E613E4267717 /* RealtimeEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016846D9E40F6B6907BE6E72 /* RealtimeEvents.swift */; };
+		E46E1E3B8CFCA86A3A89E597 /* FreeChatWaitingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F272BB70359B4751137417FB /* FreeChatWaitingView.swift */; };
 		E6472346958447E4F1F99BE0 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8FAEF2B2D67ADF4DB1D388 /* NotificationService.swift */; };
 		E843AC0ECC6A2614584ACE83 /* WalletViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE871367C110D86D9053B89 /* WalletViewModel.swift */; };
 		E8F1F632F2CF44F8FB554E65 /* TransactionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524D8CC3A0DAF6A9FD459AF2 /* TransactionDetailView.swift */; };
+		EBA3E6FE07160612D8E3A6C1 /* VoiceRecorderOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5276BF2CAFF84491BA6DB726 /* VoiceRecorderOverlay.swift */; };
+		EC0C7563E24DD2BA2F7D12F9 /* ChatHistoryAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DD9D2C4F32B25A0E8E72597 /* ChatHistoryAPI.swift */; };
 		ED631D4DBBF3592CD7C183B5 /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 018ABC66E12439FD928A2857 /* SocketIO */; };
 		EFA8CD3035A387B46F6EE294 /* SearchOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643683FF0BC1EB7709CEC01A /* SearchOverlayView.swift */; };
+		F20076156799D7D5BDB62BC6 /* FreeAskAnswersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DB679E6368461837F8D50FF /* FreeAskAnswersView.swift */; };
 		F3F13C76B3E9DD9705E1D436 /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254C5C3EABCBEC3BCFAC8433 /* AvatarView.swift */; };
 		F8A006A5123C8E865E60652B /* HexColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE401B6EA5EE18EEE82E4AE7 /* HexColor.swift */; };
+		F95E86535EDCC0ED5FBBB972 /* FreeAskEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9145E413E87D64993C234D /* FreeAskEventHandler.swift */; };
+		FDA3B91DFCE9A694041F0A6C /* InvoicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB3AC57E720870AEF6AE792B /* InvoicesView.swift */; };
 		FEEE29CDAD9F503CD253D8A5 /* CallEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10CF31BE9D33FF0CDE2E523E /* CallEventHandler.swift */; };
 /* End PBXBuildFile section */
 
@@ -98,6 +122,7 @@
 		016846D9E40F6B6907BE6E72 /* RealtimeEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeEvents.swift; sourceTree = "<group>"; };
 		01852DE59635FB4153F2C357 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0ACB1135C151BE7A30E95DCD /* NeoAstro.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = NeoAstro.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0FB40B1E2208D851BA98E26A /* FreeAskAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeAskAPI.swift; sourceTree = "<group>"; };
 		10CF31BE9D33FF0CDE2E523E /* CallEventHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallEventHandler.swift; sourceTree = "<group>"; };
 		143501EBA71F81F313B23656 /* OnboardingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingService.swift; sourceTree = "<group>"; };
 		1462AAF8D8FDD55D95DBF5D7 /* UserSettingsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsService.swift; sourceTree = "<group>"; };
@@ -105,14 +130,21 @@
 		1D0E9AC644BD099B1E163CCF /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		1E7FBDCF0805A7B583BECCC1 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		211E49A4EC2C1AED27684B2F /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
+		224F33A4B6FF221805D29B66 /* FreeChatFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeChatFlow.swift; sourceTree = "<group>"; };
 		2250FB76A11DBEBD18C297BB /* OTPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPView.swift; sourceTree = "<group>"; };
 		254C5C3EABCBEC3BCFAC8433 /* AvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarView.swift; sourceTree = "<group>"; };
+		298EEA4F7014CCDE600011BB /* DeepLinkRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkRouter.swift; sourceTree = "<group>"; };
+		29EB59024A05925AF8B66FB4 /* ConversationsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsViewModel.swift; sourceTree = "<group>"; };
+		2B18865239C723892B22428E /* FreeAskComposeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeAskComposeView.swift; sourceTree = "<group>"; };
 		2CB2B634330C2DD800D84EAF /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		2CE871367C110D86D9053B89 /* WalletViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletViewModel.swift; sourceTree = "<group>"; };
 		2D631343EA1C7883023CBEE5 /* NeoAstroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeoAstroApp.swift; sourceTree = "<group>"; };
+		2F7DEF415DA53270E23FCC0C /* ChatHistoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatHistoryService.swift; sourceTree = "<group>"; };
 		312CB1FED6F640B14427F862 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		32E72AE215C4904BED9697C7 /* JuspayPaymentSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JuspayPaymentSheet.swift; sourceTree = "<group>"; };
+		388DB20060C1D3EB85B96F61 /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
 		3CAF5B10B3FE3E30F5FF0AD0 /* AppLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLog.swift; sourceTree = "<group>"; };
+		3D302A99BFD2ABB5E4D6443A /* FreeAskWaitingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeAskWaitingView.swift; sourceTree = "<group>"; };
 		3EEC368F2F7C0D77BFFC4203 /* HoroscopeAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoroscopeAPI.swift; sourceTree = "<group>"; };
 		42114DA2F30D784C549B3483 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		472AAE9CC44C97590F768910 /* AccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewModel.swift; sourceTree = "<group>"; };
@@ -121,22 +153,28 @@
 		514EA79C37A5CE6C40EB56DB /* UserSettingsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsAPI.swift; sourceTree = "<group>"; };
 		522751E683EB689CF6118520 /* PanchangViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanchangViewModel.swift; sourceTree = "<group>"; };
 		524D8CC3A0DAF6A9FD459AF2 /* TransactionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailView.swift; sourceTree = "<group>"; };
+		5276BF2CAFF84491BA6DB726 /* VoiceRecorderOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceRecorderOverlay.swift; sourceTree = "<group>"; };
 		52C9F73FF91B8402D09E3D46 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		5342A11B1F0E04014CE17270 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		5DAE5811023E91D38C6E52D2 /* AstrologerStoriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AstrologerStoriesView.swift; sourceTree = "<group>"; };
 		6098958998522CC4A4EE0366 /* LanguageSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageSelectionView.swift; sourceTree = "<group>"; };
 		6099FC8AEF13FE80D103591B /* SocketEnvelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketEnvelope.swift; sourceTree = "<group>"; };
 		643683FF0BC1EB7709CEC01A /* SearchOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchOverlayView.swift; sourceTree = "<group>"; };
 		64F455DD0BB5131FA5B796CD /* NotificationCenterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCenterView.swift; sourceTree = "<group>"; };
 		6AB3ED7057402253FB40D6AC /* AuthAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPI.swift; sourceTree = "<group>"; };
 		6B00B99EB5CB8D190A686528 /* NudgeBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NudgeBanner.swift; sourceTree = "<group>"; };
+		6DD9D2C4F32B25A0E8E72597 /* ChatHistoryAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatHistoryAPI.swift; sourceTree = "<group>"; };
 		70D0D8BE5A4E0CB3B3173F19 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		767141686828E5C0E4E21646 /* WalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
 		76CD348A8D3EDAC8EAFC554D /* ProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
 		770D8A77CCE66541E036F2F6 /* SocketEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketEvent.swift; sourceTree = "<group>"; };
+		7DAB7351F028C8416694E5ED /* AstrologerProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AstrologerProfileViewModel.swift; sourceTree = "<group>"; };
 		822898FF3034AD910EF5FB4D /* WalletAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletAPI.swift; sourceTree = "<group>"; };
 		8459254627064F9F1FB8C8E1 /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
 		883C9F37985D8C42A130F0C1 /* ConnectionEventHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionEventHandler.swift; sourceTree = "<group>"; };
 		8952A4A8344D30F4FC6D096E /* ChatInputBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInputBar.swift; sourceTree = "<group>"; };
+		8DB679E6368461837F8D50FF /* FreeAskAnswersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeAskAnswersView.swift; sourceTree = "<group>"; };
+		903E4B16497F3ACA972C733C /* ChatHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatHistoryView.swift; sourceTree = "<group>"; };
 		9227B79C182340D824E7B2B9 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		9299E2C699C9F2780797ED56 /* PanchangAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanchangAPI.swift; sourceTree = "<group>"; };
 		9364DE3E0E3A64D704B0DD36 /* KeyboardDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardDismiss.swift; sourceTree = "<group>"; };
@@ -144,8 +182,11 @@
 		991737564742367E2C7B2B85 /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
 		9949E14C997A17FFE729C63B /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		9C479D381990E3F75123D20A /* ChatEventHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEventHandler.swift; sourceTree = "<group>"; };
+		9D3919954C3AAF02B81223A7 /* ChatMediaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMediaService.swift; sourceTree = "<group>"; };
 		9D91691CEE502F66ACBEDB2C /* SocketManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketManager.swift; sourceTree = "<group>"; };
 		9EA4EE9C63047A1D300A3280 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		A407804397F4E78503058B2D /* FreeAskFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeAskFlow.swift; sourceTree = "<group>"; };
+		A6852C7EE22EFF031A3D1ED8 /* TransactionFilterSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionFilterSheet.swift; sourceTree = "<group>"; };
 		A6DFA402D8E1969401B74776 /* AstrologerCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AstrologerCard.swift; sourceTree = "<group>"; };
 		A7C24B4546951FD8931B25A2 /* TokenStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenStore.swift; sourceTree = "<group>"; };
 		AB88E544C98924C3B0147FCD /* HoroscopeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoroscopeView.swift; sourceTree = "<group>"; };
@@ -155,7 +196,9 @@
 		B86094F0AFB9D94218755C1C /* ChatConfirmationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConfirmationSheet.swift; sourceTree = "<group>"; };
 		B9125E9782918A532AAC4B13 /* HoroscopeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoroscopeViewModel.swift; sourceTree = "<group>"; };
 		B95147230F2CAC1D20433A9E /* ProfileAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileAPI.swift; sourceTree = "<group>"; };
+		BB3AC57E720870AEF6AE792B /* InvoicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoicesView.swift; sourceTree = "<group>"; };
 		BDB60BDDAF7CB4481872C857 /* HoroscopeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoroscopeService.swift; sourceTree = "<group>"; };
+		BE9145E413E87D64993C234D /* FreeAskEventHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeAskEventHandler.swift; sourceTree = "<group>"; };
 		BF017F0A66269715EBA9131B /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		C252D5BB5EEFD16E0A8EFE75 /* PresenceEventHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresenceEventHandler.swift; sourceTree = "<group>"; };
 		C2891DED3886D35A9A945492 /* AstrologerAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AstrologerAPI.swift; sourceTree = "<group>"; };
@@ -166,6 +209,8 @@
 		CF28ECFA6FEE6D439DD36F7F /* WalletService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletService.swift; sourceTree = "<group>"; };
 		D0701E808401644343075689 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D6BBE6E7D8AA0D2AAC357E1E /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
+		D7A01D6BF711131D8F725718 /* ConversationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsView.swift; sourceTree = "<group>"; };
+		D8FA86C4C09CDAE7CC0AF785 /* FreeAskService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeAskService.swift; sourceTree = "<group>"; };
 		DB8FAEF2B2D67ADF4DB1D388 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		DE890063715CE118ACCAB6FF /* ConfigAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigAPI.swift; sourceTree = "<group>"; };
 		DFD242B027D44466FD562CDD /* TDSView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TDSView.swift; sourceTree = "<group>"; };
@@ -176,7 +221,10 @@
 		EE401B6EA5EE18EEE82E4AE7 /* HexColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexColor.swift; sourceTree = "<group>"; };
 		EE6D49462196723AEDED8F86 /* DeviceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfo.swift; sourceTree = "<group>"; };
 		EEF5D0335CFDF6E15272D545 /* PanchangView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanchangView.swift; sourceTree = "<group>"; };
+		F272BB70359B4751137417FB /* FreeChatWaitingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeChatWaitingView.swift; sourceTree = "<group>"; };
 		F3ACD7043D9269B76489A8FC /* RealtimeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeStore.swift; sourceTree = "<group>"; };
+		F9F46BBA62299CD5E9C8FDFC /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
+		FA21B6EFF95C7FFC18A7F9B7 /* SelectFreeQuestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectFreeQuestionView.swift; sourceTree = "<group>"; };
 		FC206935964BB5C37D7A69CA /* NotificationAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationAPI.swift; sourceTree = "<group>"; };
 		FC8A1752185026572F27F5F8 /* MoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -201,6 +249,16 @@
 			path = Calls;
 			sourceTree = "<group>";
 		};
+		0B0D2CBFBD9590008BB89422 /* Conversations */ = {
+			isa = PBXGroup;
+			children = (
+				903E4B16497F3ACA972C733C /* ChatHistoryView.swift */,
+				D7A01D6BF711131D8F725718 /* ConversationsView.swift */,
+				29EB59024A05925AF8B66FB4 /* ConversationsViewModel.swift */,
+			);
+			path = Conversations;
+			sourceTree = "<group>";
+		};
 		1F0F17EF8173B686C34B53FE /* Notifications */ = {
 			isa = PBXGroup;
 			children = (
@@ -215,7 +273,10 @@
 			children = (
 				C66707C7FA12C4C48A4D790D /* AstrologerService.swift */,
 				BF017F0A66269715EBA9131B /* AuthService.swift */,
+				2F7DEF415DA53270E23FCC0C /* ChatHistoryService.swift */,
+				9D3919954C3AAF02B81223A7 /* ChatMediaService.swift */,
 				B663922D76D249DE66A3FD91 /* ConfigService.swift */,
+				D8FA86C4C09CDAE7CC0AF785 /* FreeAskService.swift */,
 				BDB60BDDAF7CB4481872C857 /* HoroscopeService.swift */,
 				DB8FAEF2B2D67ADF4DB1D388 /* NotificationService.swift */,
 				143501EBA71F81F313B23656 /* OnboardingService.swift */,
@@ -246,6 +307,7 @@
 				6099FC8AEF13FE80D103591B /* SocketEnvelope.swift */,
 				770D8A77CCE66541E036F2F6 /* SocketEvent.swift */,
 				9D91691CEE502F66ACBEDB2C /* SocketManager.swift */,
+				D90B47060A6905635B9380A3 /* Audio */,
 				F44B9E43287D1DADF3AEF255 /* handlers */,
 				6CBEE9D754880333DB5362D6 /* Models */,
 			);
@@ -308,7 +370,9 @@
 			children = (
 				C2891DED3886D35A9A945492 /* AstrologerAPI.swift */,
 				6AB3ED7057402253FB40D6AC /* AuthAPI.swift */,
+				6DD9D2C4F32B25A0E8E72597 /* ChatHistoryAPI.swift */,
 				DE890063715CE118ACCAB6FF /* ConfigAPI.swift */,
+				0FB40B1E2208D851BA98E26A /* FreeAskAPI.swift */,
 				3EEC368F2F7C0D77BFFC4203 /* HoroscopeAPI.swift */,
 				FC206935964BB5C37D7A69CA /* NotificationAPI.swift */,
 				9299E2C699C9F2780797ED56 /* PanchangAPI.swift */,
@@ -342,6 +406,9 @@
 				8F2DA8DA0C078D95156B3611 /* Auth */,
 				0219568C279D8DD249329600 /* Calls */,
 				F486F39F446F33731E4E7D56 /* Chat */,
+				0B0D2CBFBD9590008BB89422 /* Conversations */,
+				B3AC5578617F451D17894EBB /* FreeAsk */,
+				C5A13987DBB016CB1BC91C35 /* FreeChat */,
 				E53F4372F9DFEBB73B971BDE /* Home */,
 				B738F6FCEAEFB1B582717414 /* Horoscope */,
 				E8F25AE7BB981E0046E8B73F /* More */,
@@ -355,6 +422,18 @@
 			path = Features;
 			sourceTree = "<group>";
 		};
+		B3AC5578617F451D17894EBB /* FreeAsk */ = {
+			isa = PBXGroup;
+			children = (
+				8DB679E6368461837F8D50FF /* FreeAskAnswersView.swift */,
+				2B18865239C723892B22428E /* FreeAskComposeView.swift */,
+				A407804397F4E78503058B2D /* FreeAskFlow.swift */,
+				3D302A99BFD2ABB5E4D6443A /* FreeAskWaitingView.swift */,
+				FA21B6EFF95C7FFC18A7F9B7 /* SelectFreeQuestionView.swift */,
+			);
+			path = FreeAsk;
+			sourceTree = "<group>";
+		};
 		B738F6FCEAEFB1B582717414 /* Horoscope */ = {
 			isa = PBXGroup;
 			children = (
@@ -364,13 +443,24 @@
 			path = Horoscope;
 			sourceTree = "<group>";
 		};
+		C5A13987DBB016CB1BC91C35 /* FreeChat */ = {
+			isa = PBXGroup;
+			children = (
+				224F33A4B6FF221805D29B66 /* FreeChatFlow.swift */,
+				F272BB70359B4751137417FB /* FreeChatWaitingView.swift */,
+			);
+			path = FreeChat;
+			sourceTree = "<group>";
+		};
 		CAED23D520680FBF030F2F5B /* Wallet */ = {
 			isa = PBXGroup;
 			children = (
 				AFAD0558A4FA8E7702138D1F /* CashbackView.swift */,
+				BB3AC57E720870AEF6AE792B /* InvoicesView.swift */,
 				32E72AE215C4904BED9697C7 /* JuspayPaymentSheet.swift */,
 				DFD242B027D44466FD562CDD /* TDSView.swift */,
 				524D8CC3A0DAF6A9FD459AF2 /* TransactionDetailView.swift */,
+				A6852C7EE22EFF031A3D1ED8 /* TransactionFilterSheet.swift */,
 				767141686828E5C0E4E21646 /* WalletView.swift */,
 				2CE871367C110D86D9053B89 /* WalletViewModel.swift */,
 			);
@@ -383,6 +473,7 @@
 				4DB0BA2E008FA6FA836E955E /* AppConfigStore.swift */,
 				01852DE59635FB4153F2C357 /* AppDelegate.swift */,
 				9EA4EE9C63047A1D300A3280 /* AppTheme.swift */,
+				298EEA4F7014CCDE600011BB /* DeepLinkRouter.swift */,
 				2D631343EA1C7883023CBEE5 /* NeoAstroApp.swift */,
 			);
 			path = App;
@@ -400,6 +491,15 @@
 				AED8BE5F21F6674D170B0BE2 /* ZupeeEnvelope.swift */,
 			);
 			path = Networking;
+			sourceTree = "<group>";
+		};
+		D90B47060A6905635B9380A3 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				F9F46BBA62299CD5E9C8FDFC /* AudioPlayer.swift */,
+				388DB20060C1D3EB85B96F61 /* AudioRecorder.swift */,
+			);
+			path = Audio;
 			sourceTree = "<group>";
 		};
 		D910B131A8C69C2F3DDAC128 /* Navigation */ = {
@@ -434,6 +534,8 @@
 			children = (
 				A6DFA402D8E1969401B74776 /* AstrologerCard.swift */,
 				CA41FE8999AD50824AC96700 /* AstrologerProfileView.swift */,
+				7DAB7351F028C8416694E5ED /* AstrologerProfileViewModel.swift */,
+				5DAE5811023E91D38C6E52D2 /* AstrologerStoriesView.swift */,
 				B86094F0AFB9D94218755C1C /* ChatConfirmationSheet.swift */,
 				312CB1FED6F640B14427F862 /* HomeView.swift */,
 				1D0E9AC644BD099B1E163CCF /* HomeViewModel.swift */,
@@ -464,6 +566,7 @@
 				10CF31BE9D33FF0CDE2E523E /* CallEventHandler.swift */,
 				9C479D381990E3F75123D20A /* ChatEventHandler.swift */,
 				883C9F37985D8C42A130F0C1 /* ConnectionEventHandler.swift */,
+				BE9145E413E87D64993C234D /* FreeAskEventHandler.swift */,
 				C4C27C0790F0C5F7471DEB1C /* NotificationEventHandler.swift */,
 				C252D5BB5EEFD16E0A8EFE75 /* PresenceEventHandler.swift */,
 			);
@@ -477,6 +580,7 @@
 				52C9F73FF91B8402D09E3D46 /* ChatView.swift */,
 				D6BBE6E7D8AA0D2AAC357E1E /* ChatViewModel.swift */,
 				E74A0A675527CF83E9CE5A6C /* MessageBubble.swift */,
+				5276BF2CAFF84491BA6DB726 /* VoiceRecorderOverlay.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -588,7 +692,11 @@
 				CB990A4E9B51F1AD17C1D297 /* AstrologerAPI.swift in Sources */,
 				D2438D429280BC2F261B92DE /* AstrologerCard.swift in Sources */,
 				0A93C96D47BE2F6AAA58CFD3 /* AstrologerProfileView.swift in Sources */,
+				86C82E939ADFB53927B89990 /* AstrologerProfileViewModel.swift in Sources */,
 				9CEF5E19C3947452A6D6ECD7 /* AstrologerService.swift in Sources */,
+				9B061C2B4747F02424A58C30 /* AstrologerStoriesView.swift in Sources */,
+				C1876693ED1D250400E8F2CF /* AudioPlayer.swift in Sources */,
+				B7180D894F4C10A7450D2930 /* AudioRecorder.swift in Sources */,
 				569DE6A336E0DEAC267F8D09 /* AuthAPI.swift in Sources */,
 				49E0C3766B84AA8969B1CA47 /* AuthService.swift in Sources */,
 				05273558B8F01B5C88992840 /* AuthViewModel.swift in Sources */,
@@ -597,15 +705,31 @@
 				0AE15262449E5E9626DC7933 /* CashbackView.swift in Sources */,
 				6D662602F2C5B73F8E0B24CF /* ChatConfirmationSheet.swift in Sources */,
 				9B961C36A124EDF6B6E1CBEE /* ChatEventHandler.swift in Sources */,
+				EC0C7563E24DD2BA2F7D12F9 /* ChatHistoryAPI.swift in Sources */,
+				B855D2807973559AED527F77 /* ChatHistoryService.swift in Sources */,
+				6B33CB5EB2F4AEABB495457E /* ChatHistoryView.swift in Sources */,
 				CFF5279B7C033A7C969F3A31 /* ChatInputBar.swift in Sources */,
+				115A06F7821CD3BA02E497A3 /* ChatMediaService.swift in Sources */,
 				A34F2C81F79C9E508A8399C7 /* ChatView.swift in Sources */,
 				6F057DFC2A2F55CB8D9D2648 /* ChatViewModel.swift in Sources */,
 				5C0AB1088E6B792CCC0093EB /* ConfigAPI.swift in Sources */,
 				797DAFFC76DCC6341720EE8D /* ConfigService.swift in Sources */,
 				283AC5527C900204D1FE00DC /* ConnectionEventHandler.swift in Sources */,
+				8BFD573D9BB675BB9316377B /* ConversationsView.swift in Sources */,
+				75B3B5443B935C4E71D8E5FB /* ConversationsViewModel.swift in Sources */,
+				11887C184C35A1B3ADAA8918 /* DeepLinkRouter.swift in Sources */,
 				93D91D66F6E715B0B82A43C3 /* DeviceInfo.swift in Sources */,
 				31811F0528B99C81293F9FA5 /* EditProfileView.swift in Sources */,
 				59C8E53EBDC74FE5E9FE79E9 /* EventValidation.swift in Sources */,
+				6B46B8633FEFD728D667AA86 /* FreeAskAPI.swift in Sources */,
+				F20076156799D7D5BDB62BC6 /* FreeAskAnswersView.swift in Sources */,
+				6758C40FD69C160239F2CD33 /* FreeAskComposeView.swift in Sources */,
+				F95E86535EDCC0ED5FBBB972 /* FreeAskEventHandler.swift in Sources */,
+				0DFD90872DC827CAB1D0EB7A /* FreeAskFlow.swift in Sources */,
+				A83E40697802DD42A76EA992 /* FreeAskService.swift in Sources */,
+				282C71D7738EB0DF1AE2E9F1 /* FreeAskWaitingView.swift in Sources */,
+				5D56037D93FE0EFB144851EC /* FreeChatFlow.swift in Sources */,
+				E46E1E3B8CFCA86A3A89E597 /* FreeChatWaitingView.swift in Sources */,
 				F8A006A5123C8E865E60652B /* HexColor.swift in Sources */,
 				97ACD1FDE863FD493A7A9B29 /* HomeView.swift in Sources */,
 				09300E78C76A6C135329C5BC /* HomeViewModel.swift in Sources */,
@@ -614,6 +738,7 @@
 				B458C5EB607167323EE9657D /* HoroscopeView.swift in Sources */,
 				315C0C87AFC4FE594026DEA3 /* HoroscopeViewModel.swift in Sources */,
 				C5E8E1AF2178455880823C7F /* IncomingCallView.swift in Sources */,
+				FDA3B91DFCE9A694041F0A6C /* InvoicesView.swift in Sources */,
 				3C848AD2FE608F48C50A2EC9 /* JuspayPaymentSheet.swift in Sources */,
 				A6B59CDC1022CA18CDA15D67 /* KeyboardDismiss.swift in Sources */,
 				B62C1673242A333FB6178F76 /* LanguageSelectionView.swift in Sources */,
@@ -644,6 +769,7 @@
 				4D59C6DA67546CBB7123F51C /* ReconnectionPolicy.swift in Sources */,
 				CF5D22E6ED6512C30F4B7E68 /* RootView.swift in Sources */,
 				EFA8CD3035A387B46F6EE294 /* SearchOverlayView.swift in Sources */,
+				ACA9B432EB2911AF1447607C /* SelectFreeQuestionView.swift in Sources */,
 				8F8C546D501D12F0A8114111 /* SocketEnvelope.swift in Sources */,
 				1D1AF7A158E793FF9A74B5F7 /* SocketEvent.swift in Sources */,
 				16616AF1A571113044897B53 /* SocketManager.swift in Sources */,
@@ -651,8 +777,10 @@
 				93D23405D9DCCA48B9CE4408 /* TDSView.swift in Sources */,
 				9FB92138BDA1D3FEB6F90666 /* TokenStore.swift in Sources */,
 				E8F1F632F2CF44F8FB554E65 /* TransactionDetailView.swift in Sources */,
+				9B3A5074B6C08419BCED52F8 /* TransactionFilterSheet.swift in Sources */,
 				9F09ECDAE88EB141BA2B8E1F /* UserSettingsAPI.swift in Sources */,
 				1F45E8FE7CC19CDB5556B0D0 /* UserSettingsService.swift in Sources */,
+				EBA3E6FE07160612D8E3A6C1 /* VoiceRecorderOverlay.swift in Sources */,
 				50B84C8C0EF6F5C477C1FFCA /* WalletAPI.swift in Sources */,
 				588175A40B86ACAE1ACCD50B /* WalletService.swift in Sources */,
 				D8B2E9B167CDC708668ADA0B /* WalletView.swift in Sources */,

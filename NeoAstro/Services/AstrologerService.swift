@@ -70,4 +70,26 @@ enum AstrologerService {
             body: NotifyUserBody(astroId: astroId)
         ))
     }
+
+    /// Optional popup banner shown on first profile open (e.g. promo offer).
+    static func popupDetails(astroId: String) async throws -> AstrologerPopupContent? {
+        AppLog.info(.home, "service · popupDetails astroId=\(astroId)")
+        let result = try await APIClient.shared.send(.init(
+            path: "/v1.0/astrologer/getPopupDetails",
+            method: .GET,
+            query: ["astroId": astroId]
+        ), as: AstrologerPopupResponse.self)
+        return result.popup
+    }
+
+    /// Long-tail metadata (top questions, consultation count, etc.).
+    static func metadata(astroId: String) async throws -> AstrologerMetadata? {
+        AppLog.info(.home, "service · metadata astroId=\(astroId)")
+        let result = try await APIClient.shared.send(.init(
+            path: "/v1.0/astrologer/getAstrologerMetadata",
+            method: .GET,
+            query: ["astroId": astroId]
+        ), as: AstrologerMetadataResponse.self)
+        return result.metadata
+    }
 }

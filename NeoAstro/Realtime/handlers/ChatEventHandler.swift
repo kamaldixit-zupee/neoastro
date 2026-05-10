@@ -50,6 +50,12 @@ enum ChatEventHandler {
         case .astroTypingStop:
             store.astroTypingUntil = nil
 
+        case .astroRecordingStarted:
+            store.astrologerRecording = true
+
+        case .astroRecordingStopped:
+            store.astrologerRecording = false
+
         case .waitlistJoined:
             if let p = envelope.decode(WaitlistJoinedPayload.self) {
                 store.waitlist = p

@@ -270,7 +270,9 @@ struct AstrologerProfileView: View {
         HStack(spacing: 12) {
             Image(systemName: state == .subscribed ? "bell.badge.fill" : "bell.fill")
                 .font(.title3)
-                .foregroundStyle(state == .subscribed ? .green : AppTheme.goldGradient)
+                .foregroundStyle(state == .subscribed
+                                 ? AnyShapeStyle(Color.green)
+                                 : AnyShapeStyle(AppTheme.goldGradient))
                 .frame(width: 36, height: 36)
                 .glassEffect(.regular, in: .circle)
 

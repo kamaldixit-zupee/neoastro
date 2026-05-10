@@ -6,6 +6,7 @@ struct HomeView: View {
     @State private var chatConfirmation: AstrologerAPI?
     @State private var pendingChatAstrologer: AstrologerAPI?
     @State private var showNotifications: Bool = false
+    @State private var showConversations: Bool = false
     @State private var showFreeAsk: Bool = false
     @State private var showFreeChat: Bool = false
     @Environment(HomeSearchCoordinator.self) private var searchCoordinator
@@ -22,6 +23,13 @@ struct HomeView: View {
 
                     ScrollView {
                         VStack(spacing: 14) {
+                            if let banner = realtime.astrologerOnlineBanner {
+                                astrologerOnlineBanner(banner)
+                                    .padding(.horizontal, 16)
+                                    .padding(.top, 4)
+                                    .transition(.move(edge: .top).combined(with: .opacity))
+                            }
+
                             heroBanner
                                 .padding(.horizontal, 16)
                                 .padding(.top, 4)
@@ -61,6 +69,13 @@ struct HomeView: View {
             .toolbarBackground(.hidden, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
+                    Button { showConversations = true } label: {
+                        Image(systemName: "bubble.left.and.bubble.right.fill")
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
                     Button { showNotifications = true } label: {
                         Image(systemName: "bell.fill")
                             .font(.headline)
@@ -78,6 +93,9 @@ struct HomeView: View {
             }
             .navigationDestination(isPresented: $showNotifications) {
                 NotificationCenterView()
+            }
+            .navigationDestination(isPresented: $showConversations) {
+                ConversationsView()
             }
             .sheet(isPresented: $showFreeAsk) {
                 FreeAskFlow(onClose: { showFreeAsk = false }, onPickAstrologer: handleFreeAskAstrologerPick)
@@ -102,6 +120,66 @@ struct HomeView: View {
                 searchFocused = true
             }
         }
+    }
+
+    /// Banner shown at the top of Home when `ASTROLOGER_ONLINE_NOTIFICATION`
+    /// arrives. Tap → opens the astrologer's profile if we already have them
+    /// in the loaded list; falls back to silently dismissing otherwise.
+    private func astrologerOnlineBanner(_ payload: AstrologerOnlineNotificationPayload) -> some View {
+        Button {
+            if let astroId = payload.astrologerId,
+               let astrologer = vm.allAstrologers.first(where: { $0._id == astroId }) {
+                selectedAstrologer = astrologer
+            }
+            realtime.astrologerOnlineBanner = nil
+        } label: {
+            HStack(spacing: 12) {
+                AvatarView(
+                    name: payload.name ?? "Astrologer",
+                    imageURL: payload.image.flatMap(URL.init(string:)),
+                    gradient: AppTheme.avatarPalette(for: payload.astrologerId ?? UUID().uuidString),
+                    size: 36
+                )
+                .overlay(alignment: .bottomTrailing) {
+                    Circle()
+                        .fill(.green)
+                        .frame(width: 12, height: 12)
+                        .overlay(Circle().stroke(.white, lineWidth: 2))
+                }
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("\(payload.name ?? "Astrologer") is online")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                    if let subtext = payload.subtext, !subtext.isEmpty {
+                        Text(subtext)
+                            .font(.caption)
+                            .foregroundStyle(.white.opacity(0.7))
+                            .lineLimit(1)
+                    }
+                }
+
+                Spacer(minLength: 6)
+
+                if let price = payload.price, !price.isEmpty {
+                    Text(price)
+                        .font(.caption.weight(.bold))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .glassEffect(.regular.tint(AppTheme.pinkAccent.opacity(0.5)), in: .capsule)
+                        .foregroundStyle(.white)
+                }
+
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.55))
+            }
+            .padding(12)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .glassEffect(.regular.tint(.green.opacity(0.18)), in: .rect(cornerRadius: 18))
     }
 
     private var freeActionsRow: some View {

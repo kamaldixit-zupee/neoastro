@@ -51,6 +51,11 @@ final class RealtimeStore {
     /// Last `ASTRO_TYPING` activity (used to drive a "typing…" indicator).
     var astroTypingUntil: Date?
 
+    /// True while an `ASTRO_RECORDING_STARTED` window is open and no
+    /// matching `ASTRO_RECORDING_STOPPED` has arrived. Cleared when the
+    /// chat ends.
+    var astrologerRecording: Bool = false
+
     /// Last business error from the chat-initiation pipeline.
     var lastChatInitiationError: ChatInitiationFailedPayload?
 
@@ -130,6 +135,7 @@ final class RealtimeStore {
     func clearActiveChat() {
         activeChat = nil
         astroTypingUntil = nil
+        astrologerRecording = false
     }
 
     // MARK: - Dispatch
@@ -161,6 +167,7 @@ final class RealtimeStore {
         // Chat
         case .chatStarted, .chatEnded, .chatInitiationFailed,
              .answerQuery, .astroTyping, .astroTypingStop,
+             .astroRecordingStarted, .astroRecordingStopped,
              .lowBalanceNotif, .updatePayment, .balanceUpdated,
              .waitlistJoined, .incomingChat, .exitWaitlist, .updateWaitTime:
             ChatEventHandler.handle(event, envelope: envelope, store: self)

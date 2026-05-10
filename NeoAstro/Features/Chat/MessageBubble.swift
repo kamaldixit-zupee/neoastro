@@ -4,6 +4,7 @@ enum BubbleSide { case user, astro }
 
 struct MessageBubble: View {
     let message: ChatViewModel.ChatMessage
+    var onRecharge: (() -> Void)? = nil
 
     private static let timeFormatter: DateFormatter = {
         let f = DateFormatter()
@@ -67,23 +68,63 @@ struct MessageBubble: View {
         .padding(side == .user ? .trailing : .leading, 6)
     }
 
+    @ViewBuilder
     private var systemMessage: some View {
-        HStack {
-            Spacer()
-            HStack(spacing: 6) {
-                Image(systemName: "exclamationmark.bubble.fill")
-                    .font(.caption)
-                    .foregroundStyle(AppTheme.goldGradient)
-                Text(message.body)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.white)
-                    .multilineTextAlignment(.center)
+        if message.messageType == "SYSTEM_LOW_BALANCE" {
+            lowBalanceMessage
+        } else {
+            HStack {
+                Spacer()
+                HStack(spacing: 6) {
+                    Image(systemName: "exclamationmark.bubble.fill")
+                        .font(.caption)
+                        .foregroundStyle(AppTheme.goldGradient)
+                    Text(message.body)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .glassEffect(.regular, in: .capsule)
+                Spacer()
             }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 8)
-            .glassEffect(.regular, in: .capsule)
-            Spacer()
         }
+    }
+
+    private var lowBalanceMessage: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "indianrupeesign.circle.fill")
+                .font(.title3)
+                .foregroundStyle(.orange)
+                .frame(width: 32, height: 32)
+                .glassEffect(.regular, in: .circle)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Low balance")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.orange)
+                Text(message.body)
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.85))
+                    .lineLimit(2)
+            }
+
+            Spacer(minLength: 4)
+
+            if let onRecharge {
+                Button(action: onRecharge) {
+                    Text("Recharge")
+                        .font(.caption.weight(.bold))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                }
+                .buttonStyle(.glass)
+                .tint(AppTheme.pinkAccent)
+            }
+        }
+        .padding(12)
+        .glassEffect(.regular.tint(.orange.opacity(0.25)), in: .rect(cornerRadius: 16))
     }
 }
 

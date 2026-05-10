@@ -135,6 +135,35 @@ struct NotifyUserBody: Encodable {
     let astroId: String
 }
 
+// MARK: - Popup details (GET /v1.0/astrologer/getPopupDetails)
+
+struct AstrologerPopupResponse: Decodable {
+    let popup: AstrologerPopupContent?
+}
+
+struct AstrologerPopupContent: Decodable, Hashable {
+    let title: String?
+    let subtitle: String?
+    let imageUrl: String?
+    let ctaText: String?
+    let ctaValue: String?
+}
+
+// MARK: - Metadata (GET /v1.0/astrologer/getAstrologerMetadata)
+
+struct AstrologerMetadataResponse: Decodable {
+    let metadata: AstrologerMetadata?
+}
+
+struct AstrologerMetadata: Decodable, Hashable {
+    let totalChats: Int?
+    let totalMinutes: Int?
+    let yearsActive: Int?
+    let speciality: String?
+    let topQuestions: [String]?
+    let consultationCount: Int?
+}
+
 // MARK: - List response (existing)
 
 struct AstrologerListResponse: Decodable {
