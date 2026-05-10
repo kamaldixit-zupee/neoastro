@@ -45,7 +45,6 @@
 		59C8E53EBDC74FE5E9FE79E9 /* EventValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55B4E5BF7A3DA4F1A7DC560 /* EventValidation.swift */; };
 		5AF472EBDA7899214C7A7F86 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D0D8BE5A4E0CB3B3173F19 /* MainTabView.swift */; };
 		5C0AB1088E6B792CCC0093EB /* ConfigAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE890063715CE118ACCAB6FF /* ConfigAPI.swift */; };
-		5C50F816163F1A8EAA4FD982 /* NotificationCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64F455DD0BB5131FA5B796CD /* NotificationCenterView.swift */; };
 		5D56037D93FE0EFB144851EC /* FreeChatFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224F33A4B6FF221805D29B66 /* FreeChatFlow.swift */; };
 		5D6063A948701AFCAEFA24EE /* PresenceEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C252D5BB5EEFD16E0A8EFE75 /* PresenceEventHandler.swift */; };
 		5F8207985467FE5118F49722 /* PanchangAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9299E2C699C9F2780797ED56 /* PanchangAPI.swift */; };
@@ -160,7 +159,6 @@
 		6098958998522CC4A4EE0366 /* LanguageSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageSelectionView.swift; sourceTree = "<group>"; };
 		6099FC8AEF13FE80D103591B /* SocketEnvelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketEnvelope.swift; sourceTree = "<group>"; };
 		643683FF0BC1EB7709CEC01A /* SearchOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchOverlayView.swift; sourceTree = "<group>"; };
-		64F455DD0BB5131FA5B796CD /* NotificationCenterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCenterView.swift; sourceTree = "<group>"; };
 		6AB3ED7057402253FB40D6AC /* AuthAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPI.swift; sourceTree = "<group>"; };
 		6B00B99EB5CB8D190A686528 /* NudgeBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NudgeBanner.swift; sourceTree = "<group>"; };
 		6DD9D2C4F32B25A0E8E72597 /* ChatHistoryAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatHistoryAPI.swift; sourceTree = "<group>"; };
@@ -262,7 +260,6 @@
 		1F0F17EF8173B686C34B53FE /* Notifications */ = {
 			isa = PBXGroup;
 			children = (
-				64F455DD0BB5131FA5B796CD /* NotificationCenterView.swift */,
 				6B00B99EB5CB8D190A686528 /* NudgeBanner.swift */,
 			);
 			path = Notifications;
@@ -749,7 +746,6 @@
 				338CD1546BB9C2AA69C69B44 /* MoreViewModel.swift in Sources */,
 				16491549EFEAC55EE80015B6 /* NeoAstroApp.swift in Sources */,
 				406B826DBDED5AED0B353F60 /* NotificationAPI.swift in Sources */,
-				5C50F816163F1A8EAA4FD982 /* NotificationCenterView.swift in Sources */,
 				DC9850D42BDEBA8FA3B1EE0A /* NotificationEventHandler.swift in Sources */,
 				E6472346958447E4F1F99BE0 /* NotificationService.swift in Sources */,
 				C3C73AEB2A573B1AA3C72E3A /* NudgeBanner.swift in Sources */,

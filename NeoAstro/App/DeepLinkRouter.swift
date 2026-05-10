@@ -19,7 +19,6 @@ final class DeepLinkRouter {
         case astrologerProfile(astroId: String)
         case chatWith(astroId: String)
         case deposit(amount: Int)
-        case notifications
     }
 
     /// Latest intent. Views observe and consume.
@@ -63,7 +62,6 @@ final class DeepLinkRouter {
     /// `neoastro://astrologer-profile/{astroId}`
     /// `neoastro://chat/{astroId}`
     /// `neoastro://deposit/{amount}`
-    /// `neoastro://notifications`
     private func parse(url: URL) -> Intent? {
         guard url.scheme == "neoastro" else { return nil }
 
@@ -76,8 +74,6 @@ final class DeepLinkRouter {
         switch host {
         case "wallet":
             return .wallet
-        case "notifications":
-            return .notifications
         case "ask-free-question", "free-ask", "freeask":
             return .freeAsk
         case "astrologer-profile":

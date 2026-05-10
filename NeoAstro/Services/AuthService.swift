@@ -79,6 +79,21 @@ enum AuthService {
         if let zodiac = result.signUpData?.zodiacName { TokenStore.shared.zodiacName = zodiac }
         TokenStore.shared.mobileNumber = phone
 
+        // Cache the profile bits the auth response carries — `viewProfile` is
+        // a partner-app endpoint and returns a business failure here, so the
+        // Account / Profile screens read these from the keychain instead of
+        // round-tripping. Only overwrite when the auth response actually
+        // carries a value, so onboarding-set fields aren't wiped on re-auth.
+        if let name = result.signUpData?.un, !name.isEmpty {
+            TokenStore.shared.userName = name
+        }
+        if let email = result.signUpData?.ue, !email.isEmpty {
+            TokenStore.shared.userEmail = email
+        }
+        if let pic = result.signUpData?.pp, !pic.isEmpty {
+            TokenStore.shared.userProfilePictureUrl = pic
+        }
+
         AppLog.info(.auth, "authenticate success userId=\(result.userId ?? "?") zupeeUserId=\(result.zupeeUserId.map(String.init) ?? "?") tokenLen=\(token.count) refreshLen=\(result.refreshToken?.count ?? 0)")
 
         return result

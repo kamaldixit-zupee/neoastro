@@ -73,10 +73,16 @@ final class AppConfigStore {
     }
 
     private func fetchUserDetails() async {
+        // Seed from the keychain cache up front so screens have something
+        // immediately and the onboarding routing works even if the server
+        // call below fails (the user-app `getUserDetails` endpoint mirrors
+        // partner-app data and may return business failures).
+        userDetails = TokenStore.shared.cachedUserDetails
         do {
-            userDetails = try await ProfileService.getUserDetails()
+            let server = try await ProfileService.getUserDetails()
+            userDetails = server
         } catch {
-            AppLog.error(.config, "getUserDetails failed", error: error)
+            AppLog.error(.config, "getUserDetails failed (using cached)", error: error)
         }
     }
 

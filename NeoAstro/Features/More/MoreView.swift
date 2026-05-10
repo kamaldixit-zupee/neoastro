@@ -80,11 +80,7 @@ struct MoreView: View {
                 case .account:
                     AccountView()
                 case .editProfile:
-                    if let profile = vm.profile {
-                        EditProfileView(profile: profile, onSaved: { Task { await vm.refresh() } })
-                    } else {
-                        profileUnavailableView
-                    }
+                    EditProfileView(profile: vm.profile, onSaved: { Task { await vm.refresh() } })
                 case .about(let items):
                     aboutScreen(items: items)
                 }
@@ -451,22 +447,6 @@ struct MoreView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 8)
-    }
-
-    private var profileUnavailableView: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .font(.title)
-                .foregroundStyle(.orange)
-            Text("Profile not available right now")
-                .font(.subheadline)
-                .foregroundStyle(.white.opacity(0.85))
-            Button("Retry") { Task { await vm.refresh() } }
-                .buttonStyle(.glass)
-                .tint(AppTheme.pinkAccent)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(CosmicBackground())
     }
 
     // MARK: - Errors + destructive actions

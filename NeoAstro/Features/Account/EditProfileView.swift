@@ -5,7 +5,7 @@ import PhotosUI
 struct EditProfileView: View {
     @Environment(\.dismiss) private var dismiss
 
-    @State var profile: UserDetails
+    @State private var profile: UserDetails?
     @State private var name: String = ""
     @State private var email: String = ""
     @State private var gender: String = ""
@@ -13,6 +13,7 @@ struct EditProfileView: View {
     @State private var state: String = ""
     @State private var isSaving: Bool = false
     @State private var errorMessage: String?
+    @State private var didHydrateFields: Bool = false
     @FocusState private var focusedField: Field?
 
     // Profile picture upload
@@ -26,50 +27,15 @@ struct EditProfileView: View {
 
     var onSaved: (() -> Void)? = nil
 
+    init(profile: UserDetails? = nil, onSaved: (() -> Void)? = nil) {
+        _profile = State(initialValue: profile)
+        self.onSaved = onSaved
+    }
+
     var body: some View {
         ZStack {
             CosmicBackground()
-
-            ScrollView {
-                VStack(spacing: 14) {
-                    avatarSection
-                        .padding(.bottom, 4)
-
-                    fieldRow("Name", text: $name, field: .name, keyboard: .default, contentType: .name)
-                    fieldRow("Email", text: $email, field: .email, keyboard: .emailAddress, contentType: .emailAddress)
-                    fieldRow("Gender", text: $gender, field: .gender, keyboard: .default, contentType: .none)
-                    fieldRow("City", text: $city, field: .city, keyboard: .default, contentType: .addressCity)
-                    fieldRow("State", text: $state, field: .state, keyboard: .default, contentType: .addressState)
-
-                    if let errorMessage {
-                        Text(errorMessage)
-                            .font(.footnote)
-                            .foregroundStyle(.red)
-                            .frame(maxWidth: .infinity)
-                    }
-
-                    Button {
-                        Task { await save() }
-                    } label: {
-                        HStack(spacing: 10) {
-                            if isSaving { ProgressView().tint(.white) }
-                            Text(isSaving ? "Saving…" : "Save Changes")
-                                .font(.headline)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                    }
-                    .buttonStyle(.glass)
-                    .controlSize(.large)
-                    .tint(AppTheme.pinkAccent)
-                    .disabled(isSaving)
-                    .padding(.top, 8)
-                }
-                .padding(20)
-                .padding(.bottom, 80)
-            }
-            .scrollIndicators(.hidden)
-            .scrollDismissesKeyboard(.interactively)
+            contentScroll
         }
         .navigationTitle("Edit Profile")
         .navigationBarTitleDisplayMode(.inline)
@@ -81,13 +47,71 @@ struct EditProfileView: View {
                     .font(.body.weight(.semibold))
             }
         }
-        .onAppear {
-            name = profile.name ?? ""
-            email = profile.email ?? ""
-            gender = profile.gender ?? ""
-            city = profile.city ?? ""
-            state = profile.state ?? ""
+        .onAppear { ensureProfileLoaded() }
+    }
+
+    private var contentScroll: some View {
+        ScrollView {
+            VStack(spacing: 14) {
+                avatarSection
+                    .padding(.bottom, 4)
+
+                fieldRow("Name", text: $name, field: .name, keyboard: .default, contentType: .name)
+                fieldRow("Email", text: $email, field: .email, keyboard: .emailAddress, contentType: .emailAddress)
+                fieldRow("Gender", text: $gender, field: .gender, keyboard: .default, contentType: .none)
+                fieldRow("City", text: $city, field: .city, keyboard: .default, contentType: .addressCity)
+                fieldRow("State", text: $state, field: .state, keyboard: .default, contentType: .addressState)
+
+                if let errorMessage {
+                    Text(errorMessage)
+                        .font(.footnote)
+                        .foregroundStyle(.red)
+                        .frame(maxWidth: .infinity)
+                }
+
+                Button {
+                    Task { await save() }
+                } label: {
+                    HStack(spacing: 10) {
+                        if isSaving { ProgressView().tint(.white) }
+                        Text(isSaving ? "Saving…" : "Save Changes")
+                            .font(.headline)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                }
+                .buttonStyle(.glass)
+                .controlSize(.large)
+                .tint(AppTheme.pinkAccent)
+                .disabled(isSaving)
+                .padding(.top, 8)
+            }
+            .padding(20)
+            .padding(.bottom, 80)
         }
+        .scrollIndicators(.hidden)
+        .scrollDismissesKeyboard(.interactively)
+    }
+
+    private func hydrateFieldsIfNeeded() {
+        guard let profile, !didHydrateFields else { return }
+        name = profile.name ?? ""
+        email = profile.email ?? ""
+        gender = profile.gender ?? ""
+        city = profile.city ?? ""
+        state = profile.state ?? ""
+        didHydrateFields = true
+    }
+
+    /// Pull profile fields from the keychain cache — the server's
+    /// `viewProfile` endpoint is partner-app only and returns a business
+    /// failure for this client, so we back the screen off auth + onboarding
+    /// values that we cached locally.
+    private func ensureProfileLoaded() {
+        if profile == nil {
+            profile = TokenStore.shared.cachedUserDetails
+        }
+        hydrateFieldsIfNeeded()
     }
 
     // MARK: - Avatar
@@ -128,10 +152,10 @@ struct EditProfileView: View {
     @ViewBuilder
     private var avatarView: some View {
         let displayURL = uploadedPictureURL
-            ?? profile.profilePictureUrl.flatMap(URL.init(string:))
+            ?? profile?.profilePictureUrl.flatMap(URL.init(string:))
 
         AvatarView(
-            name: profile.name ?? "User",
+            name: profile?.name ?? "User",
             imageURL: displayURL,
             gradient: AppTheme.primaryAvatarPalette,
             size: 110
@@ -161,7 +185,10 @@ struct EditProfileView: View {
             pickedImageData = data
             let url = try await ProfileService.uploadProfilePic(imageData: data)
             uploadedPictureURL = url
-            onSaved?()   // refresh profile in caller so the new URL sticks
+            // Persist to keychain immediately so the URL survives a dismiss
+            // even if the user backs out without tapping Save.
+            TokenStore.shared.userProfilePictureUrl = url.absoluteString
+            onSaved?()
         } catch {
             AppLog.error(.account, "profile pic upload failed", error: error)
             uploadErrorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
@@ -192,22 +219,21 @@ struct EditProfileView: View {
     private func save() async {
         isSaving = true
         errorMessage = nil
-        let payload = EditProfilePayload(
-            name: name.isEmpty ? nil : name,
-            email: email.isEmpty ? nil : email,
-            dateOfBirth: profile.dateOfBirth,
-            gender: gender.isEmpty ? nil : gender,
-            city: city.isEmpty ? nil : city,
-            state: state.isEmpty ? nil : state,
-            profilePictureUrl: uploadedPictureURL?.absoluteString
-        )
-        do {
-            try await ProfileService.submit(payload)
-            onSaved?()
-            dismiss()
-        } catch {
-            errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+
+        // Source of truth is the keychain cache — the server's profile
+        // endpoints are partner-app only, so we don't round-trip the edit.
+        TokenStore.shared.userName = name.isEmpty ? nil : name
+        TokenStore.shared.userEmail = email.isEmpty ? nil : email
+        TokenStore.shared.userGender = gender.isEmpty ? nil : gender
+        TokenStore.shared.userCity = city.isEmpty ? nil : city
+        TokenStore.shared.userState = state.isEmpty ? nil : state
+        if let url = uploadedPictureURL?.absoluteString {
+            TokenStore.shared.userProfilePictureUrl = url
         }
+
+        AppLog.info(.account, "EditProfileView · saved name=\(name) gender=\(gender) city=\(city) state=\(state)")
+        onSaved?()
         isSaving = false
+        dismiss()
     }
 }

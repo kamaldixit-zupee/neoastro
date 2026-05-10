@@ -88,9 +88,10 @@ enum ProfileService {
 
     // MARK: - Profile picture upload (2-step presigned URL)
 
-    /// Two-step upload: hit the backend for a presigned URL, then PUT raw
-    /// bytes to S3, then patch the profile with the resulting public URL.
-    /// `imageData` is the JPEG/PNG bytes; `mimeType` is e.g. `"image/jpeg"`.
+    /// Two-step upload: hit the backend for a presigned URL, then PUT the raw
+    /// bytes to S3 and return the resulting public URL. Persistence to the
+    /// user's profile happens locally via `TokenStore` — `/v1.0/profile/submit`
+    /// is a partner-app endpoint and not available to this client.
     static func uploadProfilePic(imageData: Data, mimeType: String = "image/jpeg") async throws -> URL {
         AppLog.info(.account, "→ uploadProfilePic bytes=\(imageData.count) mime=\(mimeType)")
         // Step 1: ask backend for a presigned URL.
@@ -122,12 +123,6 @@ enum ProfileService {
             throw APIError.server(status: http.statusCode, message: "Upload failed")
         }
 
-        // Step 3: patch the user profile with the resulting URL.
-        try await submit(EditProfilePayload(
-            name: nil, email: nil, dateOfBirth: nil,
-            gender: nil, city: nil, state: nil,
-            profilePictureUrl: publicURL.absoluteString
-        ))
         AppLog.info(.account, "← uploadProfilePic ok url=\(publicURL.absoluteString)")
         return publicURL
     }

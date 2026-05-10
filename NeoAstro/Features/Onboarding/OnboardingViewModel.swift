@@ -111,16 +111,25 @@ final class OnboardingViewModel {
 
         Task {
             do {
+                let dobString = Self.dobFormatter.string(from: dateOfBirth)
+                let tobString = hasTimeOfBirth ? Self.timeFormatter.string(from: timeOfBirth) : nil
                 let body = AstroUserDetailsBody(
                     name: trimmedName,
-                    dateOfBirth: Self.dobFormatter.string(from: dateOfBirth),
-                    timeOfBirth: hasTimeOfBirth ? Self.timeFormatter.string(from: timeOfBirth) : nil,
+                    dateOfBirth: dobString,
+                    timeOfBirth: tobString,
                     placeOfBirth: trimmedPlace,
                     gender: gender.rawValue,
                     zupeeUserId: TokenStore.shared.zupeeUserId
                 )
                 try await OnboardingService.submitAstroUserDetails(body)
                 try await OnboardingService.setOnboardingCompleted()
+                // Cache the answers locally so the Account / Profile screens
+                // can render them — `viewProfile` is unavailable on this app.
+                TokenStore.shared.userName = trimmedName
+                TokenStore.shared.userDateOfBirth = dobString
+                TokenStore.shared.userTimeOfBirth = tobString
+                TokenStore.shared.userPlaceOfBirth = trimmedPlace
+                TokenStore.shared.userGender = gender.rawValue
                 AppLog.info(.onboarding, "VM · submit success → authenticated")
                 auth.onboardingCompleted()
             } catch {

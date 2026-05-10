@@ -5,7 +5,6 @@ struct HomeView: View {
     @State private var selectedAstrologer: AstrologerAPI?
     @State private var chatConfirmation: AstrologerAPI?
     @State private var pendingChatAstrologer: AstrologerAPI?
-    @State private var showNotifications: Bool = false
     @State private var showConversations: Bool = false
     @State private var showFreeAsk: Bool = false
     @State private var showFreeChat: Bool = false
@@ -75,13 +74,6 @@ struct HomeView: View {
                             .foregroundStyle(.white)
                     }
                 }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { showNotifications = true } label: {
-                        Image(systemName: "bell.fill")
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                    }
-                }
             }
             .searchable(text: $vm.searchText, prompt: "Search astrologers, skills…")
             .searchFocused($searchFocused)
@@ -90,9 +82,6 @@ struct HomeView: View {
             }
             .navigationDestination(item: $pendingChatAstrologer) { astrologer in
                 ChatView(astrologer: astrologer)
-            }
-            .navigationDestination(isPresented: $showNotifications) {
-                NotificationCenterView()
             }
             .navigationDestination(isPresented: $showConversations) {
                 ConversationsView()

@@ -1,16 +1,12 @@
 import SwiftUI
 
 struct WalletView: View {
-    enum WalletDestination: Hashable {
-        case transaction(WalletTransactionAPI)
-        case tds
-        case cashback
-    }
-
     @State private var vm = WalletViewModel()
     @State private var amountText: String = ""
     @State private var showJuspay = false
-    @State private var path: [WalletDestination] = []
+    @State private var selectedTransaction: WalletTransactionAPI?
+    @State private var showTDS: Bool = false
+    @State private var showCashback: Bool = false
     @State private var showFilterSheet = false
     @State private var activeFilter: String?
     @Environment(DeepLinkRouter.self) private var deepLinks
@@ -22,59 +18,55 @@ struct WalletView: View {
     private var canAdd: Bool { amountInt >= 10 }
 
     var body: some View {
-        NavigationStack(path: $path) {
-            ZStack {
-                CosmicBackground()
+        ZStack {
+            CosmicBackground()
 
-                ScrollView {
-                    VStack(spacing: AppTheme.sectionSpacing) {
-                        balanceCard
-                        quickLinksRow
-                        addBalanceCard
-                        transactionsSection
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 8)
-                    .padding(.bottom, 120)
+            ScrollView {
+                VStack(spacing: AppTheme.sectionSpacing) {
+                    balanceCard
+                    quickLinksRow
+                    addBalanceCard
+                    transactionsSection
                 }
-                .scrollIndicators(.hidden)
-                .scrollDismissesKeyboard(.interactively)
-                .refreshable { await vm.refresh() }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 120)
             }
-            .navigationDestination(for: WalletDestination.self) { dest in
-                switch dest {
-                case .transaction(let tx): TransactionDetailView(tx: tx)
-                case .tds: TDSView()
-                case .cashback: CashbackView()
-                }
-            }
-            .navigationTitle("Wallet")
-            .toolbarBackground(.hidden, for: .navigationBar)
-            .toolbar {
-                ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
-                    Button("Done") { amountFocused = false }
-                        .font(.body.weight(.semibold))
-                }
-            }
-            .sheet(isPresented: $showJuspay) {
-                JuspayPaymentSheet(amount: amountInt) { success in
-                    showJuspay = false
-                    if success {
-                        amountText = ""
-                        amountFocused = false
-                        Task { await vm.confirmCheckoutSuccess() }
-                    }
-                }
-                .presentationDetents([.medium])
-                .presentationDragIndicator(.visible)
-            }
-            .task { await vm.load() }
-            .onChange(of: deepLinks.intent) { _, newValue in
-                handleDeepLink(newValue)
-            }
-            .task { handleDeepLink(deepLinks.intent) }
+            .scrollIndicators(.hidden)
+            .scrollDismissesKeyboard(.interactively)
+            .refreshable { await vm.refresh() }
         }
+        .navigationDestination(item: $selectedTransaction) { tx in
+            TransactionDetailView(tx: tx)
+        }
+        .navigationDestination(isPresented: $showTDS) { TDSView() }
+        .navigationDestination(isPresented: $showCashback) { CashbackView() }
+        .navigationTitle("Wallet")
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") { amountFocused = false }
+                    .font(.body.weight(.semibold))
+            }
+        }
+        .sheet(isPresented: $showJuspay) {
+            JuspayPaymentSheet(amount: amountInt) { success in
+                showJuspay = false
+                if success {
+                    amountText = ""
+                    amountFocused = false
+                    Task { await vm.confirmCheckoutSuccess() }
+                }
+            }
+            .presentationDetents([.medium])
+            .presentationDragIndicator(.visible)
+        }
+        .task { await vm.load() }
+        .onChange(of: deepLinks.intent) { _, newValue in
+            handleDeepLink(newValue)
+        }
+        .task { handleDeepLink(deepLinks.intent) }
     }
 
     private func handleDeepLink(_ intent: DeepLinkRouter.Intent?) {
@@ -201,15 +193,13 @@ struct WalletView: View {
 
     private var quickLinksRow: some View {
         HStack(spacing: 10) {
-            quickLink(icon: "gift.fill", title: "Cashback", destination: .cashback)
-            quickLink(icon: "doc.text.fill", title: "TDS", destination: .tds)
+            quickLink(icon: "gift.fill", title: "Cashback") { showCashback = true }
+            quickLink(icon: "doc.text.fill", title: "TDS") { showTDS = true }
         }
     }
 
-    private func quickLink(icon: String, title: String, destination: WalletDestination) -> some View {
-        Button {
-            path.append(destination)
-        } label: {
+    private func quickLink(icon: String, title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
             HStack(spacing: 10) {
                 Image(systemName: icon)
                     .font(.title3)
@@ -254,7 +244,7 @@ struct WalletView: View {
                 VStack(spacing: 8) {
                     ForEach(vm.transactions) { tx in
                         Button {
-                            path.append(.transaction(tx))
+                            selectedTransaction = tx
                         } label: {
                             TransactionRow(tx: tx)
                         }

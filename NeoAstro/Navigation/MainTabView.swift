@@ -61,7 +61,7 @@ struct MainTabView: View {
             switch newValue {
             case .wallet, .deposit:
                 selection = .more   // Wallet lives behind the More tab today
-            case .freeAsk, .astrologerProfile, .chatWith, .notifications:
+            case .freeAsk, .astrologerProfile, .chatWith:
                 selection = .home   // HomeView owns these intents
             case nil:
                 break
