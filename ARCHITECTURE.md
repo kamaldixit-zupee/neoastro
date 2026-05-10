@@ -58,12 +58,16 @@ The app talks to the same Zupee backend that powers the React Native user app (`
 | State | `@Observable` macro + `@MainActor` (Observation framework, **not** Combine) |
 | Concurrency | Swift Structured Concurrency (`async`/`await`, actors) |
 | Networking | `URLSession` wrapped in a singleton actor |
-| Persistence | Keychain (tokens only); **no** Core Data, SwiftData, or UserDefaults |
+| Realtime | `socket.io-client-swift` wrapped in a `NeoAstroSocket` actor (Batch 4) |
+| Audio | `AVFoundation` (`AVAudioRecorder`, `AVAudioPlayer`); `AVKit` for video stories |
+| Photos | `PhotosUI.PhotosPicker` for chat images + profile picture |
+| Push | APNs via `UIApplicationDelegateAdaptor` + `UNUserNotificationCenter` |
+| Persistence | Keychain (tokens, language, onboarding flag); **no** Core Data, SwiftData, or UserDefaults |
 | Logging | `os.Logger` via `AppLog` wrapper |
 | Project gen | XcodeGen (`project.yml` is the source of truth) |
 | Min iOS | iOS 26.0 (year-numbered) |
 | Device | iPhone only, portrait-locked, dark and light mode both |
-| Dependencies | **None** – stdlib + Apple frameworks only |
+| Dependencies | `socket.io-client-swift` (16.1+) — first and currently only third-party SPM dep. Adding more requires a discussion. |
 | Tests | None yet |
 
 ---
@@ -74,54 +78,94 @@ The app talks to the same Zupee backend that powers the React Native user app (`
 NeoAstro/
 ├── NeoAstro/                        # All app source
 │   ├── App/
-│   │   ├── NeoAstroApp.swift        # @main; injects AuthViewModel via .environment
-│   │   └── AppTheme.swift           # Cosmic gradients, StarsView, tint colors
+│   │   ├── NeoAstroApp.swift        # @main; injects auth/config/realtime/deepLinks via .environment
+│   │   ├── AppDelegate.swift        # UIApplicationDelegate for APNs + notification taps
+│   │   ├── AppTheme.swift           # Tokens (gradients, palettes, surface, corners, spacing)
+│   │   ├── AppConfigStore.swift     # @Observable bootstrap store — pre/post signup config + user details
+│   │   └── DeepLinkRouter.swift     # @Observable router for `neoastro://…` URLs + notification taps
 │   ├── Components/                  # Reusable SwiftUI bits (no business logic)
 │   │   ├── AvatarView.swift
 │   │   ├── HexColor.swift           # Color(hex:) extension
 │   │   └── KeyboardDismiss.swift
 │   ├── Features/                    # One folder per screen/flow (MVVM)
-│   │   ├── Auth/                    # LoginView, OTPView, AuthViewModel
-│   │   ├── Home/                    # HomeView + AstrologerCard + profile + chat sheets
+│   │   ├── Auth/                    # LoginView, OTPView, AuthViewModel (stage machine)
+│   │   ├── Splash/                  # SplashView (cold-start config + routing)
+│   │   ├── Onboarding/              # LanguageSelectionView, OnboardingView (4-step birth-details wizard)
+│   │   ├── Home/                    # HomeView + AstrologerCard + AstrologerProfile(+VM) + StoriesView + ChatConfirmationSheet
 │   │   ├── Horoscope/               # HoroscopeView + ViewModel
 │   │   ├── Panchang/                # PanchangView + ViewModel
-│   │   ├── Wallet/                  # WalletView + ViewModel + JuspayPaymentSheet
-│   │   ├── Account/                 # AccountView, EditProfileView, ViewModel
+│   │   ├── Wallet/                  # WalletView + ViewModel + JuspayPaymentSheet + Tx detail/TDS/Cashback/Invoices/FilterSheet
+│   │   ├── Account/                 # AccountView, EditProfileView (PhotosPicker), ViewModel
 │   │   ├── More/                    # MoreView + ViewModel (settings hub)
-│   │   └── Search/                  # SearchOverlayView
+│   │   ├── Search/                  # SearchOverlayView
+│   │   ├── Chat/                    # ChatView + ViewModel + MessageBubble (text/audio/image) + ChatInputBar + VoiceRecorderOverlay
+│   │   ├── Conversations/           # ConversationsView + ChatHistoryView (read-only viewer)
+│   │   ├── FreeAsk/                 # SelectFreeQuestion → Compose → Waiting → Answers (+ Flow wrapper)
+│   │   ├── FreeChat/                # FreeChatWaitingView + FreeChatFlow
+│   │   ├── Calls/                   # IncomingCallView (full-screen Liquid Glass)
+│   │   └── Notifications/           # NotificationCenterView + reusable NudgeBanner
 │   ├── Models/
 │   │   └── API/                     # All wire-format DTOs (Codable)
 │   │       ├── AuthAPI.swift
-│   │       ├── AstrologerAPI.swift
+│   │       ├── AstrologerAPI.swift     # + Story / Education / Review / Popup / Metadata
 │   │       ├── ProfileAPI.swift
 │   │       ├── HoroscopeAPI.swift
 │   │       ├── PanchangAPI.swift
-│   │       ├── WalletAPI.swift
-│   │       └── UserSettingsAPI.swift
+│   │       ├── WalletAPI.swift         # + TDS / Cashback / Invoice / TxFilter
+│   │       ├── UserSettingsAPI.swift
+│   │       ├── ConfigAPI.swift         # pre/post signup + onboarding submission
+│   │       ├── NotificationAPI.swift   # push token + notification list + nudges
+│   │       ├── ChatHistoryAPI.swift    # conversation + historical-message DTOs
+│   │       └── FreeAskAPI.swift        # categories + REST body
 │   ├── Navigation/
-│   │   ├── RootView.swift           # Switches on auth.stage (login/otp/authenticated)
-│   │   └── MainTabView.swift        # 5-tab TabView + HomeSearchCoordinator
+│   │   ├── RootView.swift           # Switches on auth.stage (splash/lang/login/otp/onboarding/auth) + IncomingCallView fullScreenCover
+│   │   └── MainTabView.swift        # 5-tab TabView + HomeSearchCoordinator + DeepLinkRouter tab switching
 │   ├── Networking/
 │   │   ├── APIClient.swift          # actor; send<T>, refresh on 401, envelope detection
 │   │   ├── APIEnvironment.swift     # .stage / .prod base URLs
 │   │   ├── APIError.swift           # LocalizedError enum
 │   │   ├── ZupeeEnvelope.swift      # Three response envelope shapes
-│   │   ├── TokenStore.swift         # Keychain-backed singleton
+│   │   ├── TokenStore.swift         # Keychain — tokens, language, onboardingCompleted
 │   │   ├── DeviceInfo.swift         # Spoofed Android headers for API parity
 │   │   └── AppLog.swift             # os.Logger categories
+│   ├── Realtime/                    # Batch 4 — Socket.IO realtime stack
+│   │   ├── SocketEvent.swift        # String-typed enum of every event in the protocol
+│   │   ├── SocketEnvelope.swift     # `{ en, data }` codec on req/res channels
+│   │   ├── SocketManager.swift      # `NeoAstroSocket` actor — handshake, reconnect, emit, AsyncStream
+│   │   ├── ReconnectionPolicy.swift # Linear / exponential backoff helper
+│   │   ├── EventValidation.swift    # EVENTS_REQUIRING_* / SKIP_IF_* guards (ported from RN)
+│   │   ├── RealtimeStore.swift      # @Observable bridge — activeChat, presence, unread, incomingCall, free ask state
+│   │   ├── Models/
+│   │   │   └── RealtimeEvents.swift # Typed payload structs per domain
+│   │   ├── Audio/
+│   │   │   ├── AudioRecorder.swift  # AVAudioRecorder wrapper for voice notes
+│   │   │   └── AudioPlayer.swift    # AVAudioPlayer singleton for in-chat playback
+│   │   └── handlers/                # Per-domain event handlers
+│   │       ├── ConnectionEventHandler.swift
+│   │       ├── ChatEventHandler.swift
+│   │       ├── CallEventHandler.swift
+│   │       ├── PresenceEventHandler.swift
+│   │       ├── NotificationEventHandler.swift
+│   │       └── FreeAskEventHandler.swift
 │   ├── Services/                    # Stateless `enum` API facades
 │   │   ├── AuthService.swift
 │   │   ├── ProfileService.swift
-│   │   ├── AstrologerService.swift
+│   │   ├── AstrologerService.swift  # list / getProfile / reviews / notifyMe / popup / metadata
 │   │   ├── HoroscopeService.swift
 │   │   ├── PanchangService.swift
-│   │   ├── WalletService.swift
-│   │   └── UserSettingsService.swift
+│   │   ├── WalletService.swift      # screen / passbook / TDS / cashback / invoices / filters / convert / checkout
+│   │   ├── UserSettingsService.swift
+│   │   ├── ConfigService.swift
+│   │   ├── OnboardingService.swift
+│   │   ├── NotificationService.swift
+│   │   ├── ChatHistoryService.swift # conversations + per-astro history + delete
+│   │   ├── ChatMediaService.swift   # voice/image presigned upload
+│   │   └── FreeAskService.swift     # REST submit fallback + free-chat match
 │   └── Resources/
-│       ├── Info.plist
+│       ├── Info.plist               # CFBundleURLTypes (`neoastro` scheme), mic + photo usage strings
 │       └── Assets.xcassets/
 ├── NeoAstro.xcodeproj/              # Generated by XcodeGen; do NOT hand-edit
-└── project.yml                      # XcodeGen spec (source of truth for build settings)
+└── project.yml                      # XcodeGen spec (source of truth for build settings + SPM packages)
 ```
 
 ---

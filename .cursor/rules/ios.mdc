@@ -7,14 +7,15 @@ alwaysApply: false
 - Architecture is MVVM with `@Observable @MainActor final class` ViewModels; do NOT use Combine, `@Published`, `@StateObject`, `@ObservedObject`, or `@EnvironmentObject`
 - ViewModels are owned locally with `@State private var vm = FooViewModel()`; share across screens with `.environment(vm)`
 - All HTTP must go through `APIClient.shared.send` – it owns auth, refresh-on-401, device headers, and the three Zupee envelope shapes; never call `URLSession` directly
-- Tokens live only in Keychain via `TokenStore`; do not introduce Core Data, SwiftData, UserDefaults, or any disk cache without product approval
-- `DeviceInfo.zupeeAppName` is intentionally `com.neoastro.android` – the Zupee gateway gates on package name; do not "correct" it to an iOS bundle id
+- All realtime emits/subscriptions must go through `NeoAstroSocket.shared` (Socket.IO actor) – never reach into the underlying Socket.IO client; use `emit(_:payload:)` for fire-and-forget and `emitWithAck(_:payload:)` for messages that must not silently drop (e.g. `RAISE_QUERY`)
+- Tokens, language, and onboarding flag live in Keychain via `TokenStore`; do not introduce Core Data, SwiftData, UserDefaults, or any disk cache without product approval
+- `DeviceInfo.zupeeAppName` and the matching socket-handshake `packageName` query param are intentionally `com.neoastro.android` – the Zupee gateway gates on package name; do not "correct" them to an iOS bundle id
 - Keep all three envelope branches in `APIClient.send` (`ZupeeEnvelope`, `ResponseOnlyEnvelope`, direct `T`); the backend uses all three
-- No third-party SDKs are installed (no Firebase, Sentry, Razorpay, Agora, CleverTap); adding the first one is a discussion, not a unilateral change
-- Use `AppLog.<category>` (categories: api, auth, home, search, account, wallet, horoscope, panchang, chat); never use `print` or `NSLog`; add a new category to `AppLog.swift` rather than misusing one
+- One third-party SDK installed today: `socket.io-client-swift`. Adding another (Agora, Sentry, Firebase, Razorpay, etc.) is a discussion, not a unilateral change — bring it up before wiring it
+- Use `AppLog.<category>` (categories: api, auth, home, search, account, wallet, horoscope, panchang, chat, config, onboarding); never use `print` or `NSLog`; add a new category to `AppLog.swift` rather than misusing one
 - All UI must use Liquid Glass (iOS 26 `.glassEffect(...)`); chrome (nav bar, tab bar, toolbars, banners, FABs, cards over the cosmic background) is glass; long-form body text and sensitive fields stay opaque; no `.ultraThinMaterial` / `.thickMaterial`; no glass-on-glass; no flat plastic cards; reference: `.claude/references/UI-GUIDELINES.md`
 - All modals use Liquid Glass sheets — present via `.sheet` / `.fullScreenCover` / `.confirmationDialog` / `.alert` (system Liquid Glass on iOS 26); never hand-roll overlay modals with opaque backgrounds; never override `presentationBackground` with a flat color
-- Folder convention: one feature per folder under `Features/<Name>/` containing `<Name>View.swift` + `<Name>ViewModel.swift` + supporting views; DTOs in `Models/API/<Name>API.swift`; service facades as stateless enums in `Services/<Name>Service.swift`
+- Folder convention: one feature per folder under `Features/<Name>/` containing `<Name>View.swift` + `<Name>ViewModel.swift` + supporting views; DTOs in `Models/API/<Name>API.swift`; service facades as stateless enums in `Services/<Name>Service.swift`; realtime payload DTOs in `Realtime/Models/RealtimeEvents.swift`; realtime event handlers under `Realtime/handlers/`
 - Models in `Models/API/` are wire format only; keep them `Codable`, optional-friendly, and free of view-layer logic
 - Use `async`/`await` for all I/O; never `DispatchQueue.main.async` after a network call (the actor hop is automatic)
 - Use early returns and `guard let` to keep nesting shallow; avoid forced unwraps outside obvious main-thread setup

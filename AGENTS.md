@@ -6,10 +6,11 @@ Use this doc for any change inside this repository. It is the iOS user app for t
 
 - **Single iOS target** generated from `project.yml` via XcodeGen.
 - **Swift 5.10 + SwiftUI**, iOS 26.0 minimum, dark and light mode both, iPhone-portrait only.
-- **No third-party dependencies** – stdlib + Apple frameworks only.
+- **One third-party SPM dep**: `socket.io-client-swift` (drives the realtime layer). Adding more is a discussion, not a unilateral change.
 - **MVVM with `@Observable @MainActor`** ViewModels. No Combine, no `ObservableObject`.
 - **Networking**: a single `URLSession` actor (`APIClient`) with auto-retry on 401 and three-shape envelope decoding.
-- **Tokens** live in Keychain via `TokenStore`. Nothing else is persisted.
+- **Realtime**: a single `NeoAstroSocket` actor wraps Socket.IO; `RealtimeStore` (`@Observable @MainActor`) bridges events into UI state. App boot opens the socket post-auth.
+- **Persistence**: Keychain via `TokenStore` (tokens + language + onboarding flag). Nothing else.
 
 ## Hard rules
 
@@ -22,6 +23,9 @@ Use this doc for any change inside this repository. It is the iOS user app for t
 7. **Do not add caching layers** (Core Data, SwiftData, file caches) without a product requirement. The app is intentionally stateless beyond Keychain.
 8. **Do not change the bundle ID** `varasol.MarathiCalendarPanchangam` casually – provisioning profiles and App Store Connect are tied to it.
 9. **Treat `Models/API/`** as wire format. Do not add view-layer concerns (formatting, image caching) to those types; do that in the ViewModel.
+12. **Don't bypass `NeoAstroSocket`.** Every realtime emit/subscribe goes through `NeoAstroSocket.shared`. Don't reach into `SocketIOClient` directly. Use `emit(_:payload:)` for fire-and-forget, `emitWithAck(_:payload:)` for messages that must not silently drop (e.g. `RAISE_QUERY`).
+13. **Don't break the socket handshake spoof.** `NeoAstroSocket` passes `packageName=com.neoastro.android` in the query string for the same gateway-allowlist reason as `DeviceInfo`. Same rule.
+14. **Don't add another third-party SDK without discussion.** Socket.IO is the first; the next (Agora, Sentry, Firebase, Razorpay, anything) needs explicit alignment first.
 10. **Every UI surface must use Liquid Glass.** Chrome (nav bar, tab bar, toolbars, banners, FABs, cards over the cosmic background) uses `.glassEffect(...)`; long-form body text and sensitive fields stay opaque. No `.ultraThinMaterial` / `.thickMaterial` regressions, no glass-on-glass, no flat plastic cards.
 11. **All modals use Liquid Glass sheets.** Present via `.sheet` / `.fullScreenCover` / `.confirmationDialog` / `.alert` and let iOS 26 paint the system Liquid Glass material. Never hand-roll an overlay modal with an opaque background, and never override `presentationBackground` with a flat color. See [.claude/references/UI-GUIDELINES.md](.claude/references/UI-GUIDELINES.md) § 4a.
 
@@ -36,20 +40,33 @@ If a task crosses into the parent backend / RN monorepo at `/Users/kamal.dixit/D
 | Need | File |
 |------|------|
 | App entry / DI root | [NeoAstroApp.swift](NeoAstro/App/NeoAstroApp.swift) |
-| Theme, gradients, stars | [AppTheme.swift](NeoAstro/App/AppTheme.swift) |
-| Top-level auth-stage switch | [RootView.swift](NeoAstro/Navigation/RootView.swift) |
+| AppDelegate (APNs + push taps) | [AppDelegate.swift](NeoAstro/App/AppDelegate.swift) |
+| App-level config + bootstrap | [AppConfigStore.swift](NeoAstro/App/AppConfigStore.swift) |
+| Deep-link router (`neoastro://…`) | [DeepLinkRouter.swift](NeoAstro/App/DeepLinkRouter.swift) |
+| Theme tokens, gradients, stars | [AppTheme.swift](NeoAstro/App/AppTheme.swift) |
+| Top-level stage switch (splash/lang/login/otp/onboarding/auth) | [RootView.swift](NeoAstro/Navigation/RootView.swift) |
 | Tab bar | [MainTabView.swift](NeoAstro/Navigation/MainTabView.swift) |
 | HTTP client (auth + refresh + envelopes) | [APIClient.swift](NeoAstro/Networking/APIClient.swift) |
 | Stage / prod base URLs | [APIEnvironment.swift](NeoAstro/Networking/APIEnvironment.swift) |
 | Token Keychain wrapper | [TokenStore.swift](NeoAstro/Networking/TokenStore.swift) |
 | Headers Zupee backend expects | [DeviceInfo.swift](NeoAstro/Networking/DeviceInfo.swift) |
 | Logger | [AppLog.swift](NeoAstro/Networking/AppLog.swift) |
-| Auth flow | [Features/Auth/](NeoAstro/Features/Auth) |
-| Astrologer list / chat entry | [Features/Home/](NeoAstro/Features/Home) |
-| Wallet + checkout | [Features/Wallet/](NeoAstro/Features/Wallet) |
+| Realtime layer (Socket.IO actor + handlers + store) | [Realtime/](NeoAstro/Realtime) |
+| Realtime event names | [SocketEvent.swift](NeoAstro/Realtime/SocketEvent.swift) |
+| Realtime store (UI bridge) | [RealtimeStore.swift](NeoAstro/Realtime/RealtimeStore.swift) |
+| Voice/audio (record + playback) | [Realtime/Audio/](NeoAstro/Realtime/Audio) |
+| Auth flow (login/OTP/onboarding/language) | [Features/Auth/](NeoAstro/Features/Auth), [Features/Onboarding/](NeoAstro/Features/Onboarding), [Features/Splash/](NeoAstro/Features/Splash) |
+| Astrologer list + profile + stories + reviews | [Features/Home/](NeoAstro/Features/Home) |
+| Chat (real-time, voice/image, end-chat) | [Features/Chat/](NeoAstro/Features/Chat) |
+| Conversations list + chat-history viewer | [Features/Conversations/](NeoAstro/Features/Conversations) |
+| Free Ask flow | [Features/FreeAsk/](NeoAstro/Features/FreeAsk) |
+| Free Chat flow | [Features/FreeChat/](NeoAstro/Features/FreeChat) |
+| Incoming call full-screen | [Features/Calls/](NeoAstro/Features/Calls) |
+| Wallet + checkout + TDS + cashback + invoices + filters | [Features/Wallet/](NeoAstro/Features/Wallet) |
 | Profile / delete account | [Features/Account/](NeoAstro/Features/Account) |
 | Settings widgets | [Features/More/](NeoAstro/Features/More) |
-| Build spec | [project.yml](project.yml) |
+| Notifications center + nudges | [Features/Notifications/](NeoAstro/Features/Notifications) |
+| Build spec + SPM packages | [project.yml](project.yml) |
 | Feature parity tracker | [FEATURES.md](FEATURES.md) |
 | API endpoints reference | [.claude/references/API-ENDPOINTS.md](.claude/references/API-ENDPOINTS.md) |
 | Socket events reference | [.claude/references/SOCKET-EVENTS.md](.claude/references/SOCKET-EVENTS.md) |
@@ -82,16 +99,17 @@ If a task crosses into the parent backend / RN monorepo at `/Users/kamal.dixit/D
 
 ## When to ask before acting
 
-- Touching `APIClient`, `TokenStore`, `DeviceInfo`, or the envelope types – these are load-bearing across every feature.
-- Changing `Info.plist`, `project.yml` build settings, the bundle ID, or signing config.
-- Adding a third-party dependency (SPM, CocoaPods, Carthage). The current "no deps" stance is intentional; first dep should be discussed.
+- Touching `APIClient`, `TokenStore`, `DeviceInfo`, the envelope types, or `NeoAstroSocket` — load-bearing across every feature.
+- Changing `Info.plist` (URL types, usage strings), `project.yml` build settings or SPM packages, the bundle ID, or signing config.
+- Adding a second third-party dependency (Agora, Sentry, Firebase, Razorpay, etc.). The Socket.IO precedent does not blanket-authorize more.
 - Adding analytics / crash reporting. There is none today; introducing one needs product/legal sign-off.
+- Adding background-mode entitlements (VoIP push, audio background, etc.).
 
 ## Out-of-scope concerns
 
 These belong in the parent monorepo, not here:
-- `chatId` / `callSessionId` / `sessionId` semantics
-- Backend service ownership
-- React Native user/partner app behavior
+- Backend service ownership (which microservice owns which endpoint)
+- React Native user/partner app implementation details
+- Backend-only invariants on `chatId` / `callSessionId` / `sessionId` linkage (the iOS app *consumes* these IDs but does not author them)
 
 If you're touching those, work in `/Users/kamal.dixit/Desktop/neoastro-root` and follow that repo's `AGENTS.md`.
