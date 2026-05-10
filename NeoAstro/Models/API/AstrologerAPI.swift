@@ -52,6 +52,91 @@ struct AstrologerAPI: Decodable, Identifiable, Hashable {
     }
 }
 
+// MARK: - Profile detail (POST /v1.0/astrologer/getProfile)
+
+struct AstrologerProfileResponse: Decodable {
+    let response: AstrologerProfileData?
+}
+
+struct AstrologerProfileData: Decodable {
+    let astrologer: AstrologerProfileDetail?
+}
+
+struct AstrologerProfileDetail: Decodable {
+    let _id: String?
+    let stories: [AstrologerStory]?
+    let educationAndCertifications: [AstrologerEducation]?
+    let bio: String?
+    let totalRatings: Int?
+    let totalReviews: Int?
+    let onlineSince: String?
+}
+
+struct AstrologerStory: Decodable, Identifiable, Hashable {
+    let _id: String?
+    let imageUrl: String?
+    let videoUrl: String?
+    let thumbnailUrl: String?
+    let caption: String?
+    let createdAt: Double?
+
+    var id: String { _id ?? imageUrl ?? videoUrl ?? UUID().uuidString }
+
+    var mediaURL: URL? {
+        if let v = videoUrl, !v.isEmpty { return URL(string: v) }
+        if let i = imageUrl, !i.isEmpty { return URL(string: i) }
+        return nil
+    }
+    var thumbURL: URL? {
+        thumbnailUrl.flatMap(URL.init(string:))
+            ?? imageUrl.flatMap(URL.init(string:))
+    }
+    var isVideo: Bool { videoUrl != nil && !(videoUrl?.isEmpty ?? true) }
+}
+
+struct AstrologerEducation: Decodable, Identifiable, Hashable {
+    let _id: String?
+    let title: String?
+    let institution: String?
+    let year: String?
+    let iconUrl: String?
+
+    var id: String { _id ?? "\(title ?? "")_\(institution ?? "")" }
+}
+
+// MARK: - Reviews (GET /v1.0/astrologer/reviews)
+
+struct AstrologerReviewsResponse: Decodable {
+    let reviews: [AstrologerReview]?
+    let total: Int?
+    let averageRating: Double?
+}
+
+struct AstrologerReview: Decodable, Identifiable, Hashable {
+    let _id: String?
+    let userName: String?
+    let userImage: String?
+    let rating: Double?
+    let comment: String?
+    let createdAt: Double?
+
+    var id: String { _id ?? UUID().uuidString }
+    var date: Date {
+        guard let ts = createdAt else { return .now }
+        return Date(timeIntervalSince1970: ts > 1_000_000_000_000 ? ts / 1000 : ts)
+    }
+    var displayName: String { userName ?? "User" }
+    var displayRating: Int { Int((rating ?? 0).rounded()) }
+}
+
+// MARK: - Notify me
+
+struct NotifyUserBody: Encodable {
+    let astroId: String
+}
+
+// MARK: - List response (existing)
+
 struct AstrologerListResponse: Decodable {
     let astrologers: [AstrologerAPI]
     let totalWidgets: Int
