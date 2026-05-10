@@ -518,3 +518,8 @@ private struct SafariView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> SFSafariViewController { SFSafariViewController(url: url) }
     func updateUIViewController(_: SFSafariViewController, context: Context) {}
 }
+
+#Preview {
+    MoreView()
+        .previewEnvironment()
+}

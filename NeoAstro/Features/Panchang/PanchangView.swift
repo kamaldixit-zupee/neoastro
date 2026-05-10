@@ -386,3 +386,8 @@ struct PanchangView: View {
         .glassEffect(.regular, in: .rect(cornerRadius: 20))
     }
 }
+
+#Preview {
+    PanchangView()
+        .previewEnvironment()
+}

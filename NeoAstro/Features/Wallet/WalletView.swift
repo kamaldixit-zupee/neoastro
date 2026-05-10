@@ -300,3 +300,10 @@ private struct TransactionRow: View {
         .glassEffect(.regular, in: .rect(cornerRadius: 16))
     }
 }
+
+#Preview {
+    NavigationStack {
+        WalletView()
+    }
+    .previewEnvironment()
+}

@@ -74,3 +74,8 @@ struct SplashView: View {
         auth.routeAfterBootstrap(using: config)
     }
 }
+
+#Preview {
+    SplashView()
+        .previewEnvironment()
+}

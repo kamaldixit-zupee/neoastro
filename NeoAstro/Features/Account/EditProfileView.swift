@@ -237,3 +237,10 @@ struct EditProfileView: View {
         dismiss()
     }
 }
+
+#Preview {
+    NavigationStack {
+        EditProfileView()
+    }
+    .previewEnvironment()
+}

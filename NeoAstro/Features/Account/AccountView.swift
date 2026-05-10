@@ -325,3 +325,8 @@ struct AccountView: View {
         }
     }
 }
+
+#Preview {
+    AccountView()
+        .previewEnvironment()
+}

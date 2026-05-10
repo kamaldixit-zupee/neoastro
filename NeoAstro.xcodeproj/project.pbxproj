@@ -112,6 +112,7 @@
 		F3F13C76B3E9DD9705E1D436 /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254C5C3EABCBEC3BCFAC8433 /* AvatarView.swift */; };
 		F8A006A5123C8E865E60652B /* HexColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE401B6EA5EE18EEE82E4AE7 /* HexColor.swift */; };
 		F95E86535EDCC0ED5FBBB972 /* FreeAskEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9145E413E87D64993C234D /* FreeAskEventHandler.swift */; };
+		FD01BD9A6349075DD8E2ECB8 /* PreviewSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20BC11123F53B9102E1974D8 /* PreviewSupport.swift */; };
 		FDA3B91DFCE9A694041F0A6C /* InvoicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB3AC57E720870AEF6AE792B /* InvoicesView.swift */; };
 		FEEE29CDAD9F503CD253D8A5 /* CallEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10CF31BE9D33FF0CDE2E523E /* CallEventHandler.swift */; };
 /* End PBXBuildFile section */
@@ -128,6 +129,7 @@
 		1C8927073DB90AB3ED9C500F /* MoreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreViewModel.swift; sourceTree = "<group>"; };
 		1D0E9AC644BD099B1E163CCF /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		1E7FBDCF0805A7B583BECCC1 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		20BC11123F53B9102E1974D8 /* PreviewSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSupport.swift; sourceTree = "<group>"; };
 		211E49A4EC2C1AED27684B2F /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		224F33A4B6FF221805D29B66 /* FreeChatFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeChatFlow.swift; sourceTree = "<group>"; };
 		2250FB76A11DBEBD18C297BB /* OTPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPView.swift; sourceTree = "<group>"; };
@@ -291,6 +293,7 @@
 				254C5C3EABCBEC3BCFAC8433 /* AvatarView.swift */,
 				EE401B6EA5EE18EEE82E4AE7 /* HexColor.swift */,
 				9364DE3E0E3A64D704B0DD36 /* KeyboardDismiss.swift */,
+				20BC11123F53B9102E1974D8 /* PreviewSupport.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -758,6 +761,7 @@
 				B33948658D3ED25E79637486 /* PanchangView.swift in Sources */,
 				54F0A97B15018A04400DF11D /* PanchangViewModel.swift in Sources */,
 				5D6063A948701AFCAEFA24EE /* PresenceEventHandler.swift in Sources */,
+				FD01BD9A6349075DD8E2ECB8 /* PreviewSupport.swift in Sources */,
 				31E8313D6B8E18AADC966256 /* ProfileAPI.swift in Sources */,
 				B98155195151F7C7917AAB29 /* ProfileService.swift in Sources */,
 				E006A45F6F40E613E4267717 /* RealtimeEvents.swift in Sources */,

@@ -269,3 +269,8 @@ struct HoroscopeView: View {
         .glassEffect(.regular, in: .rect(cornerRadius: 20))
     }
 }
+
+#Preview {
+    HoroscopeView()
+        .previewEnvironment()
+}

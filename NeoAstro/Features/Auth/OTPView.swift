@@ -162,11 +162,6 @@ private struct OTPBox: View {
     ZStack {
         CosmicBackground()
         OTPView()
-            .environment({
-                let vm = AuthViewModel()
-                vm.mobileNumber = "9876543210"
-                vm.stage = .otp
-                return vm
-            }())
     }
+    .previewEnvironment()
 }

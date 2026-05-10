@@ -153,6 +153,6 @@ struct LoginView: View {
     ZStack {
         CosmicBackground()
         LoginView()
-            .environment(AuthViewModel())
     }
+    .previewEnvironment()
 }

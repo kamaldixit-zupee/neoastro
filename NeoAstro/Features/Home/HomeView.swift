@@ -321,3 +321,8 @@ struct HomeView: View {
         .padding(.top, 40)
     }
 }
+
+#Preview {
+    HomeView()
+        .previewEnvironment()
+}
