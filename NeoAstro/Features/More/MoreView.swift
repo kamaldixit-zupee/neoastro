@@ -35,6 +35,11 @@ struct MoreView: View {
 
                 ScrollView {
                     VStack(spacing: 18) {
+                        ProfileHeaderCard(
+                            profile: vm.profile ?? TokenStore.shared.cachedUserDetails,
+                            onEditProfile: { path.append(.editProfile) }
+                        )
+
                         if vm.isLoading && vm.widgets.isEmpty {
                             ProgressView().tint(.white).controlSize(.large)
                                 .padding(.top, 60)
@@ -115,7 +120,9 @@ struct MoreView: View {
     private var standaloneWidgets: [UserSettingsWidget] {
         vm.widgets.filter { widget in
             let t = (widget.widgetType ?? "").lowercased()
-            return t != "navigation_item_with_subtitle"
+            // `profile_overview` is replaced by the always-on `accountCard`
+            // so we don't render two profile cards stacked.
+            return t != "navigation_item_with_subtitle" && t != "profile_overview"
         }
     }
 
@@ -125,6 +132,19 @@ struct MoreView: View {
             .flatMap { widget in
                 (widget.items ?? [])
                     .filter { $0.isVisible && ($0.title?.isEmpty == false) }
+                    .filter { item in
+                        // The always-on `accountCard` at the top owns this
+                        // entry — drop the server-rendered duplicate row.
+                        let cta = (item.cta?.value ?? "").uppercased()
+                        let title = (item.title ?? "").lowercased()
+                        if cta == "ACCOUNT" || cta == "PROFILE" || cta == "EDIT_PROFILE" {
+                            return false
+                        }
+                        if title.contains("your account") || title == "account" || title == "profile" {
+                            return false
+                        }
+                        return true
+                    }
                     .map { (widget: widget, item: $0) }
             }
     }

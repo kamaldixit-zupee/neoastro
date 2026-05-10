@@ -9,158 +9,65 @@ struct AccountView: View {
     @State private var showEditProfile = false
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                CosmicBackground()
+        ZStack {
+            CosmicBackground()
 
-                ScrollView {
-                    VStack(spacing: 22) {
-                        profileHeader
-                            .padding(.top, 16)
+            ScrollView {
+                VStack(spacing: 22) {
+                    ProfileHeaderCard(
+                        profile: vm.profile,
+                        onEditProfile: { showEditProfile = true }
+                    )
+                    .padding(.top, 16)
 
-                        if !vm.settings.isEmpty {
-                            ForEach(vm.settings) { widget in
-                                widgetSection(widget)
-                            }
-                        } else if vm.isLoading {
-                            ProgressView().tint(.white)
-                                .padding(.top, 20)
+                    if !vm.settings.isEmpty {
+                        ForEach(vm.settings) { widget in
+                            widgetSection(widget)
                         }
-
-                        if let error = vm.errorMessage {
-                            Text(error)
-                                .font(.caption)
-                                .foregroundStyle(.orange)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal, 24)
-                        }
-
-                        destructiveActions
+                    } else if vm.isLoading {
+                        ProgressView().tint(.white)
+                            .padding(.top, 20)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 120)
-                }
-                .scrollIndicators(.hidden)
-                .refreshable { await vm.refresh() }
-            }
-            .navigationTitle("Account")
-            .toolbarBackground(.hidden, for: .navigationBar)
-            .navigationDestination(isPresented: $showEditProfile) {
-                if let profile = vm.profile {
-                    EditProfileView(profile: profile, onSaved: { Task { await vm.refresh() } })
-                }
-            }
-            .alert("Logout?", isPresented: $confirmLogout) {
-                Button("Cancel", role: .cancel) {}
-                Button("Logout", role: .destructive) { auth.logout(config: config) }
-            } message: {
-                Text("You'll need to verify your number again.")
-            }
-            .alert("Delete Account?", isPresented: $confirmDelete) {
-                Button("Cancel", role: .cancel) {}
-                Button("Delete", role: .destructive) {
-                    Task {
-                        let ok = await vm.deleteAccount()
-                        if ok { auth.logout(config: config) }
+
+                    if let error = vm.errorMessage {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 24)
                     }
+
+                    destructiveActions
                 }
-            } message: {
-                Text("This permanently removes your data and cannot be undone.")
+                .padding(.horizontal, 16)
+                .padding(.bottom, 120)
             }
-            .task { await vm.load() }
+            .scrollIndicators(.hidden)
+            .refreshable { await vm.refresh() }
         }
-    }
-
-    private var displayName: String {
-        vm.profile?.name ?? userBlockUsername() ?? "NeoAstro User"
-    }
-
-    private var displayPhone: String {
-        let stored = vm.profile?.phone ?? auth.mobileNumber
-        return stored.isEmpty ? "" : "+91 \(stored)"
-    }
-
-    /// If the API returned a profile widget, use the username from it.
-    private func userBlockUsername() -> String? {
-        for widget in vm.settings {
-            if widget.widgetType == "USER_BLOCK" || widget.widgetType == "PROFILE_HEADER" {
-                if let name = widget.items?.first?.username, !name.isEmpty { return name }
-            }
+        .navigationTitle("Account")
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .navigationDestination(isPresented: $showEditProfile) {
+            EditProfileView(profile: vm.profile, onSaved: { Task { await vm.refresh() } })
         }
-        return nil
-    }
-
-    private func userBlockImageURL() -> URL? {
-        for widget in vm.settings {
-            if widget.widgetType == "USER_BLOCK" || widget.widgetType == "PROFILE_HEADER" {
-                if let url = widget.items?.first?.iconURL { return url }
-            }
+        .alert("Logout?", isPresented: $confirmLogout) {
+            Button("Cancel", role: .cancel) {}
+            Button("Logout", role: .destructive) { auth.logout(config: config) }
+        } message: {
+            Text("You'll need to verify your number again.")
         }
-        return nil
-    }
-
-    private var profileHeader: some View {
-        VStack(spacing: 14) {
-            ZStack {
-                Circle()
-                    .fill(AppTheme.goldGradient)
-                    .frame(width: 110, height: 110)
-                    .blur(radius: 22)
-                    .opacity(0.4)
-
-                AvatarView(
-                    name: displayName,
-                    imageURL: userBlockImageURL() ?? vm.profile?.profilePictureUrl.flatMap(URL.init(string:)),
-                    gradient: AppTheme.primaryAvatarPalette,
-                    size: 100
-                )
-            }
-
-            VStack(spacing: 4) {
-                Text(displayName)
-                    .font(.title2.weight(.bold))
-                    .foregroundStyle(.white)
-                if !displayPhone.isEmpty {
-                    Text(displayPhone)
-                        .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.7))
+        .alert("Delete Account?", isPresented: $confirmDelete) {
+            Button("Cancel", role: .cancel) {}
+            Button("Delete", role: .destructive) {
+                Task {
+                    let ok = await vm.deleteAccount()
+                    if ok { auth.logout(config: config) }
                 }
             }
-
-            HStack(spacing: 10) {
-                if let zodiac = vm.profile?.zodiacName ?? TokenStore.shared.zodiacName {
-                    pill(icon: "sparkles", text: zodiac)
-                }
-                pill(icon: "star.fill", text: "Member")
-            }
-
-            Button { showEditProfile = true } label: {
-                Text("Edit Profile")
-                    .font(.footnote.weight(.semibold))
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-            }
-            .buttonStyle(.glass)
-            .tint(AppTheme.pinkAccent)
-            .padding(.top, 4)
+        } message: {
+            Text("This permanently removes your data and cannot be undone.")
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 22)
-        .glassEffect(.regular, in: .rect(cornerRadius: 24))
-    }
-
-    private func pill(icon: String, text: String) -> some View {
-        HStack(spacing: 6) {
-            Image(systemName: icon)
-                .font(.caption)
-                .foregroundStyle(AppTheme.goldGradient)
-            Text(text)
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(.white)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .glassEffect(.regular, in: .capsule)
+        .task { await vm.load() }
     }
 
     private func widgetSection(_ widget: UserSettingsWidget) -> some View {
