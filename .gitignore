@@ -1,0 +1,18 @@
+# Build outputs
+build/
+DerivedData/
+
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+*.xcuserdatad/
+
+# macOS
+.DS_Store
+
+# SwiftPM / CocoaPods (we don't use these but keep noise out if added later)
+.swiftpm/
+Pods/
+
+# Claude worktrees
+.claude/worktrees/

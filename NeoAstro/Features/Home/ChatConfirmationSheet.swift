@@ -39,17 +39,17 @@ struct ChatConfirmationSheet: View {
 
             infoStrip
 
-            Spacer(minLength: 6)
+            Spacer(minLength: 3)
 
             startChatButton
         }
         .padding(.horizontal, 20)
-        .padding(.top, 12)
-        .padding(.bottom, 40)
+        .padding(.top, 28)
+        .padding(.bottom, -10)
         .overlay(alignment: .topTrailing) {
             closeButton
-                .padding(.top, 8)
-                .padding(.trailing, 12)
+                .padding(.top, 14)
+                .padding(.trailing, 20)
         }
     }
 

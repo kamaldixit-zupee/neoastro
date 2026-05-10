@@ -100,7 +100,7 @@ struct HomeView: View {
                     },
                     onCancel: { chatConfirmation = nil }
                 )
-                .presentationDetents([.fraction(0.55), .large])
+                .presentationDetents([.fraction(0.55), .medium])
                 .presentationDragIndicator(.visible)
             }
             .task { await vm.loadInitial() }
