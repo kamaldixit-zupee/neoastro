@@ -43,15 +43,42 @@ final class RealtimeStore {
     /// Latest banner-style notification — astrologer-just-came-online.
     var astrologerOnlineBanner: AstrologerOnlineNotificationPayload?
 
-    /// Inbound `ANSWER_QUERY` events for the open chat. Drained by
-    /// `ChatViewModel`.
-    private(set) var inboundMessages: [AnswerQueryPayload] = []
+    /// Inbound `ANSWER_QUERY` events for the open chat. Producers (the
+    /// realtime handlers) append; `ChatViewModel` drains via
+    /// `consumeInboundMessages()`.
+    var inboundMessages: [AnswerQueryPayload] = []
 
     /// Last `ASTRO_TYPING` activity (used to drive a "typing…" indicator).
     var astroTypingUntil: Date?
 
     /// Last business error from the chat-initiation pipeline.
     var lastChatInitiationError: ChatInitiationFailedPayload?
+
+    // MARK: - Free Ask state
+
+    /// Set on FREE_ASK_SUBMITTED — drives the waiting/progress UI.
+    var freeAskSubmissionAck: FreeAskSubmittedPayload?
+
+    /// Set on FREE_ASK_ANSWERED — clears the waiting state and surfaces the
+    /// answer detail screen.
+    var freeAskAnswer: FreeAskAnsweredPayload?
+
+    /// Per-astrologer discounted price keyed by astrologer id, populated by
+    /// `ASTRO_FREE_ASK_PRICE_UPDATE` events.
+    var freeAskOfferPrices: [String: Int] = [:]
+
+    /// Local snapshot of what the user just submitted, kept until either
+    /// `freeAskSubmissionAck` arrives or the user cancels.
+    var freeAskLocalSubmission: FreeAskSubmission?
+
+    // MARK: - Free Chat state
+
+    /// Display text from `FREE_CHAT_WAITLIST`.
+    var freeChatWaitlistText: String?
+
+    /// Astrologer id assigned via `FREE_CHAT_ASTRO_ID`. Once `CHAT_STARTED`
+    /// fires for this astrologer, callers navigate to `ChatView`.
+    var freeChatAssignedAstroId: String?
 
     // MARK: - Listener task
 
@@ -150,9 +177,26 @@ final class RealtimeStore {
         // Notifications / unread / nudges
         case .unreadMessagesCount, .dynamicNudge:
             NotificationEventHandler.handle(event, envelope: envelope, store: self)
+        // Free Ask + Free Chat
+        case .freeAskSubmitted, .freeAskAnswered, .astroFreeAskPriceUpdate,
+             .freeChatWaitlist, .freeChatAstroId:
+            FreeAskEventHandler.handle(event, envelope: envelope, store: self)
         default:
             AppLog.debug(.api, "event handled=false event=\(event.rawValue)")
         }
+    }
+
+    // MARK: - Free Ask helpers
+
+    func resetFreeAsk() {
+        freeAskSubmissionAck = nil
+        freeAskAnswer = nil
+        freeAskLocalSubmission = nil
+    }
+
+    func resetFreeChat() {
+        freeChatWaitlistText = nil
+        freeChatAssignedAstroId = nil
     }
 
     private func peekAstroId(from envelope: SocketEnvelopeIn) -> String? {

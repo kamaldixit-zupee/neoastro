@@ -17,7 +17,13 @@ final class ChatViewModel {
         var failed: Bool = false
         var sequenceId: Int? = nil
         var astroId: String? = nil
+        var mediaURL: URL? = nil
+        var audioDurationSeconds: Int? = nil
+
         var isSystem: Bool { messageType.hasPrefix("SYSTEM_") }
+        var isText:  Bool { messageType == "TEXT" }
+        var isAudio: Bool { messageType == "AUDIO" }
+        var isImage: Bool { messageType == "IMAGE" }
     }
 
     // MARK: - State
@@ -28,6 +34,7 @@ final class ChatViewModel {
     var isAstroTyping: Bool = false
     var errorMessage: String?
     var hasEndedChat: Bool = false
+    var isUploadingMedia: Bool = false
 
     private weak var realtime: RealtimeStore?
     private var inboundDrainTask: Task<Void, Never>?
@@ -119,6 +126,140 @@ final class ChatViewModel {
         }
     }
 
+    /// Send a captured voice note. Records to local file → upload to S3 via
+    /// presigned URL → emit `RAISE_QUERY` with `messageType=AUDIO` and the
+    /// public URL in `mediaUrls`.
+    func sendVoiceNote(_ captured: CapturedAudio) {
+        guard let realtime, let chat = realtime.activeChat else {
+            errorMessage = "Chat session not active"
+            return
+        }
+
+        let nextSeq = chat.sequenceCounter + 1
+        if var active = realtime.activeChat {
+            active.sequenceCounter = nextSeq
+            realtime.activeChat = active
+        }
+        let localId = "local_\(UUID().uuidString)"
+        let durationInt = Int(captured.duration.rounded())
+        // Optimistic insert with the local file URL — once the upload finishes
+        // we patch in the public URL so the in-flight bubble keeps playing.
+        let outgoing = ChatMessage(
+            id: localId,
+            body: "Voice note",
+            isFromUser: true,
+            messageType: "AUDIO",
+            sentAt: .now,
+            pending: true,
+            sequenceId: nextSeq,
+            astroId: chat.astroId,
+            mediaURL: captured.url,
+            audioDurationSeconds: durationInt
+        )
+        messages.append(outgoing)
+
+        Task {
+            isUploadingMedia = true
+            defer { isUploadingMedia = false }
+
+            do {
+                let publicURL = try await ChatMediaService.uploadVoiceNote(
+                    data: captured.data,
+                    chatId: chat.chatId,
+                    astroId: chat.astroId
+                )
+                if let idx = messages.firstIndex(where: { $0.id == localId }) {
+                    var msg = messages[idx]
+                    msg.mediaURL = publicURL
+                    messages[idx] = msg
+                }
+                let payload = RaiseQueryPayload(
+                    chatId: chat.chatId,
+                    astroId: chat.astroId,
+                    message: "[voice]",
+                    messageType: "AUDIO",
+                    sequenceId: nextSeq,
+                    mediaUrls: [publicURL.absoluteString],
+                    audioDuration: durationInt
+                )
+                let ok = await NeoAstroSocket.shared.emitWithAck(.raiseQuery, payload: payload)
+                markFinal(localId: localId, succeeded: ok)
+            } catch {
+                AppLog.error(.chat, "voice upload failed", error: error)
+                markFinal(localId: localId, succeeded: false)
+            }
+        }
+    }
+
+    /// Send an image attachment. Same shape as voice: presigned upload then
+    /// `RAISE_QUERY messageType=IMAGE`.
+    func sendImage(_ data: Data) {
+        guard let realtime, let chat = realtime.activeChat else {
+            errorMessage = "Chat session not active"
+            return
+        }
+
+        let nextSeq = chat.sequenceCounter + 1
+        if var active = realtime.activeChat {
+            active.sequenceCounter = nextSeq
+            realtime.activeChat = active
+        }
+        let localId = "local_\(UUID().uuidString)"
+        let outgoing = ChatMessage(
+            id: localId,
+            body: "Image",
+            isFromUser: true,
+            messageType: "IMAGE",
+            sentAt: .now,
+            pending: true,
+            sequenceId: nextSeq,
+            astroId: chat.astroId,
+            mediaURL: nil
+        )
+        messages.append(outgoing)
+
+        Task {
+            isUploadingMedia = true
+            defer { isUploadingMedia = false }
+            do {
+                let publicURL = try await ChatMediaService.uploadImage(
+                    data: data,
+                    chatId: chat.chatId,
+                    astroId: chat.astroId
+                )
+                if let idx = messages.firstIndex(where: { $0.id == localId }) {
+                    var msg = messages[idx]
+                    msg.mediaURL = publicURL
+                    messages[idx] = msg
+                }
+                let payload = RaiseQueryPayload(
+                    chatId: chat.chatId,
+                    astroId: chat.astroId,
+                    message: "[image]",
+                    messageType: "IMAGE",
+                    sequenceId: nextSeq,
+                    mediaUrls: [publicURL.absoluteString]
+                )
+                let ok = await NeoAstroSocket.shared.emitWithAck(.raiseQuery, payload: payload)
+                markFinal(localId: localId, succeeded: ok)
+            } catch {
+                AppLog.error(.chat, "image upload failed", error: error)
+                markFinal(localId: localId, succeeded: false)
+            }
+        }
+    }
+
+    private func markFinal(localId: String, succeeded: Bool) {
+        guard let idx = messages.firstIndex(where: { $0.id == localId }) else { return }
+        var msg = messages[idx]
+        msg.pending = false
+        msg.failed = !succeeded
+        messages[idx] = msg
+        if !succeeded {
+            errorMessage = "Couldn't send. Tap to retry."
+        }
+    }
+
     /// User typed — debounce to a single USER_TYPING emit per ~1.5s window.
     func userTypingTouched() {
         guard let realtime, let chat = realtime.activeChat else { return }
@@ -177,16 +318,24 @@ final class ChatViewModel {
             let id = p._id ?? "remote_\(UUID().uuidString)"
             // Idempotency: skip if we already have this id.
             if messages.contains(where: { $0.id == id }) { continue }
+            let messageType = p.messageType ?? "TEXT"
+            let mediaURL: URL? = {
+                if messageType == "AUDIO", let s = p.audioUrl { return URL(string: s) }
+                if messageType == "IMAGE", let s = p.mediaUrls?.first { return URL(string: s) }
+                return p.mediaUrls?.first.flatMap(URL.init(string:))
+            }()
             let msg = ChatMessage(
                 id: id,
                 body: p.message ?? "",
                 isFromUser: false,
-                messageType: p.messageType ?? "TEXT",
+                messageType: messageType,
                 sentAt: p.createdAt.map { Date(timeIntervalSince1970: $0 > 1_000_000_000_000 ? $0 / 1000 : $0) } ?? .now,
                 pending: false,
                 failed: false,
                 sequenceId: p.sequenceId,
-                astroId: p.astroId
+                astroId: p.astroId,
+                mediaURL: mediaURL,
+                audioDurationSeconds: p.audioDuration
             )
             messages.append(msg)
         }

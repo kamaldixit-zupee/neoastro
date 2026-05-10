@@ -11,6 +11,9 @@ struct WalletView: View {
     @State private var amountText: String = ""
     @State private var showJuspay = false
     @State private var path: [WalletDestination] = []
+    @State private var showFilterSheet = false
+    @State private var activeFilter: String?
+    @Environment(DeepLinkRouter.self) private var deepLinks
     @FocusState private var amountFocused: Bool
 
     private let quickAmounts = [100, 500, 1000, 2000]
@@ -67,6 +70,25 @@ struct WalletView: View {
                 .presentationDragIndicator(.visible)
             }
             .task { await vm.load() }
+            .onChange(of: deepLinks.intent) { _, newValue in
+                handleDeepLink(newValue)
+            }
+            .task { handleDeepLink(deepLinks.intent) }
+        }
+    }
+
+    private func handleDeepLink(_ intent: DeepLinkRouter.Intent?) {
+        guard let intent else { return }
+        switch intent {
+        case .deposit(let amount):
+            amountText = "\(amount)"
+            amountFocused = true
+            _ = deepLinks.consume()
+        case .wallet:
+            // Already on Wallet — just clear the intent.
+            _ = deepLinks.consume()
+        default:
+            break
         }
     }
 

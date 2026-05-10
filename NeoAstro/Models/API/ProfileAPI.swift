@@ -24,6 +24,7 @@ struct EditProfilePayload: Encodable {
     var gender: String?
     var city: String?
     var state: String?
+    var profilePictureUrl: String?
 }
 
 struct DeleteAccountResponse: Decodable {

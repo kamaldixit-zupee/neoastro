@@ -37,5 +37,22 @@
 	</array>
 	<key>UIUserInterfaceStyle</key>
 	<string>Automatic</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>NeoAstro needs the microphone to record voice notes you send to astrologers in chat.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>NeoAstro accesses your photos so you can share images with astrologers in chat.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.neoastro.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>neoastro</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

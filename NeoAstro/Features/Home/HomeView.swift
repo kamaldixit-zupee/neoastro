@@ -6,6 +6,8 @@ struct HomeView: View {
     @State private var chatConfirmation: AstrologerAPI?
     @State private var pendingChatAstrologer: AstrologerAPI?
     @State private var showNotifications: Bool = false
+    @State private var showFreeAsk: Bool = false
+    @State private var showFreeChat: Bool = false
     @Environment(HomeSearchCoordinator.self) private var searchCoordinator
     @Environment(RealtimeStore.self) private var realtime
     @FocusState private var searchFocused: Bool
@@ -23,6 +25,9 @@ struct HomeView: View {
                             heroBanner
                                 .padding(.horizontal, 16)
                                 .padding(.top, 4)
+
+                            freeActionsRow
+                                .padding(.horizontal, 16)
 
                             if vm.isLoading && vm.astrologers.isEmpty {
                                 ProgressView()
@@ -74,6 +79,12 @@ struct HomeView: View {
             .navigationDestination(isPresented: $showNotifications) {
                 NotificationCenterView()
             }
+            .sheet(isPresented: $showFreeAsk) {
+                FreeAskFlow(onClose: { showFreeAsk = false }, onPickAstrologer: handleFreeAskAstrologerPick)
+            }
+            .sheet(isPresented: $showFreeChat) {
+                FreeChatFlow(onClose: { showFreeChat = false }, onAssigned: handleFreeChatAssigned)
+            }
             .sheet(item: $chatConfirmation) { astrologer in
                 ChatConfirmationSheet(
                     astrologer: astrologer,
@@ -90,6 +101,82 @@ struct HomeView: View {
             .onChange(of: searchCoordinator.requestFocusToken) { _, _ in
                 searchFocused = true
             }
+        }
+    }
+
+    private var freeActionsRow: some View {
+        HStack(spacing: 10) {
+            freeActionTile(
+                icon: "sparkles",
+                title: "Free Question",
+                subtitle: "One free answer",
+                action: {
+                    realtime.resetFreeAsk()
+                    showFreeAsk = true
+                }
+            )
+            freeActionTile(
+                icon: "message.badge.filled.fill",
+                title: "Free Chat",
+                subtitle: "First chat on us",
+                action: {
+                    realtime.resetFreeChat()
+                    showFreeChat = true
+                }
+            )
+        }
+    }
+
+    private func freeActionTile(icon: String, title: String, subtitle: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: icon)
+                    .font(.title3)
+                    .foregroundStyle(AppTheme.goldGradient)
+                    .frame(width: 36, height: 36)
+                    .glassEffect(.regular, in: .circle)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundStyle(.white.opacity(0.65))
+                        .lineLimit(1)
+                }
+                Spacer(minLength: 4)
+            }
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .glassEffect(.regular, in: .rect(cornerRadius: 18))
+    }
+
+    /// Free Ask → user picked an astrologer → close the sheet, look up the
+    /// astrologer in the loaded list, and route into the chat-confirmation
+    /// sheet for the per-minute consultation.
+    private func handleFreeAskAstrologerPick(_ astroId: String) {
+        showFreeAsk = false
+        if let astrologer = vm.allAstrologers.first(where: { $0._id == astroId }) {
+            chatConfirmation = astrologer
+        } else {
+            AppLog.warn(.chat, "free ask pick · astrologer \(astroId) not in home list")
+        }
+    }
+
+    /// Free Chat assigned an astrologer. Find them in the home list and
+    /// push directly into ChatView (the realtime store will fill in the
+    /// active chat once `CHAT_STARTED` arrives). If not in the list, fall
+    /// back to closing — the user will see the chat in their notifications.
+    private func handleFreeChatAssigned(_ astroId: String) {
+        showFreeChat = false
+        if let astrologer = vm.allAstrologers.first(where: { $0._id == astroId }) {
+            pendingChatAstrologer = astrologer
+        } else {
+            AppLog.warn(.chat, "free chat assigned · astrologer \(astroId) not in home list")
         }
     }
 

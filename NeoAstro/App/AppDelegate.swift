@@ -82,18 +82,28 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         completionHandler([.banner, .sound, .badge, .list])
     }
 
-    /// User tapped a notification. Deep-link wiring lands with the realtime
-    /// / chat batch — for now we just log the deepLink payload.
+    /// User tapped a notification. Pulls the deep link out of the payload
+    /// and hands it to `DeepLinkRouter`, which queues the intent until the
+    /// SwiftUI hierarchy can route on it.
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         let userInfo = response.notification.request.content.userInfo
-        let deepLink = userInfo["deepLink"] as? String
-            ?? userInfo["link"] as? String
-            ?? "<none>"
-        AppLog.info(.api, "notification tapped deepLink=\(deepLink)")
+        let deepLink = (userInfo["deepLink"] as? String) ?? (userInfo["link"] as? String)
+        AppLog.info(.api, "notification tapped deepLink=\(deepLink ?? "<none>")")
+        if let deepLink {
+            // Hop to MainActor; DeepLinkRouter is @MainActor-isolated.
+            Task { @MainActor in
+                AppDelegate.deepLinks?.handle(deepLink: deepLink)
+            }
+        }
         completionHandler()
     }
+
+    /// Bridge the SwiftUI-injected `DeepLinkRouter` so the notification
+    /// callback (which runs outside any view) can reach it. Set once in
+    /// `RootView.onAppear`.
+    @MainActor static var deepLinks: DeepLinkRouter?
 }

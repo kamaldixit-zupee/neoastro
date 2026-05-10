@@ -6,6 +6,7 @@ struct NeoAstroApp: App {
     @State private var auth: AuthViewModel
     @State private var config: AppConfigStore
     @State private var realtime: RealtimeStore
+    @State private var deepLinks: DeepLinkRouter
 
     init() {
         AppLog.banner("NeoAstro launching")
@@ -15,6 +16,7 @@ struct NeoAstroApp: App {
         _auth = State(wrappedValue: AuthViewModel())
         _config = State(wrappedValue: AppConfigStore())
         _realtime = State(wrappedValue: RealtimeStore())
+        _deepLinks = State(wrappedValue: DeepLinkRouter())
     }
 
     var body: some Scene {
@@ -23,6 +25,7 @@ struct NeoAstroApp: App {
                 .environment(auth)
                 .environment(config)
                 .environment(realtime)
+                .environment(deepLinks)
                 .task(id: auth.stage) {
                     // Open the socket once the user reaches the main tabs;
                     // tear it down whenever we drop back to login or splash.
@@ -31,6 +34,9 @@ struct NeoAstroApp: App {
                     } else if auth.stage == .login || auth.stage == .splash {
                         await realtime.stop()
                     }
+                }
+                .onOpenURL { url in
+                    deepLinks.handle(url: url)
                 }
         }
     }

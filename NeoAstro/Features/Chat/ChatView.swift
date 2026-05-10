@@ -7,6 +7,7 @@ struct ChatView: View {
     @Environment(RealtimeStore.self) private var realtime
     @Environment(\.dismiss) private var dismiss
     @State private var vm: ChatViewModel
+    @State private var recorder = AudioRecorder()
     @State private var confirmEnd: Bool = false
     @FocusState private var inputFocused: Bool
 
@@ -34,8 +35,11 @@ struct ChatView: View {
                     ChatInputBar(
                         text: $vm.draft,
                         focused: $inputFocused,
+                        recorder: recorder,
                         onSend: { vm.send() },
-                        onTypingTouch: { vm.userTypingTouched() }
+                        onTypingTouch: { vm.userTypingTouched() },
+                        onVoiceCommit: { captured in vm.sendVoiceNote(captured) },
+                        onImage: { data in vm.sendImage(data) }
                     )
                 } else {
                     endedFooter

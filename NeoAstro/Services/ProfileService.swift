@@ -123,16 +123,11 @@ enum ProfileService {
         }
 
         // Step 3: patch the user profile with the resulting URL.
-        let patch = EditProfilePayload(
+        try await submit(EditProfilePayload(
             name: nil, email: nil, dateOfBirth: nil,
-            gender: nil, city: nil, state: nil
-        )
-        // Note: the EditProfilePayload doesn't currently surface a
-        // profilePictureUrl field. The backend-side `submit` honors arbitrary
-        // patch fields, so callers that need to attach the URL should extend
-        // EditProfilePayload (next batch). Returning the public URL lets the
-        // caller render it immediately while the persistence is wired.
-        try await submit(patch)
+            gender: nil, city: nil, state: nil,
+            profilePictureUrl: publicURL.absoluteString
+        ))
         AppLog.info(.account, "← uploadProfilePic ok url=\(publicURL.absoluteString)")
         return publicURL
     }

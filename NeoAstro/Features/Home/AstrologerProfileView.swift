@@ -63,7 +63,7 @@ struct AstrologerProfileView: View {
             }
         }
         .navigationDestination(isPresented: $goToChat) {
-            ConsultChatView(astrologer: astrologer)
+            ChatView(astrologer: astrologer)
         }
     }
 

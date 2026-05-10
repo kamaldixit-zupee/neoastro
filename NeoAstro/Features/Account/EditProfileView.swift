@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import PhotosUI
 
 struct EditProfileView: View {
     @Environment(\.dismiss) private var dismiss
@@ -14,6 +15,13 @@ struct EditProfileView: View {
     @State private var errorMessage: String?
     @FocusState private var focusedField: Field?
 
+    // Profile picture upload
+    @State private var pickedItem: PhotosPickerItem?
+    @State private var pickedImageData: Data?
+    @State private var uploadedPictureURL: URL?
+    @State private var isUploadingPicture: Bool = false
+    @State private var uploadErrorMessage: String?
+
     enum Field { case name, email, gender, city, state }
 
     var onSaved: (() -> Void)? = nil
@@ -24,6 +32,9 @@ struct EditProfileView: View {
 
             ScrollView {
                 VStack(spacing: 14) {
+                    avatarSection
+                        .padding(.bottom, 4)
+
                     fieldRow("Name", text: $name, field: .name, keyboard: .default, contentType: .name)
                     fieldRow("Email", text: $email, field: .email, keyboard: .emailAddress, contentType: .emailAddress)
                     fieldRow("Gender", text: $gender, field: .gender, keyboard: .default, contentType: .none)
@@ -79,6 +90,86 @@ struct EditProfileView: View {
         }
     }
 
+    // MARK: - Avatar
+
+    private var avatarSection: some View {
+        VStack(spacing: 10) {
+            ZStack(alignment: .bottomTrailing) {
+                avatarView
+
+                PhotosPicker(selection: $pickedItem, matching: .images) {
+                    Image(systemName: isUploadingPicture ? "ellipsis" : "camera.fill")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.white)
+                        .frame(width: 32, height: 32)
+                        .glassEffect(.regular.tint(AppTheme.pinkAccent.opacity(0.6)), in: .circle)
+                }
+                .disabled(isUploadingPicture)
+                .onChange(of: pickedItem) { _, newValue in
+                    guard let newValue else { return }
+                    Task { await loadAndUpload(newValue) }
+                }
+            }
+
+            if isUploadingPicture {
+                Text("Uploading…")
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.7))
+            }
+            if let uploadErrorMessage {
+                Text(uploadErrorMessage)
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+                    .multilineTextAlignment(.center)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var avatarView: some View {
+        let displayURL = uploadedPictureURL
+            ?? profile.profilePictureUrl.flatMap(URL.init(string:))
+
+        AvatarView(
+            name: profile.name ?? "User",
+            imageURL: displayURL,
+            gradient: AppTheme.primaryAvatarPalette,
+            size: 110
+        )
+        .overlay {
+            if isUploadingPicture {
+                Circle().fill(.black.opacity(0.45))
+                ProgressView().tint(.white)
+            }
+        }
+        .clipShape(Circle())
+    }
+
+    @MainActor
+    private func loadAndUpload(_ item: PhotosPickerItem) async {
+        uploadErrorMessage = nil
+        isUploadingPicture = true
+        defer {
+            isUploadingPicture = false
+            pickedItem = nil
+        }
+        do {
+            guard let data = try await item.loadTransferable(type: Data.self) else {
+                uploadErrorMessage = "Couldn't read that image"
+                return
+            }
+            pickedImageData = data
+            let url = try await ProfileService.uploadProfilePic(imageData: data)
+            uploadedPictureURL = url
+            onSaved?()   // refresh profile in caller so the new URL sticks
+        } catch {
+            AppLog.error(.account, "profile pic upload failed", error: error)
+            uploadErrorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+    }
+
+    // MARK: - Fields
+
     private func fieldRow(_ label: String, text: Binding<String>, field: Field, keyboard: UIKeyboardType, contentType: UITextContentType?) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(label)
@@ -107,7 +198,8 @@ struct EditProfileView: View {
             dateOfBirth: profile.dateOfBirth,
             gender: gender.isEmpty ? nil : gender,
             city: city.isEmpty ? nil : city,
-            state: state.isEmpty ? nil : state
+            state: state.isEmpty ? nil : state,
+            profilePictureUrl: uploadedPictureURL?.absoluteString
         )
         do {
             try await ProfileService.submit(payload)

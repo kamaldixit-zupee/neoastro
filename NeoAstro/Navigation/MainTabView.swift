@@ -12,6 +12,7 @@ struct MainTabView: View {
 
     @State private var selection: AppTab = .home
     @State private var searchCoordinator = HomeSearchCoordinator()
+    @Environment(DeepLinkRouter.self) private var deepLinks
 
     private var routedSelection: Binding<AppTab> {
         Binding(
@@ -53,5 +54,18 @@ struct MainTabView: View {
         }
         .tabBarMinimizeBehavior(.onScrollDown)
         .tint(AppTheme.pinkAccent)
+        .onChange(of: deepLinks.intent) { _, newValue in
+            // Tab-level routing only. The destination view consumes the
+            // intent in its own `onChange` to avoid races where multiple
+            // observers all try to clear it.
+            switch newValue {
+            case .wallet, .deposit:
+                selection = .more   // Wallet lives behind the More tab today
+            case .freeAsk, .astrologerProfile, .chatWith, .notifications:
+                selection = .home   // HomeView owns these intents
+            case nil:
+                break
+            }
+        }
     }
 }

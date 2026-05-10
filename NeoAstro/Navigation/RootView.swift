@@ -4,6 +4,7 @@ struct RootView: View {
     @Environment(AuthViewModel.self) private var auth
     @Environment(AppConfigStore.self) private var config
     @Environment(RealtimeStore.self) private var realtime
+    @Environment(DeepLinkRouter.self) private var deepLinks
 
     var body: some View {
         ZStack {
@@ -38,12 +39,16 @@ struct RootView: View {
         // regardless of which tab the user is on. Driven entirely by
         // `RealtimeStore.incomingCall` — the realtime layer sets it on
         // INCOMING_CALL_REQUEST and clears it on accept/reject/cancel/end.
-        .fullScreenCover(item: incomingCallBinding()) { payload in
+        .fullScreenCover(item: incomingCallBinding()) { wrapped in
             IncomingCallView(
-                payload: payload,
-                onAccept: { handleAccept(payload) },
-                onReject: { handleReject(payload) }
+                payload: wrapped.payload,
+                onAccept: { handleAccept(wrapped.payload) },
+                onReject: { handleReject(wrapped.payload) }
             )
+        }
+        .onAppear {
+            // Bridge the router into UIKit-side notification taps.
+            AppDelegate.deepLinks = deepLinks
         }
     }
 

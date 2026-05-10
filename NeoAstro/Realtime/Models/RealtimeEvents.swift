@@ -218,6 +218,79 @@ struct AstrologerOnlineNotificationPayload: Decodable, Hashable {
     let timestamp: Double?
 }
 
+// MARK: - Free Ask
+
+struct FreeAskSubmittedPayload: Decodable, Hashable {
+    let astrologers: [FreeAskAstrologerLite]?
+    let astrologerCount: Int?
+    let progressBarCount: Int?
+    let progressBarTime: Int?      // seconds
+    let text: String?
+    let acceptedText: String?
+}
+
+struct FreeAskAnsweredPayload: Decodable, Hashable {
+    let qaAskedExpiryTime: Double?
+    let questionText: String?
+    let recommendedAstrologers: [FreeAskAstrologerLite]?
+    let astrologers: [FreeAskAstrologerLite]?
+    let viewAllText: String?
+    let askNextOneInText: String?
+    let offerValidText: String?
+    let answer: String?
+    let astrologerName: String?
+    let astrologerImage: String?
+    let astrologerId: String?
+}
+
+struct FreeAskAstrologerLite: Decodable, Hashable, Identifiable {
+    let _id: String?
+    let name: String?
+    let image: String?
+    let price: Double?
+    let discountedPrice: Double?
+    let rating: Double?
+
+    var id: String { _id ?? UUID().uuidString }
+
+    var displayName: String { name ?? "Astrologer" }
+    var displayPrice: Int { Int(discountedPrice ?? price ?? 0) }
+    var imageURL: URL? { image.flatMap(URL.init(string:)) }
+}
+
+struct AstroFreeAskPriceUpdatePayload: Decodable, Hashable {
+    let astrologerId: String?
+    let discountedPrice: Double?
+    let timestamp: Double?
+}
+
+// Outbound
+
+struct FreeAskSubmissionPayload: Encodable {
+    let category: String
+    let questionText: String
+    var birthDateTime: String? = nil
+    var birthLocation: String? = nil
+}
+
+struct AnswerViewedPayload: Encodable {
+    let astroId: String
+}
+
+// MARK: - Free Chat
+
+struct InitiateFreeChatPayload: Encodable {
+    let zupeeUserId: Int
+}
+
+struct FreeChatWaitlistPayload: Decodable, Hashable {
+    let text: String?
+}
+
+struct FreeChatAstroIdPayload: Decodable, Hashable {
+    let astroId: String?
+}
+
 // MARK: - Notifications
 
 struct DynamicNudgePayload: Decodable, Hashable {
